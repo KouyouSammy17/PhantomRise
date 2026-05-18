@@ -686,10 +686,6 @@ PrefabInstance:
     m_TransformParent: {fileID: 0}
     m_Modifications:
     - target: {fileID: 1922936950124480831, guid: dbfb61446fdc5154b9255cc8ce0c5597, type: 3}
-      propertyPath: rotationSpeed
-      value: 680
-      objectReference: {fileID: 0}
-    - target: {fileID: 1922936950124480831, guid: dbfb61446fdc5154b9255cc8ce0c5597, type: 3}
       propertyPath: cameraTransform
       value: 
       objectReference: {fileID: 2131379529}
