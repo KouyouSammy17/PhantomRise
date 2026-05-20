@@ -134,7 +134,7 @@ public class PlayerStateMachine : MonoBehaviour
     private void OnTriggerEnter(Collider other)
     {
         if (_currentState != Ghost) return;
-        if (!other.CompareTag("EnemyAttack")) return;
+        if (!other.CompareTag("Enemy")) return;
 
         Ghost.OnHit();
     }
