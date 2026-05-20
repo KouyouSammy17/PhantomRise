@@ -12,8 +12,8 @@ public class DeadState : PlayerBaseState
 
     public override void Enter()
     {
-        Debug.Log("[Dead] Enter — ゲームオーバー");
         Machine.OnPlayerDead?.Invoke();
+        GameManager.Instance.TriggerGameOver(); 
     }
 
     public override void Update(float deltaTime)

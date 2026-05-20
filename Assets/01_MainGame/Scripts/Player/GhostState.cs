@@ -68,8 +68,7 @@ public class GhostState : PlayerBaseState
     /// </summary>
     public void OnHit()
     {
-        Debug.Log("[Ghost] 攻撃を受けた → 即死");
-        Machine.TransitionTo(Machine.Dead);
+        Machine.TransitionTo(Machine.Dead); // 即死
     }
 
     /// <summary>残り時間（外部参照用）</summary>
