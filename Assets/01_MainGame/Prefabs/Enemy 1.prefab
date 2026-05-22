@@ -15,6 +15,9 @@ GameObject:
   - component: {fileID: -486408349896115084}
   - component: {fileID: 2495899563628843489}
   - component: {fileID: 6443116343119807069}
+  - component: {fileID: 7762544295177896909}
+  - component: {fileID: 4571509595142399598}
+  - component: {fileID: 4217220719746605392}
   m_Layer: 0
   m_Name: Enemy 1
   m_TagString: Untagged
@@ -179,8 +182,6 @@ MonoBehaviour:
   player: {fileID: 0}
   agent: {fileID: 0}
   rank: 3
-  name: 0
-  maxHP: 100
   attackPower: 10
   chaseRange: 10
   attackRange: 2
@@ -196,9 +197,55 @@ MonoBehaviour:
   playerMask:
     serializedVersion: 2
     m_Bits: 64
+--- !u!114 &7762544295177896909
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2827516876372056535}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 108dc996ec5731f4aa62cb147b5e330f, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::EnemyHealth
+  maxHP: 100
+--- !u!114 &4571509595142399598
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2827516876372056535}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: eb30623e40b5fab4a968f6fd8e97b5b9, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::EnemyVision
+  player: {fileID: 0}
+  chaseRange: 10
+  viewAngle: 90
+  obstacleMask:
+    serializedVersion: 2
+    m_Bits: 128
+  playerMask:
+    serializedVersion: 2
+    m_Bits: 64
+--- !u!114 &4217220719746605392
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2827516876372056535}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f3bf7e86106047a44aa8835913e6a320, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::SpiderEnemySkill
   spiderWebPrefab: {fileID: 2582457696800422401, guid: 4fe466b0d5037b745832954a37705c3f, type: 3}
   webSpawnPoint: {fileID: 5496295747560091686}
-  poisonPrefab: {fileID: 875280686190255636, guid: 9315653a07ae23b45bab24227d8ff76e, type: 3}
+  usedskill: 0
 --- !u!1 &5871163668107425346
 GameObject:
   m_ObjectHideFlags: 0

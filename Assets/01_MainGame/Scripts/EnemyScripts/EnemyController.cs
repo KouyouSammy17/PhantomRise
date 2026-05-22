@@ -21,27 +21,27 @@ public class EnemyController : MonoBehaviour
     public EnemyRank rank = EnemyRank.C;
 
     // 敵のランクを選ぶための列挙型
-    public enum EnemyName
-    {
-        Spider,
-        Mushroom,
-        Skeleton,
-        Werewolf
-    }
+    //public enum EnemyName
+    //{
+    //    Spider,
+    //    Mushroom,
+    //    Skeleton,
+    //    Werewolf
+    //}
 
     // Unityのインスペクターで選べるようにする変数
-    public EnemyName name = EnemyName.Spider;
+   // public EnemyName name = EnemyName.Spider;
 
     //敵のHP
-    public int maxHP = 100;
-    private int currentHP;
+    //public int maxHP = 100;
+    //private int currentHP;
 
     //敵の攻撃力
     public int attackPower = 10;
 
 
     //敵の追跡範囲
-    public float chaseRange = 10f;
+    //public float chaseRange = 10f;
     
     //敵の攻撃範囲
     public float attackRange = 2f;
@@ -77,82 +77,98 @@ public class EnemyController : MonoBehaviour
     private bool isStunned = true;
 
 
-    [Header("視界設定")]
+    //[Header("視界設定")]
 
     // 視野角
-    public float viewAngle = 90f;
+    //public float viewAngle = 90f;
 
     // 障害物レイヤー
-    public LayerMask obstacleMask;
+    //public LayerMask obstacleMask;
 
     // プレイヤーレイヤー
-    public LayerMask playerMask;
+    //public LayerMask playerMask;
 
     //敵のスキルクールダウン
-    private float skillCooldown = 5f;
-    private float skillTimer = 0f;
+    //private float skillCooldown = 5f;
+    //private float skillTimer = 0f;
 
     //最初だけスキルが溜まっていたら撃ってそのあとに攻撃するためのフラグ
     private bool hasInitialSkill = false;
 
-    [Header("Spider")]
-    public GameObject spiderWebPrefab;
-    public Transform webSpawnPoint;
+    //[Header("Spider")]
+    //public GameObject spiderWebPrefab;
+    //public Transform webSpawnPoint;
 
-    [Header("Mushroom")]
-    public GameObject poisonPrefab;
+    //[Header("Mushroom")]
+    //public GameObject poisonPrefab;
+
+    //継承する
+    private EnemyVision enemyVision;
+    private EnemyHealth enemyHealth;
+    private SpiderEnemySkill Spiderskill;
+    private MushroomEnemySkill Mushroomskill;
+
+
 
 
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()
     {
+
+        enemyVision=GetComponent<EnemyVision>();
+        enemyHealth=GetComponent<EnemyHealth>();
+        Spiderskill= GetComponent<SpiderEnemySkill>();
+        Mushroomskill = GetComponent<MushroomEnemySkill>();
+
         agent = GetComponent<NavMeshAgent>();
         currentState= EnemyState.Patrol;
 
         currentPatrolIndex = Random.Range(0, patrolPoints.Length);
-        currentHP = maxHP;
+
+        //スキルの後に攻撃する
+        attackTimer=attackCooldown;
+
+        //currentHP = maxHP;
 
         //敵によってスキルのクールダウンを変える
-        if (name == EnemyName.Spider)
-        {
-            skillCooldown = 8f;
-            skillTimer =8f; // 最初からスキルが溜まっている状態にする
-            attackTimer = attackCooldown; // 攻撃をスキルの後にする
-        }
-        else if (name == EnemyName.Mushroom)
-        {
-            skillCooldown = 10f;
-            skillTimer = 10f; // 最初からスキルが溜まっている状態にする
-            attackTimer = attackCooldown; // 攻撃をスキルの後にする
-        }
-        else if (name == EnemyName.Skeleton)
-        {
-            skillCooldown = 6f;
-            skillTimer = 6f; // 最初からスキルが溜まっている状態にする
-            attackTimer = attackCooldown; // 攻撃をスキルの後にする
-        }
-        else if (name == EnemyName.Werewolf)
-        {
-            skillCooldown = 13f;
-            skillTimer = 13f; // 最初からスキルが溜まっている状態にする
-            attackTimer = attackCooldown; // 攻撃をスキルの後にする
-        }
+        //if (name == EnemyName.Spider)
+        //{
+        //    skillCooldown = 8f;
+        //    skillTimer =8f; // 最初からスキルが溜まっている状態にする
+        //    attackTimer = attackCooldown; // 攻撃をスキルの後にする
+        //}
+        //else if (name == EnemyName.Mushroom)
+        //{
+        //    skillCooldown = 10f;
+        //    skillTimer = 10f; // 最初からスキルが溜まっている状態にする
+        //    attackTimer = attackCooldown; // 攻撃をスキルの後にする
+        //}
+        //else if (name == EnemyName.Skeleton)
+        //{
+        //    skillCooldown = 6f;
+        //    skillTimer = 6f; // 最初からスキルが溜まっている状態にする
+        //    attackTimer = attackCooldown; // 攻撃をスキルの後にする
+        //}
+        //else if (name == EnemyName.Werewolf)
+        //{
+        //    skillCooldown = 13f;
+        //    skillTimer = 13f; // 最初からスキルが溜まっている状態にする
+        //    attackTimer = attackCooldown; // 攻撃をスキルの後にする
+        //}
 
     }
 
     // Update is called once per frame
     void Update()
     {
-      
+        //Debug.Log(attackTimer);
 
 
-       if (skillTimer <= skillCooldown)
-        {
-            skillTimer += Time.deltaTime;
-        }
+       //if (skillTimer <= skillCooldown)
+       // {
+       //     skillTimer += Time.deltaTime;
+       // }
        
-       // Debug.Log("スキルタイマー: " + skillTimer);
-
         float distance= Vector3.Distance(transform.position,player.transform.position);
         switch (currentState)
         {
@@ -160,7 +176,7 @@ public class EnemyController : MonoBehaviour
                 PatrolMode();
                 //if (distance < chaseRange)
                 //    currentState = EnemyState.Chase;
-                if (CanSeePlayer())
+                if (enemyVision.CanSeePlayer())
                     currentState = EnemyState.Chase;
                 break;
 
@@ -169,7 +185,7 @@ public class EnemyController : MonoBehaviour
                 if (distance < attackRange)
                     currentState = EnemyState.Attack;
                 //else if (distance > chaseRange)
-                else if (!CanSeePlayer())
+                else if (!enemyVision.CanSeePlayer())
                     currentState = EnemyState.Patrol;
                 break;
 
@@ -186,7 +202,7 @@ public class EnemyController : MonoBehaviour
             case EnemyState.Stun:
                 // スタン状態の処理
                 if (rank == EnemyRank.C)
-                {
+                {   
                     agent.isStopped = true;
                     Invoke("RecoverFromStun", 8f);
                     Debug.Log("敵がスタン状態になりました！"); 
@@ -210,14 +226,14 @@ public class EnemyController : MonoBehaviour
 
 
         //hpが0以下になったらDieステートに遷移
-        if (currentHP <= 0 && currentState != EnemyState.Die&& rank == EnemyRank.D )
+        if (enemyHealth.CurrentHP <= 0 && currentState != EnemyState.Die&& rank == EnemyRank.D )
         {
             currentState = EnemyState.Die;
         }
 
         //敵のランクがC以上の場合はHPが10％以下になると一回だけスタン状態になる
         //スタン状態が終わった後に攻撃を食らうと死ぬ
-        if (rank != EnemyRank.D && (float)currentHP / maxHP <= 0.1f)
+        if (rank != EnemyRank.D && (float)enemyHealth.CurrentHP / enemyHealth.maxHP <= 0.1f)
         {
             // スタン状態の処理
             if (isStunned == true)
@@ -225,7 +241,7 @@ public class EnemyController : MonoBehaviour
                 currentState = EnemyState.Stun;
             }
 
-            if (isStunned == false&&currentHP<=0)
+            if (isStunned == false&&enemyHealth.CurrentHP<=0)
             {
                 currentState = EnemyState.Die;
             }
@@ -236,7 +252,7 @@ public class EnemyController : MonoBehaviour
         //スペースキーを押すとダメージを受ける（テスト用）
         if (Input.GetKeyDown(KeyCode.Space) == true)
         {
-            TakeDamage(5);
+            enemyHealth.TakeDamage(5);
           
         }
       
@@ -244,47 +260,47 @@ public class EnemyController : MonoBehaviour
     }
 
 
-    bool CanSeePlayer()
-    {
-        Vector3 eyePosition = transform.position + Vector3.up * 1.5f;
+    //bool CanSeePlayer()
+    //{
+    //    Vector3 eyePosition = transform.position + Vector3.up * 1.5f;
 
-        Vector3 dirToPlayer = (player.position - eyePosition).normalized;
+    //    Vector3 dirToPlayer = (player.position - eyePosition).normalized;
 
-        float distanceToPlayer = Vector3.Distance(transform.position, player.position);
+    //    float distanceToPlayer = Vector3.Distance(transform.position, player.position);
 
-        // 距離判定
-        if (distanceToPlayer > chaseRange)
-            return false;
+    //    // 距離判定
+    //    if (distanceToPlayer > chaseRange)
+    //        return false;
 
-        // 角度判定
-        float angle = Vector3.Angle(transform.forward, dirToPlayer);
+    //    // 角度判定
+    //    float angle = Vector3.Angle(transform.forward, dirToPlayer);
 
-        if (angle > viewAngle / 2f)
-            return false;
+    //    if (angle > viewAngle / 2f)
+    //        return false;
 
-        // プレイヤーまでRayを飛ばす
-        Ray ray = new Ray(eyePosition, dirToPlayer);
+    //    // プレイヤーまでRayを飛ばす
+    //    Ray ray = new Ray(eyePosition, dirToPlayer);
 
-        // 壁またはプレイヤーにだけ当たる
-        LayerMask combinedMask = obstacleMask | playerMask;
+    //    // 壁またはプレイヤーにだけ当たる
+    //    LayerMask combinedMask = obstacleMask | playerMask;
 
-        if (Physics.Raycast(ray, out RaycastHit hit, chaseRange, combinedMask))
-        {
-            // 最初に当たったのがプレイヤーなら視認成功
-            if (((1 << hit.collider.gameObject.layer) & playerMask) != 0)
-            {
-                return true;
-            }
-        }
+    //    if (Physics.Raycast(ray, out RaycastHit hit, chaseRange, combinedMask))
+    //    {
+    //        // 最初に当たったのがプレイヤーなら視認成功
+    //        if (((1 << hit.collider.gameObject.layer) & playerMask) != 0)
+    //        {
+    //            return true;
+    //        }
+    //    }
 
-        return false;
-    }
+    //    return false;
+    //}
 
-    void TakeDamage(int damage)
-    {
-        currentHP -= damage;
-        Debug.Log("敵がダメージを受けました！現在のHP: " + currentHP);
-    }
+    //void TakeDamage(int damage)
+    //{
+    //    currentHP -= damage;
+    //    Debug.Log("敵がダメージを受けました！現在のHP: " + currentHP);
+    //}
 
     void RecoverFromStun()
     {
@@ -344,6 +360,7 @@ public class EnemyController : MonoBehaviour
         if (hasInitialSkill == true)
         {
             attackTimer -= Time.deltaTime;
+            
         }
 
 
@@ -356,46 +373,71 @@ public class EnemyController : MonoBehaviour
         }
 
         //敵の名前と一致した場合、対応するスキルを使用
-        if (name == EnemyName.Spider && skillTimer >= skillCooldown)
-        {
-            //攻撃内容
-            Instantiate(spiderWebPrefab, webSpawnPoint.position, webSpawnPoint.transform.rotation);
-            Debug.Log("スパイダーの攻撃！糸を飛ばす！");
+        //if (name == EnemyName.Spider && skillTimer >= skillCooldown)
+        //{
+        //    //攻撃内容
+        //    Instantiate(spiderWebPrefab, webSpawnPoint.position, webSpawnPoint.transform.rotation);
+        //    Debug.Log("スパイダーの攻撃！糸を飛ばす！");
 
-            skillTimer = 0f;
-            // スキルを使ったら攻撃タイマーをリセット(3秒に戻す)
-            attackTimer = attackCooldown;
-            hasInitialSkill = true; // 最初のスキル使用フラグを立てる
+        //    skillTimer = 0f;
+        //    // スキルを使ったら攻撃タイマーをリセット(3秒に戻す)
+        //    attackTimer = attackCooldown;
+        //    hasInitialSkill = true; // 最初のスキル使用フラグを立てる
+        //}
+
+        //if (name == EnemyName.Mushroom && skillTimer >= skillCooldown)
+        //{
+        //    //攻撃内容
+        //    Instantiate(poisonPrefab, transform.position, transform.rotation);
+        //    Debug.Log("キノコの攻撃！毒を与える！");
+        //    skillTimer = 0f;
+        //    // スキルを使ったら攻撃タイマーをリセット(3秒に戻す)
+        //    attackTimer = attackCooldown;
+        //    hasInitialSkill = true; // 最初のスキル使用フラグを立てる
+        //}
+
+        if (Spiderskill != null)
+        {
+           Spiderskill.TryUseSkill();
+                hasInitialSkill = true; // 最初のスキル使用フラグを立てる
+
+            // スキル使用時は通常攻撃しない
+            if (Spiderskill.usedskill == true)
+            {
+                attackTimer = attackCooldown;
+                Spiderskill.usedskill = false; // スキル使用フラグをリセット
+                return;
+            }
         }
 
-        if (name == EnemyName.Mushroom && skillTimer >= skillCooldown)
+        if (Mushroomskill != null)
         {
-            //攻撃内容
-            Instantiate(poisonPrefab, transform.position, transform.rotation);
-            Debug.Log("キノコの攻撃！毒を与える！");
-            skillTimer = 0f;
-            // スキルを使ったら攻撃タイマーをリセット(3秒に戻す)
-            attackTimer = attackCooldown;
+            Mushroomskill.TryUseSkill();
             hasInitialSkill = true; // 最初のスキル使用フラグを立てる
+           
+            if(Mushroomskill.usedskill == true)
+            {
+                attackTimer = attackCooldown;
+                Mushroomskill.usedskill = false; // スキル使用フラグをリセット
+                return;
+            }
         }
-
-
 
     }
 
     //視界を可視化するためのもの
-    void OnDrawGizmosSelected()
-    {
-        Gizmos.color = Color.red;
+    //void OnDrawGizmosSelected()
+    //{
+    //    Gizmos.color = Color.red;
 
-        Gizmos.DrawWireSphere(transform.position, chaseRange);
+    //    Gizmos.DrawWireSphere(transform.position, chaseRange);
 
-        Vector3 leftDirection = Quaternion.Euler(0, -viewAngle / 2, 0) * transform.forward;
-        Vector3 rightDirection = Quaternion.Euler(0, viewAngle / 2, 0) * transform.forward;
+    //    Vector3 leftDirection = Quaternion.Euler(0, -enemyVision.viewAngle / 2, 0) * transform.forward;
+    //    Vector3 rightDirection = Quaternion.Euler(0, enemyVision.viewAngle / 2, 0) * transform.forward;
 
-        Gizmos.color = Color.yellow;
+    //    Gizmos.color = Color.yellow;
 
-        Gizmos.DrawLine(transform.position, transform.position + leftDirection * chaseRange);
-        Gizmos.DrawLine(transform.position, transform.position + rightDirection * chaseRange);
-    }
+    //    Gizmos.DrawLine(transform.position, transform.position + leftDirection * chaseRange);
+    //    Gizmos.DrawLine(transform.position, transform.position + rightDirection * chaseRange);
+    //}
 }
