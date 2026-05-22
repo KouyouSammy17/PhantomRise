@@ -3,7 +3,9 @@ using UnityEngine;
 [RequireComponent(typeof(MeshFilter))]
 public class EnemyViewCone : MonoBehaviour
 {
-    public EnemyController enemyController;
+    //public EnemyController enemyController;
+
+    public EnemyVision enemyVision;
 
     public int meshResolution = 40;
 
@@ -24,8 +26,8 @@ public class EnemyViewCone : MonoBehaviour
 
     void DrawViewCone()
     {
-        float viewAngle = enemyController.viewAngle;
-        float viewDistance = enemyController.chaseRange;
+        float viewAngle = enemyVision.viewAngle;
+        float viewDistance = enemyVision.chaseRange;
 
         int stepCount = meshResolution;
 
