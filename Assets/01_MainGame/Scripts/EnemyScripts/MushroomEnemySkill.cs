@@ -11,10 +11,15 @@ public class MushroomEnemySkill : EnemySkillBase
         if (!CanUseSkill())
             return false;
 
-        Instantiate(
+        // 乗っ取り中はプレイヤーの位置・向きで生成する
+        GameObject obj = Instantiate(
             poisonPrefab,
-            transform.position,
-            transform.rotation);
+            enemyController.GetAttackOrigin(),
+            enemyController.GetAttackRotation());
+
+        // 毒エリアにダメージ値を渡す
+        Poisonarea area = obj.GetComponent<Poisonarea>();
+        if (area != null) area.damage = enemyController.attackPower;
 
         Debug.Log("毒胞子を散布！");
 

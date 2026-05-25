@@ -206,6 +206,10 @@ public class PlayerStateMachine : MonoBehaviour
     {
         if (_currentState == Ghost || _currentState == Hijacked)
         {
+            // HijackedState からの離脱は一時的 — モデルスワップを保持するよう通知
+            if (_currentState == Hijacked)
+                Hijacked.PrepareDodge();
+
             Dodge.SetCaller(_currentState);
             TransitionTo(Dodge);
         }
