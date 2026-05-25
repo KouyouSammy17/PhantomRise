@@ -18,11 +18,11 @@ public class EnemyHPbar : MonoBehaviour
     {
         HP.value = EnemyHealth.HPRatio;
 
-        //お試し用
-        if(Input.GetKeyDown(KeyCode.Space))
-        {
-            EnemyHealth.TakeDamage(10);
-        }
+        ////お試し用
+        //if(Input.GetKeyDown(KeyCode.Space))
+        //{
+        //    EnemyHealth.TakeDamage(10);
+        //}
 
     }
 
