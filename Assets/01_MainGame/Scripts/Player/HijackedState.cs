@@ -61,6 +61,9 @@ public class HijackedState : PlayerBaseState
         if (Machine.PlayerVisual != null)
             Machine.PlayerVisual.SetActive(false);
 
+        // ② 幽霊タイマー UI を非表示
+        Machine.UIManager?.HideGhostTimer();
+
         // ② 敵のビジュアルルートを取得して Player の Transform の子に移す
         if (_enemy != null)
         {
@@ -101,6 +104,9 @@ public class HijackedState : PlayerBaseState
             Debug.Log("[Hijacked] Exit (→Dodge) — ビジュアル保持");
             return;
         }
+
+        // 幽霊タイマー UI を再表示（Ghost に戻るとき）
+        Machine.UIManager?.ShowGhostTimer();
 
         // 幽霊モデルを再表示
         if (Machine.PlayerVisual != null)

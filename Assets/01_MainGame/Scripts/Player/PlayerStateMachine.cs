@@ -74,6 +74,10 @@ public class PlayerStateMachine : MonoBehaviour
     [Header("=== QTE UI ===")]
     [SerializeField] private HijackQTEUI hijackQTEUI;
 
+    [Header("=== UI Manager ===")]
+    [SerializeField] private UIManager uiManager;
+    public UIManager UIManager => uiManager;
+
     [Header("=== ビジュアル ===")]
     /// <summary>幽霊キャラモデルのルート GameObject。乗っ取り中に非表示にする。</summary>
     public GameObject PlayerVisual;
