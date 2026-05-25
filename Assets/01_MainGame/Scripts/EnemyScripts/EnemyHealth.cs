@@ -12,11 +12,17 @@ public class EnemyHealth : MonoBehaviour
     }
 
     // 外から読み取りだけ可能
+    //現在のHPを取得するプロパティ
     public int CurrentHP
     {
         get { return currentHP; }
     }
 
+    //HPバーに表示する敵のHP
+    public float HPRatio
+    {
+        get { return (float)currentHP / maxHP; }
+    }
 
     // Update is called once per frame
     void Update()
