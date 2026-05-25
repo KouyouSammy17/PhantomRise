@@ -26,7 +26,7 @@ public class EnemyHealth : MonoBehaviour
 
     public void TakeDamage(int damage)
     {
-        currentHP -= damage;
+        currentHP = Mathf.Max(0, currentHP - damage);
         Debug.Log("敵がダメージを受けました！現在のHP: " + currentHP);
     }
 }
