@@ -195,6 +195,8 @@ public class EnemyController : MonoBehaviour
             if (isStunned == false&&_enemyHealth.CurrentHP<=0)
             {
                 currentState = EnemyState.Die;
+                // クリア判定
+                GameManager.Instance.TriggerGameClear();
             }
 
 

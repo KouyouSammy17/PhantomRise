@@ -94,13 +94,13 @@ public class UIManager : MonoBehaviour
 
         if (remaining > 0f)
         {
-            ghostTimerText.text = $"残り {remaining:F0}s";
+            ghostTimerText.text = $"{remaining:F0}";
             // 残り10秒以下で赤くする
             ghostTimerText.color = remaining <= 10f ? Color.red : Color.white;
         }
         else
         {
-            ghostTimerText.text = "残り 0s";
+            ghostTimerText.text = "0s";
             ghostTimerText.color = Color.red;
         }
     }
