@@ -20,7 +20,7 @@ GameObject:
   - component: {fileID: 4217220719746605392}
   m_Layer: 0
   m_Name: Enemy 1
-  m_TagString: Untagged
+  m_TagString: Enemy
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -180,23 +180,15 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::firstenemy
   player: {fileID: 0}
-  agent: {fileID: 0}
+  agent: {fileID: 2495899563628843489}
   rank: 3
   attackPower: 10
-  chaseRange: 10
   attackRange: 2
   attackCooldown: 2
   patrolPoints:
   - {fileID: 0}
   - {fileID: 0}
   - {fileID: 0}
-  viewAngle: 90
-  obstacleMask:
-    serializedVersion: 2
-    m_Bits: 128
-  playerMask:
-    serializedVersion: 2
-    m_Bits: 64
 --- !u!114 &7762544295177896909
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -243,9 +235,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f3bf7e86106047a44aa8835913e6a320, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::SpiderEnemySkill
+  skillCooldown: 5
   spiderWebPrefab: {fileID: 2582457696800422401, guid: 4fe466b0d5037b745832954a37705c3f, type: 3}
   webSpawnPoint: {fileID: 5496295747560091686}
-  usedskill: 0
 --- !u!1 &5871163668107425346
 GameObject:
   m_ObjectHideFlags: 0
@@ -380,5 +372,5 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 32b0faf98685dbc41ae9a3badbdb3e21, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::EnemyViewCone
-  enemyController: {fileID: 6443116343119807069}
+  enemyVision: {fileID: 4571509595142399598}
   meshResolution: 40
