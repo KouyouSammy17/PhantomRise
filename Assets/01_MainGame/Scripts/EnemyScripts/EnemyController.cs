@@ -83,6 +83,7 @@ public class EnemyController : MonoBehaviour
     private EnemySkillBase _enemySkill;
     private PlayerStateMachine _playerMachine;  // 乗っ取りシステム用キャッシュ
     private EnemyViewCone _viewCone;            // 視野コーン表示
+    private EnemyHPbar _enemyHPbar;            // 敵 HP バー
 
     // ── 乗っ取りシステム ────────────────────────
     public bool IsHijacked { get; private set; }
@@ -103,7 +104,8 @@ public class EnemyController : MonoBehaviour
         _enemyHealth = GetComponent<EnemyHealth>();
         _enemySkill = GetComponent<EnemySkillBase>();
         _playerMachine = player?.GetComponent<PlayerStateMachine>();
-        _viewCone = GetComponentInChildren<EnemyViewCone>();
+        _viewCone   = GetComponentInChildren<EnemyViewCone>();
+        _enemyHPbar = GetComponentInChildren<EnemyHPbar>();
 
         agent = GetComponent<NavMeshAgent>();
         currentState= EnemyState.Patrol;
@@ -218,7 +220,8 @@ public class EnemyController : MonoBehaviour
         agent.isStopped = true;
         var col = GetComponent<Collider>();
         if (col) col.enabled = false;
-        if (_viewCone != null) _viewCone.gameObject.SetActive(false);
+        if (_viewCone   != null) _viewCone.gameObject.SetActive(false);
+        if (_enemyHPbar != null) _enemyHPbar.gameObject.SetActive(false);
         Debug.Log($"[Enemy] {name} 乗っ取られた");
     }
 
@@ -229,7 +232,8 @@ public class EnemyController : MonoBehaviour
         IsQTETarget = false;
         currentState = EnemyState.Chase;
         agent.isStopped = false;
-        if (_viewCone != null) _viewCone.gameObject.SetActive(true);
+        if (_viewCone   != null) _viewCone.gameObject.SetActive(true);
+        if (_enemyHPbar != null) _enemyHPbar.gameObject.SetActive(true);
         Debug.Log($"[Enemy] {name} プレイヤーを発見！");
     }
 
@@ -241,16 +245,42 @@ public class EnemyController : MonoBehaviour
         Debug.Log($"[Enemy] {name} QTE 中フリーズ");
     }
 
+    // ─────────────────────────────────────────
+    // スキル共通ユーティリティ
+    // ─────────────────────────────────────────
+
+    /// <summary>スキル・攻撃の発生位置（乗っ取り中はプレイヤーの現在位置）</summary>
+    public Vector3 GetAttackOrigin()
+    {
+        return (IsHijacked && _playerMachine != null)
+            ? _playerMachine.transform.position
+            : transform.position;
+    }
+
+    /// <summary>スキル・攻撃の向き（乗っ取り中はプレイヤーの向き）</summary>
+    public Quaternion GetAttackRotation()
+    {
+        return (IsHijacked && _playerMachine != null)
+            ? _playerMachine.transform.rotation
+            : transform.rotation;
+    }
+
     /// <summary>乗っ取り中に攻撃ボタンが押されたとき — 範囲内の他の敵にダメージ</summary>
     public void PerformAttack()
     {
-        Debug.Log($"[Enemy] {name} 攻撃！");
-        Collider[] hits = Physics.OverlapSphere(transform.position, attackRange);
+        // 乗っ取り中はプレイヤーの現在位置を基点にする（EnemyController 自体は動かない）
+        Vector3 origin = (IsHijacked && _playerMachine != null)
+            ? _playerMachine.transform.position
+            : transform.position;
+
+        Debug.Log($"[Enemy] {name} 攻撃！ origin={origin}");
+        Collider[] hits = Physics.OverlapSphere(origin, attackRange);
         foreach (Collider col in hits)
         {
             EnemyController other = col.GetComponentInParent<EnemyController>();
             if (other == null || other == this) continue;
             other.TakeDamage(attackPower);
+            Debug.Log($"[Enemy] {name} → {other.name} に {attackPower} ダメージ");
         }
     }
 

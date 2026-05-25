@@ -130,7 +130,7 @@ GameObject:
   - component: {fileID: 4571509595142399598}
   - component: {fileID: 4217220719746605392}
   m_Layer: 0
-  m_Name: Enemy 1
+  m_Name: EnemyBase
   m_TagString: Enemy
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -438,6 +438,7 @@ GameObject:
   - component: {fileID: 8041236562781513880}
   - component: {fileID: 1034335288474543539}
   - component: {fileID: 6209132294690835417}
+  - component: {fileID: 2028256393761387762}
   m_Layer: 5
   m_Name: EnemyCanvas
   m_TagString: Untagged
@@ -529,6 +530,20 @@ MonoBehaviour:
   m_BlockingMask:
     serializedVersion: 2
     m_Bits: 4294967295
+--- !u!114 &2028256393761387762
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5868411053652773445}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 94b3887dbb26751498d3805e4702029c, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::EnemyHPbar
+  HP: {fileID: 4595821884460960752}
+  EnemyHealth: {fileID: 7762544295177896909}
 --- !u!1 &5871163668107425346
 GameObject:
   m_ObjectHideFlags: 0
@@ -743,7 +758,7 @@ MonoBehaviour:
     m_PressedTrigger: Pressed
     m_SelectedTrigger: Selected
     m_DisabledTrigger: Disabled
-  m_Interactable: 1
+  m_Interactable: 0
   m_TargetGraphic: {fileID: 0}
   m_FillRect: {fileID: 7432282056635228474}
   m_HandleRect: {fileID: 0}

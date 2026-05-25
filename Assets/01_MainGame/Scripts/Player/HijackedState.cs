@@ -5,6 +5,11 @@
 // Enter  : 幽霊モデルを非表示 → 敵モデルを Player の子に付け替え
 // Exit   : 幽霊モデルを復元  → 敵モデルを元の親に戻す
 //          （その後 OnHijackedEnemyDied で敵ごと Destroy される）
+//
+// Dodge 連携:
+//   PrepareDodge() を呼んでから TransitionTo(Dodge) すると
+//   Exit/Enter でモデルスワップをスキップし、
+//   敵ビジュアルを Player の子に付けたまま Dodge を実行できる。
 // ============================================================
 
 using UnityEngine;
@@ -21,9 +26,18 @@ public class HijackedState : PlayerBaseState
     private Vector3   _enemyVisualOriginalLocalPos;
     private Quaternion _enemyVisualOriginalLocalRot;
 
+    // ── Dodge 一時離脱フラグ ──────────────────────────
+    private bool _leavingForDodge = false;
+
     public HijackedState(PlayerStateMachine machine) : base(machine) { }
 
     public void SetEnemy(EnemyController enemy) => _enemy = enemy;
+
+    /// <summary>
+    /// Dodge へ一時離脱する直前に PlayerStateMachine から呼ぶ。
+    /// Exit() でのモデル復元をスキップし、Enter() での再アタッチも省略する。
+    /// </summary>
+    public void PrepareDodge() => _leavingForDodge = true;
 
     // ─────────────────────────────────────────
     // Enter: 幽霊モデル OFF、敵モデルを Player の子に
@@ -32,6 +46,16 @@ public class HijackedState : PlayerBaseState
     public override void Enter()
     {
         Machine.VelocityY = 0f;
+
+        if (_enemyVisual != null)
+        {
+            // Dodge から戻ってきた — ビジュアルは既に Player の子にある
+            // 幽霊モデルが万一 ON になっていれば確実に OFF にするだけ
+            if (Machine.PlayerVisual != null)
+                Machine.PlayerVisual.SetActive(false);
+            Debug.Log($"[Hijacked] Re-Enter from Dodge — {_enemy?.name}");
+            return;
+        }
 
         // ① 幽霊キャラを非表示
         if (Machine.PlayerVisual != null)
@@ -69,6 +93,15 @@ public class HijackedState : PlayerBaseState
 
     public override void Exit()
     {
+        if (_leavingForDodge)
+        {
+            // Dodge への一時離脱 — モデルスワップをスキップ
+            // 敵ビジュアルは Player の子に付けたまま、幽霊モデルも非表示のまま
+            _leavingForDodge = false;
+            Debug.Log("[Hijacked] Exit (→Dodge) — ビジュアル保持");
+            return;
+        }
+
         // 幽霊モデルを再表示
         if (Machine.PlayerVisual != null)
             Machine.PlayerVisual.SetActive(true);

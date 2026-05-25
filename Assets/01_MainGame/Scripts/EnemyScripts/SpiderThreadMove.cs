@@ -5,46 +5,64 @@ public class SpiderThreadMove : MonoBehaviour
     private float speed = 10f;
     private Rigidbody rb;
 
-    // Start is called once before the first execution of Update after the MonoBehaviour is created
+    /// <summary>SpiderEnemySkill から生成時に設定されるダメージ量</summary>
+    public int damage = 10;
+
+    // 生成直後に自分自身に当たらないようにする猶予時間（秒）
+    [SerializeField] private float spawnGrace = 0.15f;
+    private float _graceTimer = 0f;
+
+    // 二重ヒット防止フラグ
+    private bool _hasHit = false;
+
     void Start()
     {
-
         rb = GetComponent<Rigidbody>();
-        //移動
         rb.linearVelocity = transform.forward * speed;
     }
 
-    // Update is called once per frame
     void Update()
     {
-
-
-
+        if (_graceTimer < spawnGrace)
+            _graceTimer += Time.deltaTime;
     }
 
-    //プレイヤーに当たったら消える
-    //private void OnTriggerEnter(Collider other)
-    //{
-    //    // ぶつかったオブジェクトのタグが "Player" かどうかを判定
-    //    if (other.CompareTag("Player"))
-    //    {
-    //        // ここにプレイヤーへの拘束効果
-
-
-    //        // 自分自身（糸のオブジェクト）を消去する
-    //        Destroy(gameObject);
-    //    }
-    //}
-
-    private void OnCollisionEnter(Collision collision)
+    private void OnTriggerEnter(Collider other)
     {
-        // ぶつかったオブジェクトのタグが "Player" かどうかを判定
-        if (collision.gameObject.CompareTag("Player"))
-        {
-            // ここにプレイヤーへの拘束効果
+        // 猶予時間中はヒット判定をスキップ（自分自身への誤ヒット防止）
+        if (_graceTimer < spawnGrace) return;
 
-            // 自分自身（糸のオブジェクト）を消去する
+        HandleHit(other.gameObject);
+    }
+
+    private void HandleHit(GameObject target)
+    {
+        if (_hasHit) return;
+
+        if (target.CompareTag("Player"))
+        {
+            _hasHit = true;
+
+            // 乗っ取り中は PlayerHP にダメージを与える
+            PlayerStateMachine machine = target.GetComponentInParent<PlayerStateMachine>();
+            if (machine != null && machine.CurrentStateName == nameof(HijackedState))
+            {
+                machine.PlayerHP?.TakeDamage(damage);
+                Debug.Log($"[SpiderThread] 乗っ取り中プレイヤーに {damage} ダメージ");
+            }
             Destroy(gameObject);
+        }
+        else if (target.CompareTag("Enemy"))
+        {
+            // 乗っ取り中にスキルを使った場合 → 他の敵にダメージ
+            EnemyController enemy = target.GetComponentInParent<EnemyController>();
+            if (enemy != null && !enemy.IsHijacked)
+            {
+                _hasHit = true;
+                enemy.TakeDamage(damage);
+                Debug.Log($"[SpiderThread] {enemy.name} に {damage} ダメージ");
+                Destroy(gameObject);
+            }
         }
     }
 }
