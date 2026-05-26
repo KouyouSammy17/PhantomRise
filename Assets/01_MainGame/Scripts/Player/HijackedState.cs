@@ -154,4 +154,17 @@ public class HijackedState : PlayerBaseState
         Machine.TransitionTo(Machine.Ghost);  // Exit() が呼ばれビジュアルが戻る
         dying?.OnHijackedEnemyDied();          // Destroy → ビジュアルも一緒に消える
     }
+
+    // ─────────────────────────────────────────
+    // 自発的な離脱 → 敵を破棄して Ghost に戻る
+    // ─────────────────────────────────────────
+
+    public void DisposeBody()
+    {
+        Debug.Log("[Hijacked] 自発的に身体を捨てた → Ghost へ");
+        EnemyController dying = _enemy;
+        _enemy = null;
+        Machine.TransitionTo(Machine.Ghost);  // Exit() が呼ばれビジュアルが戻る
+        dying?.OnHijackedEnemyDied();          // 敵 GameObject を破棄
+    }
 }

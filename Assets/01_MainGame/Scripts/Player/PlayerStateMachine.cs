@@ -193,6 +193,13 @@ public class PlayerStateMachine : MonoBehaviour
             return;
         }
 
+        // 乗っ取り中に再度押したら身体を捨てて Ghost に戻る
+        if (_currentState == Hijacked)
+        {
+            Hijacked.DisposeBody();
+            return;
+        }
+
         if (_currentState != Ghost) return;
 
         bool found = Hijack.TryStart(HijackRange, BehindAngle);
