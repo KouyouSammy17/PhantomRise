@@ -67,7 +67,6 @@ public class HijackState : PlayerBaseState
 
         // 敵の HP を PlayerHP に転写
         Machine.PlayerHP.Initialize(TargetEnemy.MaxHP, TargetEnemy.CurrentHP);
-
         Machine.Hijacked.SetEnemy(TargetEnemy);
         Machine.TransitionTo(Machine.Hijacked);
     }
@@ -132,22 +131,29 @@ public class HijackState : PlayerBaseState
                 continue;
             }
 
-            if (enemy.rank != EnemyController.EnemyRank.D)
+            if (enemy.rank == EnemyController.EnemyRank.D)
             {
-                Debug.Log($"[Hijack] SKIP {enemy.name}: ランク D ではない ({enemy.rank})");
-                continue;
+                // ── D ランク: 背後からのバックスタブのみ ──────────────
+                Vector3 enemyToPlayer = (Machine.transform.position - enemy.transform.position).normalized;
+                float angle = Vector3.Angle(enemy.transform.forward, enemyToPlayer);
+
+                Debug.Log($"[Hijack] {enemy.name}(D): 角度={angle:F1}° 閾値={threshold:F1}°");
+
+                if (angle < threshold)
+                {
+                    Debug.Log($"[Hijack] SKIP {enemy.name}: 背後ゾーン外");
+                    continue;
+                }
             }
-
-            // 背後判定: 敵 forward と「敵→プレイヤー」の角度が threshold 以上 = 背後
-            Vector3 enemyToPlayer = (Machine.transform.position - enemy.transform.position).normalized;
-            float angle = Vector3.Angle(enemy.transform.forward, enemyToPlayer);
-
-            Debug.Log($"[Hijack] {enemy.name}: 角度={angle:F1}° 閾値={threshold:F1}°");
-
-            if (angle < threshold)
+            else
             {
-                Debug.Log($"[Hijack] SKIP {enemy.name}: 背後ゾーン外");
-                continue;
+                // ── C / B / A ランク: スタン中のみ・方向不問 ──────────
+                if (!enemy.IsStunned)
+                {
+                    Debug.Log($"[Hijack] SKIP {enemy.name}: ランク {enemy.rank} かつスタン中でない");
+                    continue;
+                }
+                Debug.Log($"[Hijack] {enemy.name}({enemy.rank}): スタン中 → 乗っ取り可能");
             }
 
             float dist = Vector3.Distance(Machine.transform.position, enemy.transform.position);

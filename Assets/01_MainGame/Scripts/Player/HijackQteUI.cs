@@ -104,7 +104,7 @@ public class HijackQTEUI : MonoBehaviour
 
         qtePanel?.SetActive(true);
         UpdateCount();
-        if (hintText) hintText.text = "タイミングよく押せ！";
+        if (hintText) hintText.text = "Press Space!";
         BeginBeat();
     }
 
