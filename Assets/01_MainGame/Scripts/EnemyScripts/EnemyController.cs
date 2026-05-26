@@ -1,4 +1,5 @@
-﻿using UnityEngine;
+﻿using System.Collections;
+using UnityEngine;
 using UnityEngine.AI;
 
 public class EnemyController : MonoBehaviour
@@ -77,6 +78,15 @@ public class EnemyController : MonoBehaviour
     //自分がスタンしているかどうか
     private bool isStunned = true;
 
+    //敵がプレイヤーを見失ってからパトロールに戻るまでの時間を計測するタイマー
+    private float lostSightTimer = 0f;
+    public float lostSightDuration = 3f;
+
+    //ダメージを受けたら視界無視でプレイヤーを追いかけるためのフラグ
+    private bool alertedByDamage = false;
+    private float alertTimer = 0f;
+    public float alertDuration = 5f;
+
     //継承する
     private EnemyVision _enemyVision;
     private EnemyHealth _enemyHealth;
@@ -95,6 +105,8 @@ public class EnemyController : MonoBehaviour
     public int MaxHP => _enemyHealth != null ? _enemyHealth.maxHP : 0;
     public int CurrentHP => _enemyHealth != null ? _enemyHealth.CurrentHP : 0;
 
+    /// <summary>現在スタン状態かどうか（C ランク以上の乗っ取り判定に使用）</summary>
+    public bool IsStunned => currentState == EnemyState.Stun;
 
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()
@@ -120,6 +132,18 @@ public class EnemyController : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
+        // ダメージを受けたら一定時間プレイヤーを追いかける
+        if (alertedByDamage)
+        {
+            alertTimer -= Time.deltaTime;
+
+            if (alertTimer <= 0f)
+            {
+                alertedByDamage = false;
+            }
+        }
+
+
         if (IsHijacked || IsQTETarget) return;   // 乗っ取り中 or QTE 中は AI 停止
 
         float distance= Vector3.Distance(transform.position,player.transform.position);
@@ -136,8 +160,24 @@ public class EnemyController : MonoBehaviour
                 ChaseMode();
                 if (distance < attackRange)
                     currentState = EnemyState.Attack;
-                else if (!_enemyVision.CanSeePlayer())
-                    currentState = EnemyState.Patrol;
+                //else if (!_enemyVision.CanSeePlayer())
+                //    currentState = EnemyState.Patrol;
+                if (!alertedByDamage)
+                {
+                    if (_enemyVision.CanSeePlayer())
+                    {
+                        lostSightTimer = 0f;
+                    }
+                    else
+                    {
+                        lostSightTimer += Time.deltaTime;
+
+                        if (lostSightTimer >= lostSightDuration)
+                        {
+                            currentState = EnemyState.Patrol;
+                        }
+                    }
+                }
                 break;
 
             case EnemyState.Attack:
@@ -151,27 +191,28 @@ public class EnemyController : MonoBehaviour
                 Destroy(gameObject);
                 break;
             case EnemyState.Stun:
+                agent.isStopped = true;
                 // スタン状態の処理
-                if (rank == EnemyRank.C)
-                {   
-                    agent.isStopped = true;
-                    Invoke("RecoverFromStun", 8f);
-                    Debug.Log("敵がスタン状態になりました！"); 
-                }
+                //if (rank == EnemyRank.C)
+                //{   
+                //    agent.isStopped = true;
+                //    Invoke("RecoverFromStun", 8f);
+                //    Debug.Log("敵がスタン状態になりました！"); 
+                //}
 
-                if (rank == EnemyRank.B)
-                {
-                    agent.isStopped = true;
-                    Invoke("RecoverFromStun", 5f);
-                    Debug.Log("敵がスタン状態になりました！");
-                }
+                //if (rank == EnemyRank.B)
+                //{
+                //    agent.isStopped = true;
+                //    Invoke("RecoverFromStun", 5f);
+                //    Debug.Log("敵がスタン状態になりました！");
+                //}
 
-                if (rank == EnemyRank.A)
-                {
-                    agent.isStopped = true;
-                    Invoke("RecoverFromStun", 3f);
-                    Debug.Log("敵がスタン状態になりました！");
-                }
+                //if (rank == EnemyRank.A)
+                //{
+                //    agent.isStopped = true;
+                //    Invoke("RecoverFromStun", 3f);
+                //    Debug.Log("敵がスタン状態になりました！");
+                //}
                 break;
         }
 
@@ -189,10 +230,22 @@ public class EnemyController : MonoBehaviour
             // スタン状態の処理
             if (isStunned == true)
             {
+                isStunned = false;
                 currentState = EnemyState.Stun;
+               
+                float stunTime = 0f;
+                if (rank == EnemyRank.C)
+                    stunTime = 8f;
+                else if (rank == EnemyRank.B)
+                    stunTime = 5f;
+                else if (rank == EnemyRank.A)
+                    stunTime = 3f;
+                Invoke(nameof(RecoverFromStun), stunTime);
+                //スタンに入るときは1秒無敵になる
+                StartCoroutine(_enemyHealth.InvincibleTime(1f));
             }
 
-            if (isStunned == false&&_enemyHealth.CurrentHP<=0)
+            if (_enemyHealth.Invincible==false&&_enemyHealth.CurrentHP<=0)
             {
                 currentState = EnemyState.Die;
                 // クリア判定
@@ -290,6 +343,7 @@ public class EnemyController : MonoBehaviour
     public void TakeDamage(int damage)
     {
         _enemyHealth?.TakeDamage(damage);
+
     }
 
     /// <summary>乗っ取り中に HP が 0 になったとき HijackedState から呼ぶ</summary>
@@ -308,6 +362,7 @@ public class EnemyController : MonoBehaviour
     }
 
 
+
     // ─────────────────────────────────────────
     // AI モード
     // ─────────────────────────────────────────
@@ -316,7 +371,7 @@ public class EnemyController : MonoBehaviour
     {
         if (currentState == EnemyState.Stun)
         {
-            isStunned = false;
+            //isStunned = false;
             currentState = EnemyState.Patrol; // スタン状態からパトロール状態に戻る
             Debug.Log("敵がスタン状態から回復しました！");
         }
@@ -411,6 +466,22 @@ public class EnemyController : MonoBehaviour
             Debug.Log($"[Enemy] {name} 通常攻撃！");
             DealDamageToPlayer();
         }
+    }
+
+    /// <summary>
+    /// ダメージを受けたら Chase 状態に移行してプレイヤーを追いかける。
+    /// </summary>
+    public void AlertDamage()
+    {
+        if (currentState == EnemyState.Die)
+            return;
+
+        alertedByDamage = true;
+        alertTimer = alertDuration;
+
+        currentState = EnemyState.Chase;
+
+        Debug.Log($"[Enemy] {name} ダメージを受けたので追跡開始");
     }
 
 }

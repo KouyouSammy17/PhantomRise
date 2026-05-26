@@ -15,6 +15,7 @@ public class SpiderThreadMove : MonoBehaviour
     // 二重ヒット防止フラグ
     private bool _hasHit = false;
 
+
     void Start()
     {
         rb = GetComponent<Rigidbody>();

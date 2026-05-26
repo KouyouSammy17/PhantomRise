@@ -9,6 +9,8 @@ public class Poisonarea : MonoBehaviour
     private System.Collections.Generic.HashSet<EnemyController> _damaged
         = new System.Collections.Generic.HashSet<EnemyController>();
 
+    public bool isHijackedSkill = false;
+
     void Start()
     {
         // Update で毎フレーム Invoke を重複スケジュールしていたバグを修正 → Start で一度だけ
@@ -22,13 +24,37 @@ public class Poisonarea : MonoBehaviour
 
     private void OnTriggerEnter(Collider other)
     {
-        EnemyController enemy = other.GetComponentInParent<EnemyController>();
-        if (enemy == null) return;
-        if (enemy.IsHijacked) return;   // 乗っ取り中の自分自身には当たらない
-        if (_damaged.Contains(enemy)) return;
+        // 乗っ取り中に使った場合Enemy にだけ当たる
+        if (isHijackedSkill)
+        {
+            EnemyController enemy = other.GetComponentInParent<EnemyController>();
 
-        _damaged.Add(enemy);
-        enemy.TakeDamage(damage);
-        Debug.Log($"[Poisonarea] {enemy.name} に {damage} 毒ダメージ");
+            if (enemy == null) return;
+            if (enemy.IsHijacked) return;
+            if (_damaged.Contains(enemy)) return;
+
+            _damaged.Add(enemy);
+
+            enemy.TakeDamage(damage);
+
+            Debug.Log($"[Poisonarea] {enemy.name} に {damage} 毒ダメージ");
+        }
+
+        // 通常の敵が使った場合Player にだけ当たる
+        else
+        {
+            if (!other.CompareTag("Player")) return;
+
+            PlayerStateMachine machine =
+                other.GetComponentInParent<PlayerStateMachine>();
+
+            if (machine != null &&
+                machine.CurrentStateName == nameof(HijackedState))
+            {
+                machine.PlayerHP?.TakeDamage(damage);
+
+                Debug.Log($"[Poisonarea] プレイヤーに {damage} 毒ダメージ");
+            }
+        }
     }
 }
