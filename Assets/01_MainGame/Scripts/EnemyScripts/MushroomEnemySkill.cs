@@ -19,7 +19,14 @@ public class MushroomEnemySkill : EnemySkillBase
 
         // 毒エリアにダメージ値を渡す
         Poisonarea area = obj.GetComponent<Poisonarea>();
-        if (area != null) area.damage = enemyController.attackPower;
+
+        if (area != null)
+        {
+            area.damage = enemyController.attackPower;
+
+            // 追加
+            area.isHijackedSkill = enemyController.IsHijacked;
+        }
 
         Debug.Log("毒胞子を散布！");
 
