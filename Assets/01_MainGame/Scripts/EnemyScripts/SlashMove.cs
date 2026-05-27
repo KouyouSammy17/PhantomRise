@@ -1,0 +1,82 @@
+using UnityEngine;
+
+public class SlashMove : MonoBehaviour
+{
+    private float speed = 10f;
+    private Rigidbody rb;
+
+    /// <summary>SlashSkill から生成時に設定されるダメージ量</summary>
+    [SerializeField] private int damage = 10;
+
+    // 生成直後に自分自身に当たらないようにする猶予時間（秒）
+    [SerializeField] private float spawnGrace = 0.15f;
+    private float _graceTimer = 0f;
+
+    // 二重ヒット防止フラグ
+    private bool _hasHit = false;
+
+    public int Damage
+    {
+        get => damage;
+        set => damage = value;
+    }
+
+
+
+    void Start()
+    {
+        rb = GetComponent<Rigidbody>();
+        rb.linearVelocity = transform.forward * speed;
+        Invoke("Delete", 4f);
+    }
+
+    void Update()
+    {
+        if (_graceTimer < spawnGrace)
+            _graceTimer += Time.deltaTime;
+    }
+
+    private void OnTriggerEnter(Collider other)
+    {
+        // 猶予時間中はヒット判定をスキップ（自分自身への誤ヒット防止）
+        if (_graceTimer < spawnGrace) return;
+
+        HandleHit(other.gameObject);
+    }
+
+    private void HandleHit(GameObject target)
+    {
+        if (_hasHit) return;
+
+        if (target.CompareTag("Player"))
+        {
+            _hasHit = true;
+
+            // 乗っ取り中は PlayerHP にダメージを与える
+            PlayerStateMachine machine = target.GetComponentInParent<PlayerStateMachine>();
+            if (machine != null && machine.CurrentStateName == nameof(HijackedState))
+            {
+                machine.PlayerHP?.TakeDamage(damage);
+                Debug.Log($"[Slash] 乗っ取り中プレイヤーに {damage} ダメージ");
+            }
+            Destroy(gameObject);
+        }
+        else if (target.CompareTag("Enemy"))
+        {
+            // 乗っ取り中にスキルを使った場合 → 他の敵にダメージ
+            EnemyController enemy = target.GetComponentInParent<EnemyController>();
+            if (enemy != null && !enemy.IsHijacked)
+            {
+                _hasHit = true;
+                enemy.TakeDamage(damage);
+                Debug.Log($"[Slash] {enemy.name} に {damage} ダメージ");
+                Destroy(gameObject);
+            }
+        }
+    }
+
+    private void Delete()
+    {
+        Destroy(gameObject);
+    }
+}
