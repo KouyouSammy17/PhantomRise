@@ -4,7 +4,7 @@ public class MushroomEnemySkill : EnemySkillBase
 {
 
     [Header("Mushroom")]
-    public GameObject poisonPrefab;
+    [SerializeField] private GameObject poisonPrefab;
 
     public override bool TryUseSkill()
     {
@@ -22,7 +22,7 @@ public class MushroomEnemySkill : EnemySkillBase
 
         if (area != null)
         {
-            area.damage = enemyController.attackPower;
+            area.Damage = enemyController.AttackPower;
 
             // 追加
             area.isHijackedSkill = enemyController.IsHijacked;

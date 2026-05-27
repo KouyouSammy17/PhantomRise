@@ -5,8 +5,8 @@ public class SpiderEnemySkill : EnemySkillBase
 {
 
     [Header("Spider")]
-    public GameObject spiderWebPrefab;
-    public Transform webSpawnPoint;
+    [SerializeField] private GameObject spiderWebPrefab;
+    [SerializeField] private Transform webSpawnPoint;
 
     public override bool TryUseSkill()
     {
@@ -25,7 +25,7 @@ public class SpiderEnemySkill : EnemySkillBase
 
         // 糸にダメージ値を渡す
         SpiderThreadMove thread = obj.GetComponent<SpiderThreadMove>();
-        if (thread != null) thread.damage = enemyController.attackPower;
+        if (thread != null) thread.Damage = enemyController.AttackPower;
 
         Debug.Log("蜘蛛の糸を発射！");
 

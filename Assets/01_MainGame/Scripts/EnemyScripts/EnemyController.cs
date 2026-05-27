@@ -4,9 +4,9 @@ using UnityEngine.AI;
 
 public class EnemyController : MonoBehaviour
 {
-    public Transform player;
+    [SerializeField] private Transform player;
 
-    public NavMeshAgent agent;
+    [SerializeField] private NavMeshAgent agent;
 
     // 敵のランクを選ぶための列挙型
     public enum EnemyRank
@@ -22,7 +22,7 @@ public class EnemyController : MonoBehaviour
     /// 敵のビジュアルルート（モデル親 GameObject）。
     /// Inspector で指定しない場合は Renderer を持つ最初の子を自動検索。
     /// </summary>
-    public Transform VisualRoot;
+    [SerializeField] private Transform VisualRoot;
 
     /// <summary>VisualRoot を返す。未設定なら Renderer を持つ最初の子、なければ自身。</summary>
     public Transform GetVisualRoot()
@@ -36,20 +36,20 @@ public class EnemyController : MonoBehaviour
 
     [Header("敵ステータス")]
     // Unityのインスペクターで選べるようにする変数
-    public EnemyRank rank = EnemyRank.D;
+    [SerializeField] private EnemyRank rank = EnemyRank.D;
 
-   
+
     //敵の攻撃力
-    public int attackPower = 10;
+    [SerializeField] private int attackPower = 10;
 
     //敵の追跡範囲
-    //public float chaseRange = 10f;
-    
+    //[SerializeField] private float chaseRange = 10f;
+
     //敵の攻撃範囲
-    public float attackRange = 2f;
+    [SerializeField] private float attackRange = 2f;
 
     // 攻撃間隔とタイマー
-    public float attackCooldown = 3f;
+    [SerializeField] private float attackCooldown = 3f;
     private float attackTimer = 0f;
 
     //ステートで敵の行動を管理
@@ -66,7 +66,7 @@ public class EnemyController : MonoBehaviour
     private EnemyState currentState;
 
     //敵のパトロールポイント
-　 public Transform[] patrolPoints;
+　 [SerializeField] private Transform[] patrolPoints;
 
     //現在のパトロールポイントのインデックス
     private int currentPatrolIndex = 0;
@@ -80,12 +80,12 @@ public class EnemyController : MonoBehaviour
 
     //敵がプレイヤーを見失ってからパトロールに戻るまでの時間を計測するタイマー
     private float lostSightTimer = 0f;
-    public float lostSightDuration = 3f;
+    [SerializeField] private float lostSightDuration = 3f;
 
     //ダメージを受けたら視界無視でプレイヤーを追いかけるためのフラグ
     private bool alertedByDamage = false;
     private float alertTimer = 0f;
-    public float alertDuration = 5f;
+    [SerializeField] private float alertDuration = 5f;
 
     //継承する
     private EnemyVision _enemyVision;
@@ -94,6 +94,18 @@ public class EnemyController : MonoBehaviour
     private PlayerStateMachine _playerMachine;  // 乗っ取りシステム用キャッシュ
     private EnemyViewCone _viewCone;            // 視野コーン表示
     private EnemyHPbar _enemyHPbar;            // 敵 HP バー
+
+
+    // 外から読み取りだけ可能
+    public int AttackPower { 
+        get {return attackPower; } 
+    }
+
+    public EnemyRank Rank
+    {
+        get { return rank; }
+    }
+
 
     // ── 乗っ取りシステム ────────────────────────
     public bool IsHijacked { get; private set; }

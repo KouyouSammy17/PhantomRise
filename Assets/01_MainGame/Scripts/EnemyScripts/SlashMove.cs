@@ -1,11 +1,11 @@
 using UnityEngine;
 
-public class SpiderThreadMove : MonoBehaviour
+public class SlashMove : MonoBehaviour
 {
     private float speed = 10f;
     private Rigidbody rb;
 
-    /// <summary>SpiderEnemySkill から生成時に設定されるダメージ量</summary>
+    /// <summary>SlashSkill から生成時に設定されるダメージ量</summary>
     [SerializeField] private int damage = 10;
 
     // 生成直後に自分自身に当たらないようにする猶予時間（秒）
@@ -22,11 +22,12 @@ public class SpiderThreadMove : MonoBehaviour
     }
 
 
+
     void Start()
     {
         rb = GetComponent<Rigidbody>();
         rb.linearVelocity = transform.forward * speed;
-        Invoke("Delete", 2f);
+        Invoke("Delete", 4f);
     }
 
     void Update()
@@ -41,10 +42,7 @@ public class SpiderThreadMove : MonoBehaviour
         if (_graceTimer < spawnGrace) return;
 
         HandleHit(other.gameObject);
-
-        Debug.Log("当たった");
     }
-
 
     private void HandleHit(GameObject target)
     {
@@ -59,7 +57,7 @@ public class SpiderThreadMove : MonoBehaviour
             if (machine != null && machine.CurrentStateName == nameof(HijackedState))
             {
                 machine.PlayerHP?.TakeDamage(damage);
-                Debug.Log($"[SpiderThread] 乗っ取り中プレイヤーに {damage} ダメージ");
+                Debug.Log($"[Slash] 乗っ取り中プレイヤーに {damage} ダメージ");
             }
             Destroy(gameObject);
         }
@@ -71,13 +69,13 @@ public class SpiderThreadMove : MonoBehaviour
             {
                 _hasHit = true;
                 enemy.TakeDamage(damage);
-                Debug.Log($"[SpiderThread] {enemy.name} に {damage} ダメージ");
+                Debug.Log($"[Slash] {enemy.name} に {damage} ダメージ");
                 Destroy(gameObject);
             }
         }
     }
 
-    void Delete()
+    private void Delete()
     {
         Destroy(gameObject);
     }

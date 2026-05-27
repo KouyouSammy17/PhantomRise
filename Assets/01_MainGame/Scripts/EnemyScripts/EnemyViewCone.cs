@@ -3,11 +3,11 @@ using UnityEngine;
 [RequireComponent(typeof(MeshFilter))]
 public class EnemyViewCone : MonoBehaviour
 {
-    //public EnemyController enemyController;
+    //[SerializeField] private EnemyController enemyController;
 
-    public EnemyVision enemyVision;
+    [SerializeField] private EnemyVision enemyVision;
 
-    public int meshResolution = 40;
+    [SerializeField] private int meshResolution = 40;
 
     private Mesh mesh;
 
