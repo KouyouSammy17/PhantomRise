@@ -80,5 +80,35 @@ PrefabInstance:
     - {fileID: 4217220719746605392, guid: 4ef9cf0b807c6d74ba60784351b7ecd4, type: 3}
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
-    m_AddedComponents: []
+    m_AddedComponents:
+    - targetCorrespondingSourceObject: {fileID: 2827516876372056535, guid: 4ef9cf0b807c6d74ba60784351b7ecd4, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: -5714315866886243194}
   m_SourcePrefab: {fileID: 100100000, guid: 4ef9cf0b807c6d74ba60784351b7ecd4, type: 3}
+--- !u!4 &3485700809582975880 stripped
+Transform:
+  m_CorrespondingSourceObject: {fileID: 5496295747560091686, guid: 4ef9cf0b807c6d74ba60784351b7ecd4, type: 3}
+  m_PrefabInstance: {fileID: 8942303568224005038}
+  m_PrefabAsset: {fileID: 0}
+--- !u!1 &6567420515636949625 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 2827516876372056535, guid: 4ef9cf0b807c6d74ba60784351b7ecd4, type: 3}
+  m_PrefabInstance: {fileID: 8942303568224005038}
+  m_PrefabAsset: {fileID: 0}
+--- !u!114 &-5714315866886243194
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6567420515636949625}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d0ae4e77961671e45b7c08dd754ebe9e, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::SkeletonEnemySkill
+  skillCooldown: 5
+  SlashPrefab: {fileID: 2078651765059141772, guid: 91987f8d5a96adf4591c4345303c03ff, type: 3}
+  slashSpawnPoint: {fileID: 3485700809582975880}
+  slashCount: 3
+  slashInterval: 0.3
