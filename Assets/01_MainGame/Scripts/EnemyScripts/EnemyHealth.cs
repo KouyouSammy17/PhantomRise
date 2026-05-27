@@ -3,7 +3,8 @@ using UnityEngine;
 
 public class EnemyHealth : MonoBehaviour
 {
-    public int maxHP = 100;
+    [SerializeField] private int _maxHP = 100;
+    public int maxHP => _maxHP;
     private int currentHP;
 
     //無敵状態のフラグ
@@ -64,7 +65,7 @@ public class EnemyHealth : MonoBehaviour
         invincible = true;
 
         //hpが0にならないようにmaxhpの10分の一のhpを回復させる
-        currentHP = Mathf.Max(currentHP, maxHP / 10);
+        currentHP = Mathf.Max(currentHP, _maxHP / 10);
 
         Debug.Log("無敵開始");
 

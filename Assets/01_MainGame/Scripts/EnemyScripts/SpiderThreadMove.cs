@@ -6,7 +6,7 @@ public class SpiderThreadMove : MonoBehaviour
     private Rigidbody rb;
 
     /// <summary>SpiderEnemySkill から生成時に設定されるダメージ量</summary>
-    public int damage = 10;
+    [SerializeField] private int damage = 10;
 
     // 生成直後に自分自身に当たらないようにする猶予時間（秒）
     [SerializeField] private float spawnGrace = 0.15f;
@@ -15,11 +15,18 @@ public class SpiderThreadMove : MonoBehaviour
     // 二重ヒット防止フラグ
     private bool _hasHit = false;
 
+    public int Damage
+    {
+        get => damage;
+        set => damage = value;
+    }
+
 
     void Start()
     {
         rb = GetComponent<Rigidbody>();
         rb.linearVelocity = transform.forward * speed;
+        Invoke("Delete", 2f);
     }
 
     void Update()
@@ -34,7 +41,10 @@ public class SpiderThreadMove : MonoBehaviour
         if (_graceTimer < spawnGrace) return;
 
         HandleHit(other.gameObject);
+
+        Debug.Log("当たった");
     }
+
 
     private void HandleHit(GameObject target)
     {
@@ -65,5 +75,10 @@ public class SpiderThreadMove : MonoBehaviour
                 Destroy(gameObject);
             }
         }
+    }
+
+    void Delete()
+    {
+        Destroy(gameObject);
     }
 }

@@ -3,7 +3,7 @@ using UnityEngine;
 public class Poisonarea : MonoBehaviour
 {
     /// <summary>MushroomEnemySkill から生成時に設定されるダメージ量</summary>
-    public int damage = 10;
+    [SerializeField] private int damage = 10;
 
     // 一度ダメージを与えた敵を覚えておく（重複ダメージ防止）
     private System.Collections.Generic.HashSet<EnemyController> _damaged
@@ -11,6 +11,11 @@ public class Poisonarea : MonoBehaviour
 
     public bool isHijackedSkill = false;
 
+    public int Damage
+    {
+        get => damage;
+        set => damage = value;
+    }
     void Start()
     {
         // Update で毎フレーム Invoke を重複スケジュールしていたバグを修正 → Start で一度だけ

@@ -3,7 +3,7 @@ using UnityEngine;
 public abstract class EnemySkillBase : MonoBehaviour
 {
     [Header("スキル設定")]
-    public float skillCooldown = 5f;
+    [SerializeField] private float skillCooldown = 5f;
 
     protected float skillTimer;
 
