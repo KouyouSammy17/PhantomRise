@@ -73,4 +73,14 @@ public class GhostState : PlayerBaseState
 
     /// <summary>残り時間（外部参照用）</summary>
     public float TimeRemaining => Mathf.Max(0f, Machine.GhostTimeLimit - _timer);
+
+    /// <summary>
+    /// タイマーを延長する（アイテム取得時などに呼ぶ）。
+    /// _timer を減算することで残り時間を増やす。
+    /// </summary>
+    public void AddTime(float seconds)
+    {
+        _timer = Mathf.Max(0f, _timer - seconds);
+        Debug.Log($"[Ghost] タイマー延長 +{seconds}s → 残り {TimeRemaining:F1}s");
+    }
 }

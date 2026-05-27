@@ -131,7 +131,7 @@ public class HijackState : PlayerBaseState
                 continue;
             }
 
-            if (enemy.rank == EnemyController.EnemyRank.D)
+            if (enemy.Rank == EnemyController.EnemyRank.D)
             {
                 // ── D ランク: 背後からのバックスタブのみ ──────────────
                 Vector3 enemyToPlayer = (Machine.transform.position - enemy.transform.position).normalized;
