@@ -379,16 +379,6 @@ PrefabInstance:
     m_AddedGameObjects: []
     m_AddedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 5d62d9f3d72bd924b8f5d0d6d1655ab8, type: 3}
---- !u!1 &237300913 stripped
-GameObject:
-  m_CorrespondingSourceObject: {fileID: 4270429987110276320, guid: 5325e82fd57b7c147bf5fce36e304cb4, type: 3}
-  m_PrefabInstance: {fileID: 6746243213155933154}
-  m_PrefabAsset: {fileID: 0}
---- !u!224 &237300914 stripped
-RectTransform:
-  m_CorrespondingSourceObject: {fileID: 623406151990619082, guid: 5325e82fd57b7c147bf5fce36e304cb4, type: 3}
-  m_PrefabInstance: {fileID: 6746243213155933154}
-  m_PrefabAsset: {fileID: 0}
 --- !u!114 &258416972
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1971,22 +1961,6 @@ Transform:
   - {fileID: 341935017}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &2096126808 stripped
-MonoBehaviour:
-  m_CorrespondingSourceObject: {fileID: 3889007076365019711, guid: 5325e82fd57b7c147bf5fce36e304cb4, type: 3}
-  m_PrefabInstance: {fileID: 6746243213155933154}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 0}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: fe87c0e1cc204ed48ad3b37840f39efc, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: UnityEngine.UI::UnityEngine.UI.Image
---- !u!224 &2096126810 stripped
-RectTransform:
-  m_CorrespondingSourceObject: {fileID: 4048714470106575574, guid: 5325e82fd57b7c147bf5fce36e304cb4, type: 3}
-  m_PrefabInstance: {fileID: 6746243213155933154}
-  m_PrefabAsset: {fileID: 0}
 --- !u!1 &2097562645
 GameObject:
   m_ObjectHideFlags: 0
@@ -2178,10 +2152,6 @@ PrefabInstance:
       value: 
       objectReference: {fileID: 1335479525}
     - target: {fileID: 4303073340821829473, guid: dbfb61446fdc5154b9255cc8ce0c5597, type: 3}
-      propertyPath: CameraTransform
-      value: 
-      objectReference: {fileID: 2131379529}
-    - target: {fileID: 4303073340821829473, guid: dbfb61446fdc5154b9255cc8ce0c5597, type: 3}
       propertyPath: _cameraTransform
       value: 
       objectReference: {fileID: 330585546}
@@ -2291,22 +2261,6 @@ PrefabInstance:
       propertyPath: m_Name
       value: UI Manager
       objectReference: {fileID: 0}
-    - target: {fileID: 8482029377561204695, guid: 5325e82fd57b7c147bf5fce36e304cb4, type: 3}
-      propertyPath: _qtePanel
-      value: 
-      objectReference: {fileID: 237300913}
-    - target: {fileID: 8482029377561204695, guid: 5325e82fd57b7c147bf5fce36e304cb4, type: 3}
-      propertyPath: _ringInner
-      value: 
-      objectReference: {fileID: 237300914}
-    - target: {fileID: 8482029377561204695, guid: 5325e82fd57b7c147bf5fce36e304cb4, type: 3}
-      propertyPath: _ringOuter
-      value: 
-      objectReference: {fileID: 2096126810}
-    - target: {fileID: 8482029377561204695, guid: 5325e82fd57b7c147bf5fce36e304cb4, type: 3}
-      propertyPath: _ringOuterImage
-      value: 
-      objectReference: {fileID: 2096126808}
     - target: {fileID: 9031186118975090734, guid: 5325e82fd57b7c147bf5fce36e304cb4, type: 3}
       propertyPath: m_Pivot.x
       value: 0
@@ -2413,15 +2367,15 @@ PrefabInstance:
     m_Modifications:
     - target: {fileID: 4394452858261453900, guid: dbfa8b4cb4138fd47bba17aa07a85fe3, type: 3}
       propertyPath: m_LocalPosition.x
-      value: 0
+      value: -0.21
       objectReference: {fileID: 0}
     - target: {fileID: 4394452858261453900, guid: dbfa8b4cb4138fd47bba17aa07a85fe3, type: 3}
       propertyPath: m_LocalPosition.y
-      value: 0
+      value: 1.34
       objectReference: {fileID: 0}
     - target: {fileID: 4394452858261453900, guid: dbfa8b4cb4138fd47bba17aa07a85fe3, type: 3}
       propertyPath: m_LocalPosition.z
-      value: 0
+      value: 82.09
       objectReference: {fileID: 0}
     - target: {fileID: 4394452858261453900, guid: dbfa8b4cb4138fd47bba17aa07a85fe3, type: 3}
       propertyPath: m_LocalRotation.w

@@ -364,20 +364,20 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 8cad1c823ca849d459e996b484749845, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::HijackQTEUI
-  qtePanel: {fileID: 1284459111879592773}
-  ringOuter: {fileID: 4048714470106575574}
-  ringInner: {fileID: 623406151990619082}
-  ringOuterImage: {fileID: 3889007076365019711}
-  countText: {fileID: 0}
-  hintText: {fileID: 1554262776750534020}
-  outerStartSize: 400
-  innerSize: 120
-  shrinkSpeed: 180
-  hitWindow: 30
-  requiredHits: 1
-  normalColor: {r: 1, g: 1, b: 1, a: 1}
-  successColor: {r: 0, g: 1, b: 0, a: 1}
-  failColor: {r: 1, g: 0, b: 0, a: 1}
+  _qtePanel: {fileID: 1284459111879592773}
+  _ringOuter: {fileID: 4048714470106575574}
+  _ringInner: {fileID: 623406151990619082}
+  _ringOuterImage: {fileID: 3889007076365019711}
+  _countText: {fileID: 0}
+  _hintText: {fileID: 1554262776750534020}
+  _outerStartSize: 400
+  _innerSize: 120
+  _shrinkSpeed: 180
+  _hitWindow: 30
+  _requiredHits: 1
+  _normalColor: {r: 1, g: 1, b: 1, a: 1}
+  _successColor: {r: 0, g: 1, b: 0, a: 1}
+  _failColor: {r: 1, g: 0, b: 0, a: 1}
 --- !u!1 &3776639611295160603
 GameObject:
   m_ObjectHideFlags: 0

@@ -192,9 +192,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 816f0d908ecaf9344a95a336d3f5775b, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::PlayerHPBarUI
-  hpSlider: {fileID: 283888255693114088}
-  playerMachine: {fileID: 4303073340821829473}
-  fillColor: {r: 0, g: 1, b: 0, a: 1}
+  _hpSlider: {fileID: 283888255693114088}
+  _playerMachine: {fileID: 4303073340821829473}
+  _fillColor: {r: 0, g: 1, b: 0, a: 1}
 --- !u!1 &2251856728320947923
 GameObject:
   m_ObjectHideFlags: 0
@@ -489,16 +489,16 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 12c40aba392314e479a60e9b68efe757, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::PlayerStateMachine
-  MoveSpeed: 5
-  Gravity: -20
-  RotationSpeed: 720
-  DodgeSpeed: 25
-  DodgeDuration: 0.25
-  DodgeCooldown: 1.5
-  GhostTimeLimit: 60
-  CameraTransform: {fileID: 0}
-  HijackRange: 5
-  BehindAngle: 120
+  _moveSpeed: 5
+  _gravity: -20
+  _rotationSpeed: 720
+  _dodgeSpeed: 20
+  _dodgeDuration: 0.25
+  _dodgeCooldown: 1
+  _ghostTimeLimit: 60
+  _cameraTransform: {fileID: 0}
+  _hijackRange: 2.5
+  _behindAngle: 120
   OnGhostTimerUpdate:
     m_PersistentCalls:
       m_Calls:
@@ -518,7 +518,8 @@ MonoBehaviour:
     m_PersistentCalls:
       m_Calls: []
   hijackQTEUI: {fileID: 0}
-  PlayerVisual: {fileID: 8405801619694396985}
+  uiManager: {fileID: 0}
+  _playerVisual: {fileID: 8405801619694396985}
 --- !u!114 &3599081290773302911
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -531,10 +532,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: b249c3847806c93479e274f55e177c2c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::PlayerHP
-  OnHPChanged:
+  _onHPChanged:
     m_PersistentCalls:
       m_Calls: []
-  OnDead:
+  _onDead:
     m_PersistentCalls:
       m_Calls: []
 --- !u!1 &5264533818139831138
