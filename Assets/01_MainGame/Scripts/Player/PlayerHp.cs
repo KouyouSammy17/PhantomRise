@@ -10,8 +10,12 @@ using UnityEngine.Events;
 public class PlayerHP : MonoBehaviour
 {
     [Header("=== イベント ===")]
-    public UnityEvent<int, int> OnHPChanged;  // (currentHP, maxHP)
-    public UnityEvent OnDead;
+    [SerializeField] private UnityEvent<int, int> _onHPChanged;  // (currentHP, maxHP)
+    [SerializeField] private UnityEvent _onDead;
+
+    // Public accessors for external event subscriptions
+    public UnityEvent<int, int> OnHPChanged => _onHPChanged;
+    public UnityEvent OnDead => _onDead;
 
     public int CurrentHP { get; private set; }
     public int MaxHP { get; private set; }
@@ -28,8 +32,21 @@ public class PlayerHP : MonoBehaviour
     {
         MaxHP = maxHP;
         CurrentHP = currentHP;
-        OnHPChanged?.Invoke(CurrentHP, MaxHP);
+        _onHPChanged?.Invoke(CurrentHP, MaxHP);
         Debug.Log($"[PlayerHP] 初期化 {CurrentHP}/{MaxHP}");
+    }
+
+    /// <summary>
+    /// HP を回復する（アイテム取得時などに呼ぶ）。
+    /// 乗っ取り中のみ有効。MaxHP を超えない。
+    /// </summary>
+    public void Heal(int amount)
+    {
+        if (_machine.CurrentStateName != nameof(HijackedState)) return;
+
+        CurrentHP = Mathf.Min(MaxHP, CurrentHP + amount);
+        _onHPChanged?.Invoke(CurrentHP, MaxHP);
+        Debug.Log($"[PlayerHP] +{amount} 回復 → {CurrentHP}/{MaxHP}");
     }
 
     /// <summary>乗っ取り状態で敵の攻撃を受けたとき呼ぶ</summary>
@@ -38,12 +55,12 @@ public class PlayerHP : MonoBehaviour
         if (_machine.CurrentStateName != nameof(HijackedState)) return;
 
         CurrentHP = Mathf.Max(0, CurrentHP - damage);
-        OnHPChanged?.Invoke(CurrentHP, MaxHP);
+        _onHPChanged?.Invoke(CurrentHP, MaxHP);
         Debug.Log($"[PlayerHP] -{damage} → {CurrentHP}/{MaxHP}");
 
         if (CurrentHP <= 0)
         {
-            OnDead?.Invoke();
+            _onDead?.Invoke();
             _machine.Hijacked.OnHPZero();
         }
     }

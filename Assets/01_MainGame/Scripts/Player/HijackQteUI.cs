@@ -21,24 +21,24 @@ using TMPro;
 public class HijackQTEUI : MonoBehaviour
 {
     [Header("=== 参照 ===")]
-    [SerializeField] private GameObject qtePanel;
-    [SerializeField] private RectTransform ringOuter;
-    [SerializeField] private RectTransform ringInner;
-    [SerializeField] private Image ringOuterImage;
-    [SerializeField] private TextMeshProUGUI countText;
-    [SerializeField] private TextMeshProUGUI hintText;
+    [SerializeField] private GameObject _qtePanel;
+    [SerializeField] private RectTransform _ringOuter;
+    [SerializeField] private RectTransform _ringInner;
+    [SerializeField] private Image _ringOuterImage;
+    [SerializeField] private TextMeshProUGUI _countText;
+    [SerializeField] private TextMeshProUGUI _hintText;
 
     [Header("=== QTE パラメーター ===")]
-    [SerializeField] private float outerStartSize = 400f;
-    [SerializeField] private float innerSize = 120f;
-    [SerializeField] private float shrinkSpeed = 180f;   // px/秒
-    [SerializeField] private float hitWindow = 30f;    // 成功ウィンドウ幅
-    [SerializeField] private int requiredHits = 1;
+    [SerializeField] private float _outerStartSize = 400f;
+    [SerializeField] private float _innerSize = 120f;
+    [SerializeField] private float _shrinkSpeed = 180f;   // px/秒
+    [SerializeField] private float _hitWindow = 30f;    // 成功ウィンドウ幅
+    [SerializeField] private int _requiredHits = 1;
 
     [Header("=== 色 ===")]
-    [SerializeField] private Color normalColor = Color.white;
-    [SerializeField] private Color successColor = Color.green;
-    [SerializeField] private Color failColor = Color.red;
+    [SerializeField] private Color _normalColor = Color.white;
+    [SerializeField] private Color _successColor = Color.green;
+    [SerializeField] private Color _failColor = Color.red;
 
     // ─────────────────────────────────────────
     // 内部
@@ -60,7 +60,7 @@ public class HijackQTEUI : MonoBehaviour
     {
         _hijackState = state;
         _hijackState.OnQTEStart += StartQTE;
-        qtePanel?.SetActive(false);
+        _qtePanel?.SetActive(false);
     }
 
     private void OnDestroy()
@@ -84,11 +84,11 @@ public class HijackQTEUI : MonoBehaviour
             return;
         }
 
-        _currentSize -= shrinkSpeed * Time.deltaTime;
+        _currentSize -= _shrinkSpeed * Time.deltaTime;
         ApplySizes();
 
         // リングが緑ゾーンを通過してしまったら自動ミス
-        if (_currentSize < innerSize - hitWindow)
+        if (_currentSize < _innerSize - _hitWindow)
             RegisterMiss();
     }
 
@@ -102,9 +102,9 @@ public class HijackQTEUI : MonoBehaviour
         _active = true;
         _waitNext = false;
 
-        qtePanel?.SetActive(true);
+        _qtePanel?.SetActive(true);
         UpdateCount();
-        if (hintText) hintText.text = "Press Space!";
+        if (_hintText) _hintText.text = "Press Space!";
         BeginBeat();
     }
 
@@ -116,7 +116,7 @@ public class HijackQTEUI : MonoBehaviour
     {
         if (!_active || _waitNext) return;
 
-        if (Mathf.Abs(_currentSize - innerSize) <= hitWindow)
+        if (Mathf.Abs(_currentSize - _innerSize) <= _hitWindow)
             RegisterHit();
         else
             RegisterMiss();
@@ -128,9 +128,9 @@ public class HijackQTEUI : MonoBehaviour
 
     private void BeginBeat()
     {
-        _currentSize = outerStartSize;
+        _currentSize = _outerStartSize;
         _waitNext = false;
-        if (ringOuterImage) ringOuterImage.color = normalColor;
+        if (_ringOuterImage) _ringOuterImage.color = _normalColor;
         ApplySizes();
     }
 
@@ -138,10 +138,10 @@ public class HijackQTEUI : MonoBehaviour
     {
         _hitCount++;
         UpdateCount();
-        Flash(successColor);
-        Debug.Log($"[QTE] Hit {_hitCount}/{requiredHits}");
+        Flash(_successColor);
+        Debug.Log($"[QTE] Hit {_hitCount}/{_requiredHits}");
 
-        if (_hitCount >= requiredHits)
+        if (_hitCount >= _requiredHits)
         {
             End(true);
         }
@@ -154,7 +154,7 @@ public class HijackQTEUI : MonoBehaviour
 
     private void RegisterMiss()
     {
-        Flash(failColor);
+        Flash(_failColor);
         Debug.Log("[QTE] Miss");
         End(false);
     }
@@ -162,7 +162,7 @@ public class HijackQTEUI : MonoBehaviour
     private void End(bool success)
     {
         _active = false;
-        qtePanel?.SetActive(false);
+        _qtePanel?.SetActive(false);
 
         if (success) _hijackState?.OnQTESuccess();
         else _hijackState?.OnQTEFail();
@@ -170,17 +170,17 @@ public class HijackQTEUI : MonoBehaviour
 
     private void Flash(Color c)
     {
-        if (ringOuterImage) ringOuterImage.color = c;
+        if (_ringOuterImage) _ringOuterImage.color = c;
     }
 
     private void ApplySizes()
     {
-        if (ringOuter) ringOuter.sizeDelta = new Vector2(_currentSize, _currentSize);
-        if (ringInner) ringInner.sizeDelta = new Vector2(innerSize, innerSize);
+        if (_ringOuter) _ringOuter.sizeDelta = new Vector2(_currentSize, _currentSize);
+        if (_ringInner) _ringInner.sizeDelta = new Vector2(_innerSize, _innerSize);
     }
 
     private void UpdateCount()
     {
-        if (countText) countText.text = $"{_hitCount} / {requiredHits}";
+        if (_countText) _countText.text = $"{_hitCount} / {_requiredHits}";
     }
 }

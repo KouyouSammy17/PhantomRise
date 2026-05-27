@@ -16,11 +16,11 @@ using UnityEngine.UI;
 public class PlayerHPBarUI : MonoBehaviour
 {
     [Header("=== 参照 ===")]
-    [SerializeField] private Slider hpSlider;
-    [SerializeField] private PlayerStateMachine playerMachine;
+    [SerializeField] private Slider _hpSlider;
+    [SerializeField] private PlayerStateMachine _playerMachine;
 
     [Header("=== 色 ===")]
-    [SerializeField] private Color fillColor = Color.green;
+    [SerializeField] private Color _fillColor = Color.green;
 
     private Image _fillImage;
 
@@ -31,25 +31,25 @@ public class PlayerHPBarUI : MonoBehaviour
     private void Start()
     {
         // PlayerStateMachine が未指定なら自動検索
-        if (playerMachine == null)
-            playerMachine = FindAnyObjectByType<PlayerStateMachine>();
+        if (_playerMachine == null)
+            _playerMachine = FindAnyObjectByType<PlayerStateMachine>();
 
-        if (hpSlider != null)
+        if (_hpSlider != null)
         {
             // fillRect の Image を緑に染める
-            _fillImage = hpSlider.fillRect != null
-                ? hpSlider.fillRect.GetComponent<Image>()
+            _fillImage = _hpSlider.fillRect != null
+                ? _hpSlider.fillRect.GetComponent<Image>()
                 : null;
             if (_fillImage != null)
-                _fillImage.color = fillColor;
+                _fillImage.color = _fillColor;
 
             // Slider の範囲を 0–1 に固定
-            hpSlider.minValue = 0f;
-            hpSlider.maxValue = 1f;
-            hpSlider.value    = 1f;
+            _hpSlider.minValue = 0f;
+            _hpSlider.maxValue = 1f;
+            _hpSlider.value    = 1f;
 
             // 最初は非表示
-            hpSlider.gameObject.SetActive(false);
+            _hpSlider.gameObject.SetActive(false);
         }
     }
 
@@ -59,20 +59,20 @@ public class PlayerHPBarUI : MonoBehaviour
 
     private void Update()
     {
-        if (playerMachine == null || hpSlider == null) return;
+        if (_playerMachine == null || _hpSlider == null) return;
 
-        bool isHijacked = playerMachine.CurrentStateName == nameof(HijackedState);
+        bool isHijacked = _playerMachine.CurrentStateName == nameof(HijackedState);
 
         // 表示 / 非表示を切り替え
-        if (hpSlider.gameObject.activeSelf != isHijacked)
-            hpSlider.gameObject.SetActive(isHijacked);
+        if (_hpSlider.gameObject.activeSelf != isHijacked)
+            _hpSlider.gameObject.SetActive(isHijacked);
 
         // 乗っ取り中だけ値を更新
         if (!isHijacked) return;
 
-        PlayerHP hp = playerMachine.PlayerHP;
+        PlayerHP hp = _playerMachine.PlayerHP;
         if (hp == null || hp.MaxHP <= 0) return;
 
-        hpSlider.value = (float)hp.CurrentHP / hp.MaxHP;
+        _hpSlider.value = (float)hp.CurrentHP / hp.MaxHP;
     }
 }

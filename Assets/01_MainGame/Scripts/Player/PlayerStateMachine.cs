@@ -17,28 +17,28 @@ public class PlayerStateMachine : MonoBehaviour
     // ─────────────────────────────────────────
 
     [Header("=== 移動 ===")]
-    public float MoveSpeed = 5f;
-    public float Gravity = -20f;
-    public float RotationSpeed = 720f;
+    [SerializeField] private float _moveSpeed = 5f;
+    [SerializeField] private float _gravity = -20f;
+    [SerializeField] private float _rotationSpeed = 720f;
 
     [Header("=== 回避 ===")]
-    public float DodgeSpeed = 12f;
-    public float DodgeDuration = 0.25f;
-    public float DodgeCooldown = 1.0f;
+    [SerializeField] private float _dodgeSpeed = 12f;
+    [SerializeField] private float _dodgeDuration = 0.25f;
+    [SerializeField] private float _dodgeCooldown = 1.0f;
 
     [Header("=== 幽霊タイマー ===")]
-    public float GhostTimeLimit = 60f;
+    [SerializeField] private float _ghostTimeLimit = 60f;
 
     [Header("=== カメラ ===")]
-    public Transform CameraTransform;
+    [SerializeField] private Transform _cameraTransform;
 
     // ─────────────────────────────────────────
     // UnityEvents（UI・GameManager への通知）
     // ─────────────────────────────────────────
 
     [Header("=== 乗っ取り ===")]
-    public float HijackRange = 2.5f;   // 乗っ取り可能距離
-    public float BehindAngle = 120f;   // 背後アークの幅（度）
+    [SerializeField] private float _hijackRange = 2.5f;   // 乗っ取り可能距離
+    [SerializeField] private float _behindAngle = 120f;   // 背後アークの幅（度）
 
     [Header("=== イベント ===")]
     public UnityEvent<float> OnGhostTimerUpdate;
@@ -80,7 +80,22 @@ public class PlayerStateMachine : MonoBehaviour
 
     [Header("=== ビジュアル ===")]
     /// <summary>幽霊キャラモデルのルート GameObject。乗っ取り中に非表示にする。</summary>
-    public GameObject PlayerVisual;
+    [SerializeField] private GameObject _playerVisual;
+    public GameObject PlayerVisual => _playerVisual;
+
+    // ─────────────────────────────────────────
+    // パラメーター用パブリックゲッター（backward compatibility）
+    // ─────────────────────────────────────────
+
+    public float MoveSpeed => _moveSpeed;
+    public float Gravity => _gravity;
+    public float RotationSpeed => _rotationSpeed;
+    public float DodgeSpeed => _dodgeSpeed;
+    public float DodgeDuration => _dodgeDuration;
+    public float DodgeCooldown => _dodgeCooldown;
+    public float GhostTimeLimit => _ghostTimeLimit;
+    public float HijackRange => _hijackRange;
+    public float BehindAngle => _behindAngle;
 
     private PlayerBaseState _currentState;
 
@@ -103,8 +118,8 @@ public class PlayerStateMachine : MonoBehaviour
     {
         CC = GetComponent<CharacterController>();
 
-        if (CameraTransform == null && Camera.main != null)
-            CameraTransform = Camera.main.transform;
+        if (_cameraTransform == null && Camera.main != null)
+            _cameraTransform = Camera.main.transform;
 
         // 状態インスタンスを生成
         Ghost   = new GhostState(this);
@@ -202,7 +217,7 @@ public class PlayerStateMachine : MonoBehaviour
 
         if (_currentState != Ghost) return;
 
-        bool found = Hijack.TryStart(HijackRange, BehindAngle);
+        bool found = Hijack.TryStart(_hijackRange, _behindAngle);
         if (!found)
             Debug.Log("[Player] 背後に乗っ取れる敵がいません");
     }
@@ -270,10 +285,16 @@ public class PlayerStateMachine : MonoBehaviour
     /// <summary>カメラ水平軸をキャッシュ（固定カメラなので Start 時のみ）</summary>
     public void CacheCameraAxes()
     {
-        if (CameraTransform == null) return;
-        CamForward = Vector3.ProjectOnPlane(CameraTransform.forward, Vector3.up).normalized;
-        CamRight   = Vector3.ProjectOnPlane(CameraTransform.right,   Vector3.up).normalized;
+        if (_cameraTransform == null) return;
+        CamForward = Vector3.ProjectOnPlane(_cameraTransform.forward, Vector3.up).normalized;
+        CamRight   = Vector3.ProjectOnPlane(_cameraTransform.right,   Vector3.up).normalized;
     }
+
+    /// <summary>
+    /// ゴーストタイマーを延長する（アイテム取得時などに呼ぶ）。
+    /// GhostState 以外の状態でも安全に呼べる（Ghost に戻ったとき延長分が残る）。
+    /// </summary>
+    public void AddGhostTime(float seconds) => Ghost.AddTime(seconds);
 
     /// <summary>入力をカメラ基準のワールド方向に変換</summary>
     public Vector3 GetMoveDirection()
@@ -288,15 +309,15 @@ public class PlayerStateMachine : MonoBehaviour
         Vector3 moveDir = GetMoveDirection();
 
         if (CC.isGrounded) VelocityY = -2f;
-        else VelocityY += Gravity * deltaTime;
+        else VelocityY += _gravity * deltaTime;
 
-        CC.Move((moveDir * MoveSpeed + Vector3.up * VelocityY) * deltaTime);
+        CC.Move((moveDir * _moveSpeed + Vector3.up * VelocityY) * deltaTime);
 
         if (moveDir.sqrMagnitude > 0.01f)
         {
             Quaternion target = Quaternion.LookRotation(moveDir);
             transform.rotation = Quaternion.RotateTowards(
-                transform.rotation, target, RotationSpeed * deltaTime);
+                transform.rotation, target, _rotationSpeed * deltaTime);
         }
     }
 }
