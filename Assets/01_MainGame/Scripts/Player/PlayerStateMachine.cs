@@ -274,7 +274,7 @@ public class PlayerStateMachine : MonoBehaviour
             if (!other.CompareTag("Enemy")) return;
             EnemyController attacker = other.GetComponentInParent<EnemyController>();
             if (attacker == null || attacker == Hijacked.CurrentEnemy) return;
-            PlayerHP.TakeDamage(attacker.attackPower);
+            PlayerHP.TakeDamage(attacker.AttackPower);
         }
     }
 

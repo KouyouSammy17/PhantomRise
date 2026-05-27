@@ -150,10 +150,10 @@ public class HijackState : PlayerBaseState
                 // ── C / B / A ランク: スタン中のみ・方向不問 ──────────
                 if (!enemy.IsStunned)
                 {
-                    Debug.Log($"[Hijack] SKIP {enemy.name}: ランク {enemy.rank} かつスタン中でない");
+                    Debug.Log($"[Hijack] SKIP {enemy.name}: ランク {enemy.Rank} かつスタン中でない");
                     continue;
                 }
-                Debug.Log($"[Hijack] {enemy.name}({enemy.rank}): スタン中 → 乗っ取り可能");
+                Debug.Log($"[Hijack] {enemy.name}({enemy.Rank}): スタン中 → 乗っ取り可能");
             }
 
             float dist = Vector3.Distance(Machine.transform.position, enemy.transform.position);
