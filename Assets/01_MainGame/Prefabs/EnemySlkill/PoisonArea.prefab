@@ -126,7 +126,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 3b0357d8f77869d49afc20dbcddac8f4, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Poisonarea
-  damage: 10
+  damage: 15
+  isHijackedSkill: 0
 --- !u!136 &5511952293349031506
 CapsuleCollider:
   m_ObjectHideFlags: 0
