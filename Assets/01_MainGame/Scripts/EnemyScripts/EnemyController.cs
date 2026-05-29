@@ -284,7 +284,7 @@ public class EnemyController : MonoBehaviour
     {
         IsQTETarget = false;   // QTE フリーズを解除（IsHijacked で完全停止に移行）
         IsHijacked = true;
-        agent.isStopped = true;
+        agent.enabled = false;   // NavMeshAgent を完全無効化
         var col = GetComponent<Collider>();
         if (col) col.enabled = false;
         if (_viewCone   != null) _viewCone.gameObject.SetActive(false);
@@ -298,6 +298,7 @@ public class EnemyController : MonoBehaviour
         if (IsHijacked) return;
         IsQTETarget = false;
         currentState = EnemyState.Chase;
+        agent.enabled = true;    // NavMeshAgent を再有効化
         agent.isStopped = false;
         if (_viewCone   != null) _viewCone.gameObject.SetActive(true);
         if (_enemyHPbar != null) _enemyHPbar.gameObject.SetActive(true);
