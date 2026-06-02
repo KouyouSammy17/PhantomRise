@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using UnityEngine;
 
 public class Poisonarea : MonoBehaviour
@@ -5,9 +6,9 @@ public class Poisonarea : MonoBehaviour
     /// <summary>MushroomEnemySkill から生成時に設定されるダメージ量</summary>
     [SerializeField] private int damage = 10;
 
-    // 一度ダメージを与えた敵を覚えておく（重複ダメージ防止）
-    private System.Collections.Generic.HashSet<EnemyController> _damaged
-        = new System.Collections.Generic.HashSet<EnemyController>();
+    // 一度毒状態にした対象を覚える（重複付与防止）
+    private HashSet<EnemyController> _damaged =
+        new HashSet<EnemyController>();
 
     public bool isHijackedSkill = false;
 
@@ -16,10 +17,10 @@ public class Poisonarea : MonoBehaviour
         get => damage;
         set => damage = value;
     }
+
     void Start()
     {
-        // Update で毎フレーム Invoke を重複スケジュールしていたバグを修正 → Start で一度だけ
-        Invoke("Delete", 2f);
+        Invoke(nameof(Delete), 2f);
     }
 
     void Delete()
@@ -29,10 +30,14 @@ public class Poisonarea : MonoBehaviour
 
     private void OnTriggerEnter(Collider other)
     {
-        // 乗っ取り中に使った場合Enemy にだけ当たる
+        // ─────────────────────────────
+        // 乗っ取り中
+        // 敵に毒を付与
+        // ─────────────────────────────
         if (isHijackedSkill)
         {
-            EnemyController enemy = other.GetComponentInParent<EnemyController>();
+            EnemyController enemy =
+                other.GetComponentInParent<EnemyController>();
 
             if (enemy == null) return;
             if (enemy.IsHijacked) return;
@@ -40,15 +45,29 @@ public class Poisonarea : MonoBehaviour
 
             _damaged.Add(enemy);
 
-            enemy.TakeDamage(damage);
+            EnemyHealth hp =
+                enemy.GetComponent<EnemyHealth>();
 
-            Debug.Log($"[Poisonarea] {enemy.name} に {damage} 毒ダメージ");
+            if (hp != null)
+            {
+                hp.ApplyPoison(
+                    duration: 5f,
+                    interval: 1f,
+                    percent: 0.15f);
+
+                Debug.Log(
+                    $"[Poisonarea] {enemy.name} を毒状態にした");
+            }
         }
 
-        // 通常の敵が使った場合Player にだけ当たる
+        // ─────────────────────────────
+        // 通常時
+        // プレイヤーに毒を付与
+        // ─────────────────────────────
         else
         {
-            if (!other.CompareTag("Player")) return;
+            if (!other.CompareTag("Player"))
+                return;
 
             PlayerStateMachine machine =
                 other.GetComponentInParent<PlayerStateMachine>();
@@ -56,9 +75,13 @@ public class Poisonarea : MonoBehaviour
             if (machine != null &&
                 machine.CurrentStateName == nameof(HijackedState))
             {
-                machine.PlayerHP?.TakeDamage(damage);
+                machine.PlayerHP?.ApplyPoison(
+                    duration: 5f,
+                    interval: 1f,
+                    percent: 0.15f);
 
-                Debug.Log($"[Poisonarea] プレイヤーに {damage} 毒ダメージ");
+                Debug.Log(
+                    "[Poisonarea] プレイヤーを毒状態にした");
             }
         }
     }
