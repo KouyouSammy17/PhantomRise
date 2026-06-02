@@ -123,11 +123,11 @@ GameObject:
   - component: {fileID: 3766345162108326662}
   - component: {fileID: 4645401483766828060}
   - component: {fileID: 8060403493178725083}
-  - component: {fileID: -486408349896115084}
   - component: {fileID: 2495899563628843489}
   - component: {fileID: 6443116343119807069}
   - component: {fileID: 7762544295177896909}
   - component: {fileID: 4571509595142399598}
+  - component: {fileID: 8193375969649961829}
   m_Layer: 0
   m_Name: EnemyBase
   m_TagString: Enemy
@@ -231,31 +231,6 @@ BoxCollider:
   serializedVersion: 3
   m_Size: {x: 1, y: 1, z: 1}
   m_Center: {x: 0, y: 0, z: 0}
---- !u!143 &-486408349896115084
-CharacterController:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 2827516876372056535}
-  m_Material: {fileID: 0}
-  m_IncludeLayers:
-    serializedVersion: 2
-    m_Bits: 0
-  m_ExcludeLayers:
-    serializedVersion: 2
-    m_Bits: 0
-  m_LayerOverridePriority: 0
-  m_ProvidesContacts: 0
-  m_Enabled: 1
-  serializedVersion: 3
-  m_Height: 1
-  m_Radius: 0.5
-  m_SlopeLimit: 45
-  m_StepOffset: 0.3
-  m_SkinWidth: 0.08
-  m_MinMoveDistance: 0.001
-  m_Center: {x: 0, y: 0, z: 0}
 --- !u!195 &2495899563628843489
 NavMeshAgent:
   m_ObjectHideFlags: 0
@@ -301,6 +276,8 @@ MonoBehaviour:
   - {fileID: 0}
   - {fileID: 0}
   - {fileID: 0}
+  lostSightDuration: 3
+  alertDuration: 5
 --- !u!114 &7762544295177896909
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -313,7 +290,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 108dc996ec5731f4aa62cb147b5e330f, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::EnemyHealth
-  maxHP: 100
+  _maxHP: 100
 --- !u!114 &4571509595142399598
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -327,14 +304,40 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::EnemyVision
   player: {fileID: 0}
-  chaseRange: 10
-  viewAngle: 90
+  _chaseRange: 10
+  _viewAngle: 90
   obstacleMask:
     serializedVersion: 2
     m_Bits: 128
   playerMask:
     serializedVersion: 2
     m_Bits: 64
+  shadowRangeMultiplier: 0.3
+--- !u!143 &8193375969649961829
+CharacterController:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2827516876372056535}
+  m_Material: {fileID: 0}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_LayerOverridePriority: 0
+  m_ProvidesContacts: 0
+  m_Enabled: 1
+  serializedVersion: 3
+  m_Height: 1
+  m_Radius: 0.5
+  m_SlopeLimit: 45
+  m_StepOffset: 0.3
+  m_SkinWidth: 0.08
+  m_MinMoveDistance: 0.001
+  m_Center: {x: 0, y: 0, z: 0}
 --- !u!1 &2900941461927276153
 GameObject:
   m_ObjectHideFlags: 0

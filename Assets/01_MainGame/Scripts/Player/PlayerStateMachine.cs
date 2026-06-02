@@ -4,6 +4,9 @@
 // PlayerController にアタッチして使う
 // ============================================================
 
+using System;
+using System.Threading;
+using Cysharp.Threading.Tasks;
 using UnityEngine;
 using UnityEngine.Events;
 using UnityEngine.InputSystem;
@@ -20,6 +23,9 @@ public class PlayerStateMachine : MonoBehaviour
     [SerializeField] private float _moveSpeed = 5f;
     [SerializeField] private float _gravity = -20f;
     [SerializeField] private float _rotationSpeed = 720f;
+    private float _speedMultiplier = 1f;
+    private CancellationTokenSource _slowCts;
+
 
     [Header("=== 回避 ===")]
     [SerializeField] private float _dodgeSpeed = 12f;
@@ -58,6 +64,16 @@ public class PlayerStateMachine : MonoBehaviour
 
     // 現在の状態名（デバッグ・UI 用）
     public string CurrentStateName => _currentState?.GetType().Name ?? "None";
+
+    // ─────────────────────────────────────────
+    // シャドウゾーン
+    // ─────────────────────────────────────────
+
+    /// <summary>
+    /// プレイヤーがシャドウゾーン内にいるか。
+    /// ShadowZone コンポーネントが OnTriggerEnter/Exit で設定する。
+    /// </summary>
+    public bool IsInShadowZone { get; set; }
 
     // ─────────────────────────────────────────
     // 状態インスタンス
@@ -208,10 +224,13 @@ public class PlayerStateMachine : MonoBehaviour
             return;
         }
 
-        // 乗っ取り中に再度押したら身体を捨てて Ghost に戻る
+        // 乗っ取り中に再度押したら:
+        //   有効なターゲットがあれば即転送、なければ身体を捨てて Ghost に戻る
         if (_currentState == Hijacked)
         {
-            Hijacked.DisposeBody();
+            bool transferred = Hijack.TryTransfer(HijackRange, BehindAngle);
+            if (!transferred)
+                Hijacked.DisposeBody();
             return;
         }
 
@@ -311,13 +330,63 @@ public class PlayerStateMachine : MonoBehaviour
         if (CC.isGrounded) VelocityY = -2f;
         else VelocityY += _gravity * deltaTime;
 
-        CC.Move((moveDir * _moveSpeed + Vector3.up * VelocityY) * deltaTime);
+        CC.Move((moveDir * (_moveSpeed * _speedMultiplier) + Vector3.up * VelocityY)* deltaTime);
 
         if (moveDir.sqrMagnitude > 0.01f)
         {
             Quaternion target = Quaternion.LookRotation(moveDir);
             transform.rotation = Quaternion.RotateTowards(
                 transform.rotation, target, _rotationSpeed * deltaTime);
+        }
+    }
+
+    // ─────────────────────────────────────────
+    // スロウ（UniTask）
+    // ─────────────────────────────────────────
+
+    /// <summary>
+    /// 移動速度を一時的に低下させる。
+    /// すでにスロウ中なら古い効果をキャンセルして新しい値で上書きする。
+    /// </summary>
+    /// <param name="slowPercent"> 低下割合（例: 0.5 = 50% ダウン）</param>
+    /// <param name="duration">    効果時間（秒）</param>
+    public void ApplySlow(float slowPercent, float duration)
+    {
+        // 既存のスロウをキャンセルして上書き（コルーチン版の StopCoroutine 相当）
+        _slowCts?.Cancel();
+        _slowCts?.Dispose();
+        _slowCts = CancellationTokenSource.CreateLinkedTokenSource(
+            this.GetCancellationTokenOnDestroy());
+
+        SlowAsync(slowPercent, duration, _slowCts.Token).Forget();
+    }
+
+    private async UniTaskVoid SlowAsync(
+        float slowPercent,
+        float duration,
+        CancellationToken ct)
+    {
+        try
+        {
+            _speedMultiplier = 1f - slowPercent;
+            Debug.Log($"[Player] 移動速度 {slowPercent * 100f}% ダウン");
+
+            await UniTask.Delay(
+                TimeSpan.FromSeconds(duration),
+                cancellationToken: ct);
+
+            _speedMultiplier = 1f;
+            Debug.Log("[Player] 移動速度回復");
+        }
+        catch (OperationCanceledException)
+        {
+            // 上書きキャンセル時はここに来る。
+            // _speedMultiplier は次の ApplySlow が即座に上書きするので触らない。
+        }
+        finally
+        {
+            _slowCts?.Dispose();
+            _slowCts = null;
         }
     }
 }
