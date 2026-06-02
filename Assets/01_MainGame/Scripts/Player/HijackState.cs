@@ -2,10 +2,11 @@
 // HijackState.cs
 // エルデンリング風バックスタブ乗っ取り
 //
-// ① TryStart  : 背後判定 → 即座に敵の真後ろにスナップ → QTE 開始
-// ② Enter     : 敵の AI をフリーズ・OnQTEStart イベント発火
-// ③ OnQTESuccess : 乗っ取り成立
-// ④ OnQTEFail    : 失敗 → 敵が気づく
+// ① TryStart    : Ghost から → 背後判定・スナップ・QTE 開始
+// ② TryTransfer : HijackedState から → 背後/スタン判定・スナップ・QTE 開始
+// ③ Enter       : 敵の AI をフリーズ・OnQTEStart イベント発火
+// ④ OnQTESuccess: 乗っ取り成立（通常 or 転送）
+// ⑤ OnQTEFail  : 失敗 → 元の状態に戻る（通常: Ghost / 転送: HijackedState）
 // ============================================================
 
 using UnityEngine;
@@ -15,10 +16,13 @@ public class HijackState : PlayerBaseState
     public EnemyController TargetEnemy { get; private set; }
     public event System.Action<EnemyController> OnQTEStart;
 
+    // QTE 終了後に戻る状態（null = Ghost / Machine.Hijacked = 転送）
+    private PlayerBaseState _callerState;
+
     public HijackState(PlayerStateMachine machine) : base(machine) { }
 
     // ─────────────────────────────────────────
-    // 背後判定 → スナップ → QTE 開始
+    // Ghost から: 背後判定 → スナップ → QTE 開始
     // ─────────────────────────────────────────
 
     public bool TryStart(float range, float behindAngle)
@@ -26,11 +30,30 @@ public class HijackState : PlayerBaseState
         EnemyController target = FindTargetBehind(range, behindAngle);
         if (target == null) return false;
 
-        TargetEnemy = target;
+        TargetEnemy   = target;
+        _callerState  = null;   // 通常フロー: 失敗時は Ghost に戻る
 
-        // エルデンリング風: プレイヤーを敵の真後ろへ即スナップ
         SnapBehindEnemy();
+        Machine.TransitionTo(this);
+        return true;
+    }
 
+    // ─────────────────────────────────────────
+    // HijackedState から: 転送対象を探して QTE 開始
+    // ─────────────────────────────────────────
+
+    public bool TryTransfer(float range, float behindAngle)
+    {
+        EnemyController target = FindTargetBehind(range, behindAngle);
+        if (target == null) return false;
+
+        TargetEnemy  = target;
+        _callerState = Machine.Hijacked;   // 失敗時は HijackedState に戻る
+
+        // HijackedState.Exit() でモデル復元をスキップ（ビジュアルは付けたまま）
+        Machine.Hijacked.PrepareTransfer();
+
+        SnapBehindEnemy();
         Machine.TransitionTo(this);
         return true;
     }
@@ -57,27 +80,51 @@ public class HijackState : PlayerBaseState
     {
         Debug.Log("[Hijack] 成功！");
 
-        // 敵の AI を永続停止・コライダー無効
         TargetEnemy.BecomeHijacked();
 
-        // プレイヤーを敵の位置へ（乗っ取りボディとして使う）
         Machine.CC.enabled = false;
         Machine.transform.position = TargetEnemy.transform.position;
         Machine.CC.enabled = true;
 
-        // 敵の HP を PlayerHP に転写
         Machine.PlayerHP.Initialize(TargetEnemy.MaxHP, TargetEnemy.CurrentHP);
-        Machine.Hijacked.SetEnemy(TargetEnemy);
-        Machine.TransitionTo(Machine.Hijacked);
+
+        if (_callerState == Machine.Hijacked)
+        {
+            // 転送フロー: 旧ボディを捨てて新ボディへ
+            Debug.Log("[Hijack] 転送成功！");
+            Machine.Hijacked.TransferBody(TargetEnemy);
+            Machine.TransitionTo(Machine.Hijacked);
+        }
+        else
+        {
+            // 通常フロー: Ghost から乗っ取り
+            Machine.Hijacked.SetEnemy(TargetEnemy);
+            Machine.TransitionTo(Machine.Hijacked);
+        }
+
+        _callerState = null;
     }
 
     public void OnQTEFail()
     {
-        Debug.Log("[Hijack] 失敗 → 敵が気づいた");
-        TargetEnemy.AlertChase();   // FreezeForQTE 解除 + Chase 状態
+        TargetEnemy.AlertChase();
 
-        Machine.Ghost.Resume();
-        Machine.TransitionTo(Machine.Ghost);
+        PlayerBaseState returnTo = _callerState;
+        _callerState = null;
+
+        if (returnTo == Machine.Hijacked)
+        {
+            // 転送失敗 → 現在のボディのまま HijackedState に戻る
+            Debug.Log("[Hijack] 転送失敗 → 現在のボディに戻る");
+            Machine.TransitionTo(Machine.Hijacked);
+        }
+        else
+        {
+            // 通常失敗 → Ghost に戻る
+            Debug.Log("[Hijack] 失敗 → 敵が気づいた");
+            Machine.Ghost.Resume();
+            Machine.TransitionTo(Machine.Ghost);
+        }
     }
 
     // ─────────────────────────────────────────

@@ -60,6 +60,16 @@ public class PlayerStateMachine : MonoBehaviour
     public string CurrentStateName => _currentState?.GetType().Name ?? "None";
 
     // ─────────────────────────────────────────
+    // シャドウゾーン
+    // ─────────────────────────────────────────
+
+    /// <summary>
+    /// プレイヤーがシャドウゾーン内にいるか。
+    /// ShadowZone コンポーネントが OnTriggerEnter/Exit で設定する。
+    /// </summary>
+    public bool IsInShadowZone { get; set; }
+
+    // ─────────────────────────────────────────
     // 状態インスタンス
     // ─────────────────────────────────────────
 
@@ -208,10 +218,13 @@ public class PlayerStateMachine : MonoBehaviour
             return;
         }
 
-        // 乗っ取り中に再度押したら身体を捨てて Ghost に戻る
+        // 乗っ取り中に再度押したら:
+        //   有効なターゲットがあれば即転送、なければ身体を捨てて Ghost に戻る
         if (_currentState == Hijacked)
         {
-            Hijacked.DisposeBody();
+            bool transferred = Hijack.TryTransfer(HijackRange, BehindAngle);
+            if (!transferred)
+                Hijacked.DisposeBody();
             return;
         }
 

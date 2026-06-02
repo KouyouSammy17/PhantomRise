@@ -26,18 +26,19 @@ public class HijackedState : PlayerBaseState
     private Vector3   _enemyVisualOriginalLocalPos;
     private Quaternion _enemyVisualOriginalLocalRot;
 
-    // ── Dodge 一時離脱フラグ ──────────────────────────
-    private bool _leavingForDodge = false;
+    // ── 一時離脱フラグ ────────────────────────────────
+    private bool _leavingForDodge    = false;
+    private bool _leavingForTransfer = false;
 
     public HijackedState(PlayerStateMachine machine) : base(machine) { }
 
     public void SetEnemy(EnemyController enemy) => _enemy = enemy;
 
-    /// <summary>
-    /// Dodge へ一時離脱する直前に PlayerStateMachine から呼ぶ。
-    /// Exit() でのモデル復元をスキップし、Enter() での再アタッチも省略する。
-    /// </summary>
+    /// <summary>Dodge へ一時離脱する直前に呼ぶ。Exit() のモデル復元をスキップする。</summary>
     public void PrepareDodge() => _leavingForDodge = true;
+
+    /// <summary>転送 QTE へ移行する直前に HijackState から呼ぶ。Exit() のモデル復元をスキップする。</summary>
+    public void PrepareTransfer() => _leavingForTransfer = true;
 
     // ─────────────────────────────────────────
     // Enter: 幽霊モデル OFF、敵モデルを Player の子に
@@ -99,9 +100,16 @@ public class HijackedState : PlayerBaseState
         if (_leavingForDodge)
         {
             // Dodge への一時離脱 — モデルスワップをスキップ
-            // 敵ビジュアルは Player の子に付けたまま、幽霊モデルも非表示のまま
             _leavingForDodge = false;
             Debug.Log("[Hijacked] Exit (→Dodge) — ビジュアル保持");
+            return;
+        }
+
+        if (_leavingForTransfer)
+        {
+            // 転送 QTE への移行 — モデルスワップをスキップ（旧ボディは QTE 後に処理）
+            _leavingForTransfer = false;
+            Debug.Log("[Hijacked] Exit (→Transfer QTE) — ビジュアル保持");
             return;
         }
 
@@ -166,5 +174,39 @@ public class HijackedState : PlayerBaseState
         _enemy = null;
         Machine.TransitionTo(Machine.Ghost);  // Exit() が呼ばれビジュアルが戻る
         dying?.OnHijackedEnemyDied();          // 敵 GameObject を破棄
+    }
+
+    // ─────────────────────────────────────────
+    // ボディ転送（QTE なし・状態遷移なし）
+    // HijackState.TryTransfer() から呼ぶ
+    // ─────────────────────────────────────────
+
+    public void TransferBody(EnemyController newEnemy)
+    {
+        Debug.Log($"[Hijacked] ボディ転送: {_enemy?.name} → {newEnemy.name}");
+
+        EnemyController oldEnemy = _enemy;
+
+        // ── 旧ビジュアルを元の親に戻す ──────────────────
+        if (_enemyVisual != null)
+        {
+            _enemyVisual.SetParent(_enemyVisualOriginalParent);
+            _enemyVisual.localPosition = _enemyVisualOriginalLocalPos;
+            _enemyVisual.localRotation = _enemyVisualOriginalLocalRot;
+            _enemyVisual = null;
+        }
+
+        // ── 新ビジュアルを Player の子にする ─────────────
+        _enemy                       = newEnemy;
+        _enemyVisual                 = _enemy.GetVisualRoot();
+        _enemyVisualOriginalParent   = _enemyVisual.parent;
+        _enemyVisualOriginalLocalPos = _enemyVisual.localPosition;
+        _enemyVisualOriginalLocalRot = _enemyVisual.localRotation;
+        _enemyVisual.SetParent(Machine.transform, false);
+        _enemyVisual.localPosition = Vector3.zero;
+        _enemyVisual.localRotation = Quaternion.identity;
+
+        // ── 旧ボディを破棄（ビジュアル返却後） ───────────
+        oldEnemy?.OnHijackedEnemyDied();
     }
 }
