@@ -13,6 +13,9 @@ public class EnemyHealth : MonoBehaviour
     private EnemyController enemyController;
 
 
+    private Coroutine poisonCoroutine;
+
+
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()
     {
@@ -64,8 +67,8 @@ public class EnemyHealth : MonoBehaviour
     {
         invincible = true;
 
-        //hpが0にならないようにmaxhpの10分の一のhpを回復させる
-        currentHP = Mathf.Max(currentHP, _maxHP / 10);
+        //hpが0にならないようにmaxhpの10分の三のhpを回復させる
+        currentHP = Mathf.Max(currentHP, _maxHP/2);
 
         Debug.Log("無敵開始");
 
@@ -74,5 +77,38 @@ public class EnemyHealth : MonoBehaviour
         invincible = false;
 
         Debug.Log("無敵終了");
+    }
+
+    public void ApplyPoison(float duration, float interval, float percent)
+    {
+        if (poisonCoroutine != null)
+            return;
+
+        poisonCoroutine =
+            StartCoroutine(PoisonCoroutine(duration, interval, percent));
+    }
+
+    private IEnumerator PoisonCoroutine(
+        float duration,
+        float interval,
+        float percent)
+    {
+        float timer = 0f;
+
+        while (timer < duration)
+        {
+            yield return new WaitForSeconds(interval);
+
+            int poisonDamage =
+                Mathf.Max(1, Mathf.CeilToInt(CurrentHP * percent));
+
+            TakeDamage(poisonDamage);
+
+            Debug.Log($"敵に毒ダメージ {poisonDamage}");
+
+            timer += interval;
+        }
+
+        poisonCoroutine = null;
     }
 }

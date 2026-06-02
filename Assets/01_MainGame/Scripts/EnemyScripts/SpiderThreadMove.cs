@@ -59,6 +59,8 @@ public class SpiderThreadMove : MonoBehaviour
             if (machine != null && machine.CurrentStateName == nameof(HijackedState))
             {
                 machine.PlayerHP?.TakeDamage(damage);
+                // 6秒間90%減速
+                machine.ApplySlow(0.9f, 6f);
                 Debug.Log($"[SpiderThread] 乗っ取り中プレイヤーに {damage} ダメージ");
             }
             Destroy(gameObject);
@@ -72,6 +74,10 @@ public class SpiderThreadMove : MonoBehaviour
                 _hasHit = true;
                 enemy.TakeDamage(damage);
                 Debug.Log($"[SpiderThread] {enemy.name} に {damage} ダメージ");
+                
+                // 敵が蜘蛛の糸に当たった場合、移動速度を遅くする
+                enemy.ApplySlow(0.9f, 6f);
+
                 Destroy(gameObject);
             }
         }

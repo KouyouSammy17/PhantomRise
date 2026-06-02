@@ -120,6 +120,11 @@ public class EnemyController : MonoBehaviour
     /// <summary>現在スタン状態かどうか（C ランク以上の乗っ取り判定に使用）</summary>
     public bool IsStunned => currentState == EnemyState.Stun;
 
+    //蜘蛛の糸に当たった時に移動速度を遅くするためのコルーチン
+    private Coroutine slowCoroutine;
+    //元の移動速度を保存する変数
+    private float originalSpeed;
+
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()
     {
@@ -138,6 +143,8 @@ public class EnemyController : MonoBehaviour
 
         //スキルの後に攻撃する
         attackTimer=attackCooldown;
+
+        originalSpeed = agent.speed;
 
     }
 
@@ -237,7 +244,7 @@ public class EnemyController : MonoBehaviour
 
         //敵のランクがC以上の場合はHPが10％以下になると一回だけスタン状態になる
         //スタン状態が終わった後に攻撃を食らうと死ぬ
-        if (rank != EnemyRank.D && (float)_enemyHealth.CurrentHP / _enemyHealth.maxHP <= 0.1f)
+        if (rank != EnemyRank.D && (float)_enemyHealth.CurrentHP / _enemyHealth.maxHP <= 0.5f)
         {
             // スタン状態の処理
             if (isStunned == true)
@@ -336,6 +343,7 @@ public class EnemyController : MonoBehaviour
     /// <summary>乗っ取り中に攻撃ボタンが押されたとき — 範囲内の他の敵にダメージ</summary>
     public void PerformAttack()
     {
+    
         // 乗っ取り中はプレイヤーの現在位置を基点にする（EnemyController 自体は動かない）
         Vector3 origin = (IsHijacked && _playerMachine != null)
             ? _playerMachine.transform.position
@@ -495,6 +503,35 @@ public class EnemyController : MonoBehaviour
         currentState = EnemyState.Chase;
 
         Debug.Log($"[Enemy] {name} ダメージを受けたので追跡開始");
+    }
+
+    public void ApplySlow(float slowPercent, float duration)
+    {
+        if (slowCoroutine != null)
+        {
+            StopCoroutine(slowCoroutine);
+        }
+
+        slowCoroutine = StartCoroutine(
+            SlowCoroutine(slowPercent, duration));
+    }
+
+    private IEnumerator SlowCoroutine(
+        float slowPercent,
+        float duration)
+    {
+        agent.speed = originalSpeed * (1f - slowPercent);
+
+        Debug.Log(
+            $"{name} の移動速度が {(int)(slowPercent * 100)}% 低下");
+
+        yield return new WaitForSeconds(duration);
+
+        agent.speed = originalSpeed;
+
+        Debug.Log($"{name} の移動速度が元に戻った");
+
+        slowCoroutine = null;
     }
 
 }
