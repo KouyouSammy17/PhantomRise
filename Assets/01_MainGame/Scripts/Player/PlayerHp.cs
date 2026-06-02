@@ -4,6 +4,9 @@
 // PlayerStateMachine と同じ GameObject にアタッチする
 // ============================================================
 
+using System;
+using System.Threading;
+using Cysharp.Threading.Tasks;
 using UnityEngine;
 using UnityEngine.Events;
 
@@ -21,6 +24,9 @@ public class PlayerHP : MonoBehaviour
     public int MaxHP { get; private set; }
 
     private PlayerStateMachine _machine;
+
+    // 毒 DoT タスクのキャンセルソース（null = 毒なし）
+    private CancellationTokenSource _poisonCts;
 
     private void Awake()
     {
@@ -62,6 +68,68 @@ public class PlayerHP : MonoBehaviour
         {
             _onDead?.Invoke();
             _machine.Hijacked.OnHPZero();
+        }
+    }
+
+    // ─────────────────────────────────────────
+    // 毒 DoT（UniTask）
+    // ─────────────────────────────────────────
+
+    /// <summary>
+    /// 毒ダメージを開始する。すでに毒状態なら重複しない。
+    /// </summary>
+    /// <param name="duration"> 毒の持続時間（秒）</param>
+    /// <param name="interval"> ダメージを与える間隔（秒）</param>
+    /// <param name="percent">  1 ティックあたり現在 HP に対する割合（例: 0.1 = 10%）</param>
+    public void ApplyPoison(float duration, float interval, float percent)
+    {
+        if (_poisonCts != null) return;  // 毒は重複しない
+
+        // GameObject が Destroy されたときも自動キャンセルするようリンクする
+        _poisonCts = CancellationTokenSource.CreateLinkedTokenSource(
+            this.GetCancellationTokenOnDestroy());
+
+        PoisonAsync(duration, interval, percent, _poisonCts.Token).Forget();
+    }
+
+    /// <summary>
+    /// 毒を強制解除する（解毒アイテムなどに使用）。
+    /// </summary>
+    public void CancelPoison()
+    {
+        _poisonCts?.Cancel();
+    }
+
+    private async UniTaskVoid PoisonAsync(
+        float duration,
+        float interval,
+        float percent,
+        CancellationToken ct)
+    {
+        try
+        {
+            float timer = 0f;
+            while (timer < duration)
+            {
+                await UniTask.Delay(
+                    TimeSpan.FromSeconds(interval),
+                    cancellationToken: ct);
+
+                int poisonDamage = Mathf.Max(1, Mathf.CeilToInt(CurrentHP * percent));
+                TakeDamage(poisonDamage);
+                Debug.Log($"[PlayerHP] 毒ダメージ {poisonDamage}");
+                timer += interval;
+            }
+        }
+        catch (OperationCanceledException)
+        {
+            Debug.Log("[PlayerHP] 毒キャンセル");
+        }
+        finally
+        {
+            // 正常終了・キャンセルどちらでも必ずクリーンアップ
+            _poisonCts?.Dispose();
+            _poisonCts = null;
         }
     }
 }
