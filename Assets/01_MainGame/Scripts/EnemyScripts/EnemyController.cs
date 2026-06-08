@@ -525,6 +525,24 @@ public class EnemyController : MonoBehaviour
 
 
     //
+    /// <summary>
+    /// 外部（スタントラップなど）からスタンを適用する。
+    /// 既存のスタン回復タイマーをキャンセルして上書きする。
+    /// </summary>
+    public void ApplyStun(float duration)
+    {
+        if (currentState == EnemyState.Die || IsHijacked) return;
+
+        // 既存の回復タイマーをキャンセル
+        CancelInvoke(nameof(RecoverFromStun));
+
+        currentState = EnemyState.Stun;
+        agent.isStopped = true;
+
+        Invoke(nameof(RecoverFromStun), duration);
+        Debug.Log($"[StunTrap] {name} がスタン（{duration}秒）");
+    }
+
     public void ApplySlow(float slowPercent, float duration)
     {
         if (slowCoroutine != null)
