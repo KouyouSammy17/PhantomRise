@@ -40,7 +40,7 @@ public class BatEnemySkill : EnemySkillBase
             blood.Damage = enemyController.AttackPower;
 
             PlayerStateMachine player =
-                FindFirstObjectByType<PlayerStateMachine>();
+                FindAnyObjectByType<PlayerStateMachine>();
 
             blood.Initialize(enemyController, player);
         }
@@ -50,7 +50,7 @@ public class BatEnemySkill : EnemySkillBase
         {
 
             PlayerStateMachine machine =
-            FindFirstObjectByType<PlayerStateMachine>();
+            FindAnyObjectByType<PlayerStateMachine>();
 
             Collider biteCollider =
                 obj.GetComponent<Collider>();
