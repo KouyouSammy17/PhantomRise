@@ -108,6 +108,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::SkeletonEnemySkill
   skillCooldown: 5
+  skillRange: 6
   SlashPrefab: {fileID: 2078651765059141772, guid: 91987f8d5a96adf4591c4345303c03ff, type: 3}
   slashSpawnPoint: {fileID: 3485700809582975880}
   slashCount: 3

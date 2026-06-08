@@ -79,4 +79,5 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::MushroomEnemySkill
   skillCooldown: 5
+  skillRange: 2
   poisonPrefab: {fileID: 875280686190255636, guid: 9315653a07ae23b45bab24227d8ff76e, type: 3}
