@@ -9,6 +9,11 @@ public abstract class EnemySkillBase : MonoBehaviour
 
     protected EnemyController enemyController;
 
+    [SerializeField]
+    protected float skillRange = 8f;
+
+    public float SkillRange => skillRange;
+
     protected virtual void Start()
     {
         enemyController = GetComponent<EnemyController>();

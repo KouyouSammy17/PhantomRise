@@ -62,6 +62,13 @@ public class EnemyHealth : MonoBehaviour
          enemyController?.AlertDamage();
     }
 
+    public void Heal(int healAmount)
+    {
+        currentHP = Mathf.Min(maxHP, currentHP + healAmount);
+        Debug.Log("敵が回復しました！現在のHP: " + currentHP);
+    }
+
+
     //無敵状態
     public IEnumerator InvincibleTime(float time)
     {
@@ -78,6 +85,8 @@ public class EnemyHealth : MonoBehaviour
 
         Debug.Log("無敵終了");
     }
+
+    //キノコの毒攻撃を受けたときに呼び出される関数
 
     public void ApplyPoison(float duration, float interval, float percent)
     {

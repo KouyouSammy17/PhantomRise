@@ -48,6 +48,7 @@ public class EnemyController : MonoBehaviour
     //敵の攻撃範囲
     [SerializeField] private float attackRange = 2f;
 
+   
     // 攻撃間隔とタイマー
     [SerializeField] private float attackCooldown = 3f;
     private float attackTimer = 0f;
@@ -177,6 +178,17 @@ public class EnemyController : MonoBehaviour
 
             case EnemyState.Chase:
                 ChaseMode();
+
+                // スキル距離に入ったらスキル
+                if (distance <= _enemySkill.SkillRange)
+                {
+                    if (_enemySkill != null)
+                    {
+                        _enemySkill.TryUseSkill();
+                    }
+                }
+
+
                 if (distance < attackRange)
                     currentState = EnemyState.Attack;
                 //else if (!_enemyVision.CanSeePlayer())
@@ -237,7 +249,7 @@ public class EnemyController : MonoBehaviour
 
 
         //hpが0以下になったらDieステートに遷移
-        if (_enemyHealth.CurrentHP <= 0 && currentState != EnemyState.Die&& rank == EnemyRank.D )
+        if (_enemyHealth.CurrentHP <= 0 && currentState != EnemyState.Die&& rank == EnemyRank.D)
         {
             currentState = EnemyState.Die;
         }
@@ -402,24 +414,30 @@ public class EnemyController : MonoBehaviour
     void PatrolMode()
     {
         agent.isStopped = false;
-        // 巡回ロジック
-        agent.SetDestination(patrolPoints[currentPatrolIndex].position);
 
-        //目的地の0.5f以内に到達したら1秒待ってから次のポイントへ
-        if (!agent.pathPending && agent.remainingDistance < 0.5f)
+        agent.SetDestination(
+            patrolPoints[currentPatrolIndex].position);
+
+        if (!isWaiting &&
+            !agent.pathPending &&
+            agent.remainingDistance < 0.5f)
         {
-            Invoke("SetNextPatrolPoint", 1f);
             isWaiting = true;
+
+            Invoke(
+                nameof(SetNextPatrolPoint),
+                1f);
         }
     }
 
     void SetNextPatrolPoint()
     {
-        if (isWaiting == true)
-        {
-            isWaiting = false;
-            currentPatrolIndex = Random.Range(0, patrolPoints.Length);
-        }
+        currentPatrolIndex =
+         Random.Range(
+             0,
+             patrolPoints.Length);
+
+        isWaiting = false;
     }
 
     void ChaseMode()
@@ -505,6 +523,8 @@ public class EnemyController : MonoBehaviour
         Debug.Log($"[Enemy] {name} ダメージを受けたので追跡開始");
     }
 
+
+    //
     public void ApplySlow(float slowPercent, float duration)
     {
         if (slowCoroutine != null)
@@ -515,6 +535,7 @@ public class EnemyController : MonoBehaviour
         slowCoroutine = StartCoroutine(
             SlowCoroutine(slowPercent, duration));
     }
+
 
     private IEnumerator SlowCoroutine(
         float slowPercent,
