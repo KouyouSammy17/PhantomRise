@@ -127,4 +127,4 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::HijackHealItem
   HealAmount: 50
   DestroyOnPickup: 1
-  PickupEffectPrefab: {fileID: 0}
+  PickupEffectPrefab: {fileID: 2804958011205994593, guid: f8b832107120f174fb1d673ee26b18e1, type: 3}
