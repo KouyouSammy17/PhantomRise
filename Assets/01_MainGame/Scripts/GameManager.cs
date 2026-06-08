@@ -45,8 +45,9 @@ public class GameManager : MonoBehaviour
     // Inspector
     // ─────────────────────────────────────────
 
-    [Header("=== リスタート ===")]
-    [SerializeField] private string gameSceneName = "";  // 空なら現在のシーンをリロード
+    [Header("=== シーン ===")]
+    [SerializeField] private string gameSceneName = "";   // 空なら現在のシーンをリロード
+    [SerializeField] private string titleSceneName = "TitleScene";
 
     // ─────────────────────────────────────────
     // UnityEvents（UIManager などへ通知）
@@ -108,5 +109,27 @@ public class GameManager : MonoBehaviour
             ? SceneManager.GetActiveScene().name
             : gameSceneName;
         SceneManager.LoadScene(scene);
+    }
+
+    /// <summary>
+    /// タイトル画面からゲームシーンへ遷移する。
+    /// TitleManager などから呼ぶ。
+    /// </summary>
+    public void LoadGameScene()
+    {
+        Time.timeScale = 1f;
+        string scene = string.IsNullOrEmpty(gameSceneName)
+            ? SceneManager.GetActiveScene().name
+            : gameSceneName;
+        SceneManager.LoadScene(scene);
+    }
+
+    /// <summary>
+    /// タイトル画面へ戻る。
+    /// </summary>
+    public void GoToTitle()
+    {
+        Time.timeScale = 1f;
+        SceneManager.LoadScene(titleSceneName);
     }
 }
