@@ -14,6 +14,7 @@
 //     └── HintText    (TextMeshPro "タイミングよく押せ！")
 // ============================================================
 
+using System.Collections;
 using UnityEngine;
 using UnityEngine.UI;
 using TMPro;
@@ -27,6 +28,7 @@ public class HijackQTEUI : MonoBehaviour
     [SerializeField] private Image _ringOuterImage;
     [SerializeField] private TextMeshProUGUI _countText;
     [SerializeField] private TextMeshProUGUI _hintText;
+    [SerializeField] private TextMeshProUGUI _resultText;   // 成功・失敗テキスト
 
     [Header("=== QTE パラメーター ===")]
     [SerializeField] private float _outerStartSize = 400f;
@@ -39,6 +41,11 @@ public class HijackQTEUI : MonoBehaviour
     [SerializeField] private Color _normalColor = Color.white;
     [SerializeField] private Color _successColor = Color.green;
     [SerializeField] private Color _failColor = Color.red;
+
+    [Header("=== 結果テキスト ===")]
+    [SerializeField] private string _successMessage = "SUCCESS!";
+    [SerializeField] private string _failMessage    = "FAILED!";
+    [SerializeField] private float  _resultDisplayTime = 0.8f;   // 表示時間（秒）
 
     // ─────────────────────────────────────────
     // 内部
@@ -103,6 +110,7 @@ public class HijackQTEUI : MonoBehaviour
         _waitNext = false;
 
         _qtePanel?.SetActive(true);
+        if (_resultText) _resultText.gameObject.SetActive(false);
         UpdateCount();
         if (_hintText) _hintText.text = "Press Space!";
         BeginBeat();
@@ -162,10 +170,32 @@ public class HijackQTEUI : MonoBehaviour
     private void End(bool success)
     {
         _active = false;
+        StartCoroutine(ShowResultThenEnd(success));
+    }
+
+    private IEnumerator ShowResultThenEnd(bool success)
+    {
+        // カウント・ヒントを隠して結果テキストを表示
+        if (_countText) _countText.gameObject.SetActive(false);
+        if (_hintText)  _hintText.gameObject.SetActive(false);
+
+        if (_resultText)
+        {
+            _resultText.text  = success ? _successMessage : _failMessage;
+            _resultText.color = success ? _successColor   : _failColor;
+            _resultText.gameObject.SetActive(true);
+        }
+
+        yield return new WaitForSecondsRealtime(_resultDisplayTime);
+
+        // UI を元に戻してパネルを閉じる
+        if (_countText) _countText.gameObject.SetActive(true);
+        if (_hintText)  _hintText.gameObject.SetActive(true);
+        if (_resultText) _resultText.gameObject.SetActive(false);
         _qtePanel?.SetActive(false);
 
         if (success) _hijackState?.OnQTESuccess();
-        else _hijackState?.OnQTEFail();
+        else         _hijackState?.OnQTEFail();
     }
 
     private void Flash(Color c)
