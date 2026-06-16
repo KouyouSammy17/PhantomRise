@@ -1,3 +1,4 @@
+using DG.Tweening.Core.Easing;
 using UnityEngine;
 using static EnemyController;
 
@@ -25,6 +26,9 @@ public class SpiderEnemySkill : EnemySkillBase
 
         // 糸にダメージ値を渡す
         SpiderThreadMove thread = obj.GetComponent<SpiderThreadMove>();
+
+        thread.SetOwner(GetComponent<EnemyController>()); // オーナー設定
+
         if (thread != null) thread.Damage = enemyController.AttackPower;
 
         Debug.Log("蜘蛛の糸を発射！");

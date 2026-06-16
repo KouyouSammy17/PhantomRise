@@ -36,14 +36,11 @@ public class EnemyController : MonoBehaviour
 
     [Header("敵ステータス")]
     // Unityのインスペクターで選べるようにする変数
-    [SerializeField] private EnemyRank rank = EnemyRank.D;
+    [SerializeField] private  EnemyRank rank = EnemyRank.D;
 
 
     //敵の攻撃力
     [SerializeField] private int attackPower = 10;
-
-    //敵の追跡範囲
-    //[SerializeField] private float chaseRange = 10f;
 
     //敵の攻撃範囲
     [SerializeField] private float attackRange = 2f;
@@ -95,6 +92,7 @@ public class EnemyController : MonoBehaviour
     private PlayerStateMachine _playerMachine;  // 乗っ取りシステム用キャッシュ
     private EnemyViewCone _viewCone;            // 視野コーン表示
     private EnemyHPbar _enemyHPbar;            // 敵 HP バー
+    private BossSkill _bossSkill;                    // ボス専用スキル
 
 
     // 外から読み取りだけ可能
@@ -127,7 +125,7 @@ public class EnemyController : MonoBehaviour
     private float originalSpeed;
 
     // Start is called once before the first execution of Update after the MonoBehaviour is created
-    void Start()
+    protected virtual void Start()
     {
 
         _enemyVision = GetComponent<EnemyVision>();
@@ -136,6 +134,7 @@ public class EnemyController : MonoBehaviour
         _playerMachine = player?.GetComponent<PlayerStateMachine>();
         _viewCone   = GetComponentInChildren<EnemyViewCone>();
         _enemyHPbar = GetComponentInChildren<EnemyHPbar>();
+        _bossSkill = GetComponent<BossSkill>();
 
         agent = GetComponent<NavMeshAgent>();
         currentState= EnemyState.Patrol;
@@ -150,8 +149,10 @@ public class EnemyController : MonoBehaviour
     }
 
     // Update is called once per frame
-    void Update()
+     protected virtual void Update()
     {
+        
+
         // ダメージを受けたら一定時間プレイヤーを追いかける
         if (alertedByDamage)
         {
@@ -222,28 +223,8 @@ public class EnemyController : MonoBehaviour
                 Destroy(gameObject);
                 break;
             case EnemyState.Stun:
+                Debug.Log("現在スタン中");
                 agent.isStopped = true;
-                // スタン状態の処理
-                //if (rank == EnemyRank.C)
-                //{   
-                //    agent.isStopped = true;
-                //    Invoke("RecoverFromStun", 8f);
-                //    Debug.Log("敵がスタン状態になりました！"); 
-                //}
-
-                //if (rank == EnemyRank.B)
-                //{
-                //    agent.isStopped = true;
-                //    Invoke("RecoverFromStun", 5f);
-                //    Debug.Log("敵がスタン状態になりました！");
-                //}
-
-                //if (rank == EnemyRank.A)
-                //{
-                //    agent.isStopped = true;
-                //    Invoke("RecoverFromStun", 3f);
-                //    Debug.Log("敵がスタン状態になりました！");
-                //}
                 break;
         }
 
@@ -254,16 +235,19 @@ public class EnemyController : MonoBehaviour
             currentState = EnemyState.Die;
         }
 
+
+
         //敵のランクがC以上の場合はHPが10％以下になると一回だけスタン状態になる
         //スタン状態が終わった後に攻撃を食らうと死ぬ
-        if (rank != EnemyRank.D && (float)_enemyHealth.CurrentHP / _enemyHealth.maxHP <= 0.5f)
+        if (rank != EnemyRank.D && (float)_enemyHealth.CurrentHP / _enemyHealth.maxHP <= 0.5f&&CanStun())
         {
+
             // スタン状態の処理
             if (isStunned == true)
             {
                 isStunned = false;
                 currentState = EnemyState.Stun;
-               
+
                 float stunTime = 0f;
                 if (rank == EnemyRank.C)
                     stunTime = 8f;
@@ -276,15 +260,19 @@ public class EnemyController : MonoBehaviour
                 StartCoroutine(_enemyHealth.InvincibleTime(1f));
             }
 
-            if (_enemyHealth.Invincible==false&&_enemyHealth.CurrentHP<=0)
+            if (_enemyHealth.Invincible == false && _enemyHealth.CurrentHP <= 0)
             {
                 currentState = EnemyState.Die;
+            }
+
+            if (rank == EnemyRank.A && _enemyHealth.CurrentHP <= 0)
+            {
                 // クリア判定
                 GameManager.Instance.TriggerGameClear();
             }
 
-
         }
+
 
         //スペースキーを押すとダメージを受ける（テスト用）
         //if (Input.GetKeyDown(KeyCode.Space) == true)
@@ -373,7 +361,7 @@ public class EnemyController : MonoBehaviour
     }
 
     /// <summary>他の敵から攻撃されたとき（乗っ取り攻撃など）</summary>
-    public void TakeDamage(int damage)
+    public virtual void TakeDamage(int damage)
     {
         _enemyHealth?.TakeDamage(damage);
 
@@ -411,7 +399,7 @@ public class EnemyController : MonoBehaviour
     }
 
 
-    void PatrolMode()
+    protected  virtual void PatrolMode()
     {
         agent.isStopped = false;
 
@@ -442,7 +430,19 @@ public class EnemyController : MonoBehaviour
 
     void ChaseMode()
     {
-        agent.isStopped = false;
+        // ボスがスキル使用中は追跡を一時停止
+        if (_bossSkill != null)
+        {
+            if (_bossSkill.IsUsingSkill == false)
+            {
+                agent.isStopped = false;
+            }
+        }
+        else
+        {
+            agent.isStopped = false;
+        }
+        
         //プレイヤーを追跡するロジック
         agent.SetDestination(player.position);
     }
@@ -514,6 +514,8 @@ public class EnemyController : MonoBehaviour
     {
         if (currentState == EnemyState.Die)
             return;
+        if (currentState == EnemyState.Stun)
+            return;
 
         alertedByDamage = true;
         alertTimer = alertDuration;
@@ -573,4 +575,9 @@ public class EnemyController : MonoBehaviour
         slowCoroutine = null;
     }
 
+
+    protected virtual bool CanStun()
+    {
+        return true;   // デフォルトはスタン不可。BossController でオーバーライドしてスタン可能にする。
+    }
 }

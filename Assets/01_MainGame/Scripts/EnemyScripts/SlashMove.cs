@@ -15,12 +15,18 @@ public class SlashMove : MonoBehaviour
     // 二重ヒット防止フラグ
     private bool _hasHit = false;
 
+    private EnemyController owner;
+
     public int Damage
     {
         get => damage;
         set => damage = value;
     }
 
+    public void SetOwner(EnemyController enemy)
+    {
+        owner = enemy;
+    }
 
 
     void Start()
@@ -63,13 +69,18 @@ public class SlashMove : MonoBehaviour
         }
         else if (target.CompareTag("Enemy"))
         {
-            // 乗っ取り中にスキルを使った場合 → 他の敵にダメージ
-            EnemyController enemy = target.GetComponentInParent<EnemyController>();
-            if (enemy != null && !enemy.IsHijacked)
+            if (owner == null || !owner.IsHijacked)
+                return;
+
+            EnemyController enemy =
+                target.GetComponentInParent<EnemyController>();
+
+            if (enemy != null &&
+                enemy != owner &&
+                !enemy.IsHijacked)
             {
                 _hasHit = true;
                 enemy.TakeDamage(damage);
-                Debug.Log($"[Slash] {enemy.name} に {damage} ダメージ");
                 Destroy(gameObject);
             }
         }
