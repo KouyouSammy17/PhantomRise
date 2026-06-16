@@ -8,7 +8,7 @@ public class EnemyHPbar : MonoBehaviour
     public EnemyHealth EnemyHealth;
 
     // Update is called once per frame
-    void Update()
+     void Update()
     {
         HP.value = EnemyHealth.HPRatio;
     }

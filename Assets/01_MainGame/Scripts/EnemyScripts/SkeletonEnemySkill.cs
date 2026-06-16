@@ -54,6 +54,8 @@ public class SkeletonEnemySkill : EnemySkillBase
             // ダメージ設定
             SlashMove slash = obj.GetComponent<SlashMove>();
 
+            slash.SetOwner(GetComponent<EnemyController>()); // オーナー設定
+
             if (slash != null)
             {
                 slash.Damage = enemyController.AttackPower;

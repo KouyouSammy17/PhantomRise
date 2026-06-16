@@ -15,11 +15,20 @@ public class SpiderThreadMove : MonoBehaviour
     // 二重ヒット防止フラグ
     private bool _hasHit = false;
 
+    //敵が敵に攻撃してしまわないようにするためのオーナー情報
+    private EnemyController owner;
+
     public int Damage
     {
         get => damage;
         set => damage = value;
     }
+
+    public void SetOwner(EnemyController enemy)
+    {
+        owner = enemy;
+    }
+
 
 
     void Start()
@@ -67,9 +76,13 @@ public class SpiderThreadMove : MonoBehaviour
         }
         else if (target.CompareTag("Enemy"))
         {
+            //敵が敵に攻撃してしまわないようにするためのオーナー情報を確認
+            if (owner == null || !owner.IsHijacked)
+                return;
+
             // 乗っ取り中にスキルを使った場合 → 他の敵にダメージ
             EnemyController enemy = target.GetComponentInParent<EnemyController>();
-            if (enemy != null && !enemy.IsHijacked)
+            if (enemy != null && !enemy.IsHijacked&&enemy != owner)
             {
                 _hasHit = true;
                 enemy.TakeDamage(damage);
