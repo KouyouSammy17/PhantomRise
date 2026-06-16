@@ -76,6 +76,10 @@ public class EnemyController : MonoBehaviour
     //自分がスタンしているかどうか
     private bool isStunned = true;
 
+    //スタン状態をプレイヤーに知らせるためのインジケーター
+    [SerializeField] private GameObject stunIndicator;
+
+
     //敵がプレイヤーを見失ってからパトロールに戻るまでの時間を計測するタイマー
     private float lostSightTimer = 0f;
     [SerializeField] private float lostSightDuration = 3f;
@@ -246,6 +250,7 @@ public class EnemyController : MonoBehaviour
             if (isStunned == true)
             {
                 isStunned = false;
+                stunIndicator.SetActive(true);
                 currentState = EnemyState.Stun;
 
                 float stunTime = 0f;
@@ -392,6 +397,7 @@ public class EnemyController : MonoBehaviour
     {
         if (currentState == EnemyState.Stun)
         {
+            stunIndicator.SetActive(false);
             //isStunned = false;
             currentState = EnemyState.Patrol; // スタン状態からパトロール状態に戻る
             Debug.Log("敵がスタン状態から回復しました！");
