@@ -35,6 +35,10 @@ public class PlayerStateMachine : MonoBehaviour
     [Header("=== 幽霊タイマー ===")]
     [SerializeField] private float _ghostTimeLimit = 60f;
 
+    [Header("=== 落下死 ===")]
+    [Tooltip("この Y 座標を下回ったらゲームオーバー（ステージの床より十分低い値に設定）")]
+    [SerializeField] private float _fallDeathY = -10f;
+
     [Header("=== カメラ ===")]
     [SerializeField] private Transform _cameraTransform;
 
@@ -125,6 +129,7 @@ public class PlayerStateMachine : MonoBehaviour
     private InputAction _attackAction;
     private InputAction _dodgeAction;
     private InputAction _skillAction;
+    private InputAction _disposeAction;
 
     // ─────────────────────────────────────────
     // Unity ライフサイクル
@@ -155,7 +160,8 @@ public class PlayerStateMachine : MonoBehaviour
         _hijackAction = _pi.actions.FindAction("Hijack", true);
         _attackAction = _pi.actions.FindAction("Attack", true);
         _dodgeAction  = _pi.actions.FindAction("Dodge",  true);
-        _skillAction  = _pi.actions.FindAction("Skill");   // 存在しない場合は null
+        _skillAction   = _pi.actions.FindAction("Skill");        // 存在しない場合は null
+        _disposeAction = _pi.actions.FindAction("Dispose");   // 存在しない場合は null
     }
 
     private void OnEnable()
@@ -168,7 +174,8 @@ public class PlayerStateMachine : MonoBehaviour
         _hijackAction.started += OnHijackStarted;
         _attackAction.started += OnAttackStarted;
         _dodgeAction.started  += OnDodgeStarted;
-        if (_skillAction != null) _skillAction.started += OnSkillStarted;
+        if (_skillAction   != null) _skillAction.started   += OnSkillStarted;
+        if (_disposeAction != null) _disposeAction.started += OnDisposeStarted;
     }
 
     private void OnDisable()
@@ -179,7 +186,8 @@ public class PlayerStateMachine : MonoBehaviour
         _hijackAction.started -= OnHijackStarted;
         _attackAction.started -= OnAttackStarted;
         _dodgeAction.started  -= OnDodgeStarted;
-        if (_skillAction != null) _skillAction.started -= OnSkillStarted;
+        if (_skillAction   != null) _skillAction.started   -= OnSkillStarted;
+        if (_disposeAction != null) _disposeAction.started -= OnDisposeStarted;
     }
 
     private void Start()
@@ -191,6 +199,14 @@ public class PlayerStateMachine : MonoBehaviour
     private void Update()
     {
         _currentState?.Update(Time.deltaTime);
+
+        // 落下死：Dead 以外の状態でステージ外まで落ちたらゲームオーバー
+        if (CurrentStateName != nameof(DeadState)
+            && transform.position.y < _fallDeathY)
+        {
+            Debug.Log("[Player] ステージ外に落下 → ゲームオーバー");
+            TransitionTo(Dead);
+        }
     }
 
     // ─────────────────────────────────────────
@@ -224,13 +240,10 @@ public class PlayerStateMachine : MonoBehaviour
             return;
         }
 
-        // 乗っ取り中に再度押したら:
-        //   有効なターゲットがあれば即転送、なければ身体を捨てて Ghost に戻る
+        // 乗っ取り中に再度押したら背後の敵に即転送を試みる（身体を捨てるのは Q ボタン）
         if (_currentState == Hijacked)
         {
-            bool transferred = Hijack.TryTransfer(HijackRange, BehindAngle);
-            if (!transferred)
-                Hijacked.DisposeBody();
+            Hijack.TryTransfer(_hijackRange, _behindAngle);
             return;
         }
 
@@ -264,6 +277,13 @@ public class PlayerStateMachine : MonoBehaviour
     {
         if (_currentState != Hijacked) return;
         Hijacked.TrySkill();
+    }
+
+    private void OnDisposeStarted(InputAction.CallbackContext ctx)
+    {
+        // 乗っ取り中のみ有効 — Q ボタンで身体を捨てて Ghost に戻る
+        if (_currentState != Hijacked) return;
+        Hijacked.DisposeBody();
     }
 
     // ─────────────────────────────────────────

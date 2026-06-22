@@ -44,7 +44,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 8e90f3791440abe44a7837d500e218dc, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::GameManager
-  gameSceneName: GameScene
+  gameSceneName: NewStage
+  titleSceneName: TitleScene
   OnGameClear:
     m_PersistentCalls:
       m_Calls:

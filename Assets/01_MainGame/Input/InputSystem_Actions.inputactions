@@ -68,6 +68,15 @@
                     "processors": "",
                     "interactions": "",
                     "initialStateCheck": false
+                },
+                {
+                    "name": "Dispose",
+                    "type": "Button",
+                    "id": "32313042-8bba-4f9b-bd2c-463a2c6ef2cf",
+                    "expectedControlType": "",
+                    "processors": "",
+                    "interactions": "",
+                    "initialStateCheck": false
                 }
             ],
             "bindings": [
@@ -387,6 +396,17 @@
                     "processors": "",
                     "groups": "Gamepad",
                     "action": "Skill",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "6a56e4aa-8fe6-4d19-97c8-145728c9115a",
+                    "path": "<Keyboard>/q",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": ";Keyboard&Mouse",
+                    "action": "Dispose",
                     "isComposite": false,
                     "isPartOfComposite": false
                 }

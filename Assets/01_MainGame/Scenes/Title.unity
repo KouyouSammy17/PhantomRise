@@ -188,6 +188,10 @@ PrefabInstance:
       propertyPath: titleUI
       value: 
       objectReference: {fileID: 596172088}
+    - target: {fileID: 2454333956852493814, guid: 5325e82fd57b7c147bf5fce36e304cb4, type: 3}
+      propertyPath: m_IsActive
+      value: 1
+      objectReference: {fileID: 0}
     - target: {fileID: 6985734097682280509, guid: 5325e82fd57b7c147bf5fce36e304cb4, type: 3}
       propertyPath: m_Name
       value: UI Manager
