@@ -18,8 +18,17 @@ public class StunTrap : MonoBehaviour
     // ─────────────────────────────────────────
 
     [Header("=== スタン設定 ===")]
-    [Tooltip("スタン持続時間（秒）")]
-    [SerializeField] private float stunDuration = 3f;
+    [Tooltip("ランクD（最弱）のスタン持続時間（秒）。ランクが上がるほど短くなる。")]
+    [SerializeField] private float stunDurationRankD = 6f;
+
+    [Tooltip("ランクCのスタン持続時間（秒）")]
+    [SerializeField] private float stunDurationRankC = 4f;
+
+    [Tooltip("ランクBのスタン持続時間（秒）")]
+    [SerializeField] private float stunDurationRankB = 2.5f;
+
+    [Tooltip("ランクA（最強）のスタン持続時間（秒）")]
+    [SerializeField] private float stunDurationRankA = 1f;
 
     [Tooltip("トラップ再発動までのクールダウン（秒）。0 なら無制限に発動。")]
     [SerializeField] private float trapCooldown = 5f;
@@ -50,8 +59,16 @@ public class StunTrap : MonoBehaviour
                              ?? other.GetComponentInParent<EnemyController>();
         if (enemy == null) return;
 
+        // ボスはスタントラップ無効
+        if (enemy is BossController)
+        {
+            Debug.Log($"[StunTrap] {enemy.name} はボスのためスタン無効");
+            return;
+        }
+
+        float stunDuration = GetStunDurationForRank(enemy.Rank);
         enemy.ApplyStun(stunDuration);
-        Debug.Log($"[StunTrap] {enemy.name} をスタン！");
+        Debug.Log($"[StunTrap] {enemy.name}（ランク{enemy.Rank}）を {stunDuration}秒スタン！");
 
         // ビジュアル切り替え
         if (activatedVisual != null) activatedVisual.SetActive(true);
@@ -63,6 +80,17 @@ public class StunTrap : MonoBehaviour
             _onCooldown = true;
             Invoke(nameof(ResetTrap), trapCooldown);
         }
+    }
+
+    private float GetStunDurationForRank(EnemyController.EnemyRank rank)
+    {
+        return rank switch
+        {
+            EnemyController.EnemyRank.A => stunDurationRankA,
+            EnemyController.EnemyRank.B => stunDurationRankB,
+            EnemyController.EnemyRank.C => stunDurationRankC,
+            _                           => stunDurationRankD,  // D（デフォルト）
+        };
     }
 
     private void ResetTrap()
