@@ -14,6 +14,8 @@ public class EnemyHealth : MonoBehaviour
 
     private Coroutine poisonCoroutine;
 
+    private Coroutine bleedCoroutine;
+
     protected virtual void Start()
     {
         currentHP = maxHP;
@@ -89,5 +91,31 @@ public class EnemyHealth : MonoBehaviour
         }
 
         poisonCoroutine = null;
+    }
+
+    public void ApplyBleed(float duration)
+    {
+        if (bleedCoroutine != null)
+            return;
+
+        bleedCoroutine =
+            StartCoroutine(BleedCoroutine(duration));
+
+    }
+
+    private IEnumerator BleedCoroutine(float duration)
+    {
+        float timer = 0f;
+
+        while (timer < duration)
+        {
+            TakeDamage(7);   // 1秒ごと7ダメージ
+
+            yield return new WaitForSeconds(1f);
+
+            timer += 1f;
+        }
+
+        bleedCoroutine = null;
     }
 }

@@ -89,6 +89,8 @@ public class EnemyController : MonoBehaviour
     private float alertTimer = 0f;
     [SerializeField] private float alertDuration = 5f;
 
+    private bool isTryingSkill = false;
+
     //継承する
     private EnemyVision _enemyVision;
     private EnemyHealth _enemyHealth;
@@ -109,6 +111,13 @@ public class EnemyController : MonoBehaviour
         get { return rank; }
     }
 
+    public Transform GetControlRoot()
+    {
+        if (IsHijacked && _playerMachine != null)
+            return _playerMachine.transform;
+
+        return transform;
+    }
 
     // ── 乗っ取りシステム ────────────────────────
     public bool IsHijacked { get; private set; }
@@ -187,12 +196,16 @@ public class EnemyController : MonoBehaviour
                 // スキル距離に入ったらスキル
                 if (distance <= _enemySkill.SkillRange)
                 {
-                    if (_enemySkill != null)
+                    if (_enemySkill != null && !isTryingSkill)
                     {
+                        isTryingSkill = true;
                         _enemySkill.TryUseSkill();
                     }
                 }
-
+                else
+                {
+                    isTryingSkill = false;
+                }
 
                 if (distance < attackRange)
                     currentState = EnemyState.Attack;
@@ -270,11 +283,7 @@ public class EnemyController : MonoBehaviour
                 currentState = EnemyState.Die;
             }
 
-            if (rank == EnemyRank.A && _enemyHealth.CurrentHP <= 0)
-            {
-                // クリア判定
-                GameManager.Instance.TriggerGameClear();
-            }
+       
 
         }
 
@@ -296,6 +305,8 @@ public class EnemyController : MonoBehaviour
     {
         IsQTETarget = false;   // QTE フリーズを解除（IsHijacked で完全停止に移行）
         IsHijacked = true;
+        //乗っ取ったらスタンインディケーターを消す
+        stunIndicator.SetActive(false);
         agent.enabled = false;   // NavMeshAgent を完全無効化
         var col = GetComponent<Collider>();
         if (col) col.enabled = false;
@@ -546,7 +557,7 @@ public class EnemyController : MonoBehaviour
 
         currentState = EnemyState.Stun;
         agent.isStopped = true;
-
+        stunIndicator.SetActive(true);
         Invoke(nameof(RecoverFromStun), duration);
         Debug.Log($"[StunTrap] {name} がスタン（{duration}秒）");
     }

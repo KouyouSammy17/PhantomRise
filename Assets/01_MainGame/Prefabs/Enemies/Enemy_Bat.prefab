@@ -70,6 +70,10 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 0}
     m_Modifications:
+    - target: {fileID: 1657749507933975513, guid: 4ef9cf0b807c6d74ba60784351b7ecd4, type: 3}
+      propertyPath: m_Name
+      value: Enemy_Bat
+      objectReference: {fileID: 0}
     - target: {fileID: 2495899563628843489, guid: 4ef9cf0b807c6d74ba60784351b7ecd4, type: 3}
       propertyPath: m_Height
       value: 1.5
@@ -86,6 +90,10 @@ PrefabInstance:
       propertyPath: 'm_Materials.Array.data[0]'
       value: 
       objectReference: {fileID: 2100000, guid: 6961937a412162949872db24ada42cfb, type: 2}
+    - target: {fileID: 6274497160392044223, guid: 4ef9cf0b807c6d74ba60784351b7ecd4, type: 3}
+      propertyPath: m_Enabled
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 6443116343119807069, guid: 4ef9cf0b807c6d74ba60784351b7ecd4, type: 3}
       propertyPath: rank
       value: 2
@@ -158,7 +166,8 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
-    m_RemovedComponents: []
+    m_RemovedComponents:
+    - {fileID: 5667092363493179327, guid: 4ef9cf0b807c6d74ba60784351b7ecd4, type: 3}
     m_RemovedGameObjects: []
     m_AddedGameObjects:
     - targetCorrespondingSourceObject: {fileID: 9222787218964806624, guid: 4ef9cf0b807c6d74ba60784351b7ecd4, type: 3}
@@ -167,7 +176,7 @@ PrefabInstance:
     m_AddedComponents:
     - targetCorrespondingSourceObject: {fileID: 2827516876372056535, guid: 4ef9cf0b807c6d74ba60784351b7ecd4, type: 3}
       insertIndex: -1
-      addedObject: {fileID: -2171326066996718899}
+      addedObject: {fileID: 7232828907364714261}
   m_SourcePrefab: {fileID: 100100000, guid: 4ef9cf0b807c6d74ba60784351b7ecd4, type: 3}
 --- !u!4 &1092192797120682340 stripped
 Transform:
@@ -184,7 +193,7 @@ GameObject:
   m_CorrespondingSourceObject: {fileID: 2827516876372056535, guid: 4ef9cf0b807c6d74ba60784351b7ecd4, type: 3}
   m_PrefabInstance: {fileID: 8130637332949148292}
   m_PrefabAsset: {fileID: 0}
---- !u!114 &-2171326066996718899
+--- !u!114 &7232828907364714261
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -196,7 +205,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 18f38f045bc37ae49a728a8acaca24d5, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::BatEnemySkill
-  skillCooldown: 5
-  skillRange: 8
+  skillCooldown: 3
+  skillRange: 1
   bitePrefab: {fileID: 3023999648932019501, guid: 01bdc0c3dd0a9824daf88d726d063144, type: 3}
   biteSpawnPoint: {fileID: 4364850395713475234}
