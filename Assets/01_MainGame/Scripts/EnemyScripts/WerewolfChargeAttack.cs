@@ -23,12 +23,18 @@ public class WerewolfChargeAttack : MonoBehaviour
 
     private bool hasHit = false;
 
+    private Rigidbody rb;
+
+    private CharacterController cc;
+
 
     public void StartCharge(int attackDamage, EnemyController enemy)
     {
         damage = attackDamage;
         owner = enemy;
         controlRoot = enemy.GetControlRoot();
+        rb = controlRoot.GetComponent<Rigidbody>();
+        cc = controlRoot.GetComponent<CharacterController>();
         startPosition = controlRoot.position; // 突進開始位置を記録
         hasHit = false;
         isCharging = true;
@@ -41,17 +47,24 @@ public class WerewolfChargeAttack : MonoBehaviour
             return;
 
 
+        if (owner.IsStunned)
+        {
+            StopCharge();
+            return;
+        }
+
+
         // ─────────────────────────────
         // ① 当たり判定
         // ─────────────────────────────
         if (!hasHit &&
-     Physics.SphereCast(
-    controlRoot.position,
-    hitRadius,
-    controlRoot.forward,
-    out RaycastHit hit,
-    hitDistance))
-        {
+            Physics.SphereCast(
+            controlRoot.position,
+            hitRadius,
+            controlRoot.forward,
+            out RaycastHit hit,
+            hitDistance))
+          {
            //hasHit = true;
 
             Debug.Log("Hit object = " + hit.collider.name);
@@ -99,13 +112,23 @@ public class WerewolfChargeAttack : MonoBehaviour
                 StopCharge();
                 return;
             }
-        }
+         }
 
-        float move = chargeSpeed * Time.deltaTime;
 
         //前方向に移動
-        controlRoot.position += controlRoot.forward * move;
-        
+        if (rb != null)
+        {
+            rb.linearVelocity =
+                controlRoot.forward * chargeSpeed;
+        }
+        else if (cc != null)
+        {
+            cc.Move(
+                controlRoot.forward *
+                chargeSpeed *
+                Time.deltaTime);
+        }
+
 
         float distance =
             Vector3.Distance(startPosition, controlRoot.position);
@@ -122,6 +145,8 @@ public class WerewolfChargeAttack : MonoBehaviour
     private void StopCharge()
     {
         isCharging = false;
+        if (rb != null)
+            rb.linearVelocity = Vector3.zero;
     }
 
    
