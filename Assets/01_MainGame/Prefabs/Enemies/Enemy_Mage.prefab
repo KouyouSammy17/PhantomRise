@@ -1,84 +1,68 @@
 %YAML 1.1
 %TAG !u! tag:unity3d.com,2011:
---- !u!1001 &2395613769162772233
+--- !u!1001 &5986973346228922052
 PrefabInstance:
   m_ObjectHideFlags: 0
   serializedVersion: 2
   m_Modification:
     serializedVersion: 3
-    m_TransformParent: {fileID: 4550612406007009513}
+    m_TransformParent: {fileID: 1092192797120682340}
     m_Modifications:
-    - target: {fileID: 535702951195797787, guid: 35f16650380449c78eeac51057eaff2a, type: 3}
-      propertyPath: m_LocalScale.x
-      value: 1.5
+    - target: {fileID: 3972964382682025698, guid: 848956f3f885b9040afda3779ed0fe60, type: 3}
+      propertyPath: m_Name
+      value: EvilMagePBR
       objectReference: {fileID: 0}
-    - target: {fileID: 535702951195797787, guid: 35f16650380449c78eeac51057eaff2a, type: 3}
-      propertyPath: m_LocalScale.y
-      value: 1.5
-      objectReference: {fileID: 0}
-    - target: {fileID: 535702951195797787, guid: 35f16650380449c78eeac51057eaff2a, type: 3}
-      propertyPath: m_LocalScale.z
-      value: 1.5
-      objectReference: {fileID: 0}
-    - target: {fileID: 535702951195797787, guid: 35f16650380449c78eeac51057eaff2a, type: 3}
+    - target: {fileID: 3972964382682190530, guid: 848956f3f885b9040afda3779ed0fe60, type: 3}
       propertyPath: m_LocalPosition.x
       value: 0
       objectReference: {fileID: 0}
-    - target: {fileID: 535702951195797787, guid: 35f16650380449c78eeac51057eaff2a, type: 3}
+    - target: {fileID: 3972964382682190530, guid: 848956f3f885b9040afda3779ed0fe60, type: 3}
       propertyPath: m_LocalPosition.y
       value: -0.5
       objectReference: {fileID: 0}
-    - target: {fileID: 535702951195797787, guid: 35f16650380449c78eeac51057eaff2a, type: 3}
+    - target: {fileID: 3972964382682190530, guid: 848956f3f885b9040afda3779ed0fe60, type: 3}
       propertyPath: m_LocalPosition.z
       value: 0
       objectReference: {fileID: 0}
-    - target: {fileID: 535702951195797787, guid: 35f16650380449c78eeac51057eaff2a, type: 3}
+    - target: {fileID: 3972964382682190530, guid: 848956f3f885b9040afda3779ed0fe60, type: 3}
       propertyPath: m_LocalRotation.w
       value: 1
       objectReference: {fileID: 0}
-    - target: {fileID: 535702951195797787, guid: 35f16650380449c78eeac51057eaff2a, type: 3}
+    - target: {fileID: 3972964382682190530, guid: 848956f3f885b9040afda3779ed0fe60, type: 3}
       propertyPath: m_LocalRotation.x
       value: 0
       objectReference: {fileID: 0}
-    - target: {fileID: 535702951195797787, guid: 35f16650380449c78eeac51057eaff2a, type: 3}
+    - target: {fileID: 3972964382682190530, guid: 848956f3f885b9040afda3779ed0fe60, type: 3}
       propertyPath: m_LocalRotation.y
       value: 0
       objectReference: {fileID: 0}
-    - target: {fileID: 535702951195797787, guid: 35f16650380449c78eeac51057eaff2a, type: 3}
+    - target: {fileID: 3972964382682190530, guid: 848956f3f885b9040afda3779ed0fe60, type: 3}
       propertyPath: m_LocalRotation.z
       value: 0
       objectReference: {fileID: 0}
-    - target: {fileID: 535702951195797787, guid: 35f16650380449c78eeac51057eaff2a, type: 3}
+    - target: {fileID: 3972964382682190530, guid: 848956f3f885b9040afda3779ed0fe60, type: 3}
       propertyPath: m_LocalEulerAnglesHint.x
       value: 0
       objectReference: {fileID: 0}
-    - target: {fileID: 535702951195797787, guid: 35f16650380449c78eeac51057eaff2a, type: 3}
+    - target: {fileID: 3972964382682190530, guid: 848956f3f885b9040afda3779ed0fe60, type: 3}
       propertyPath: m_LocalEulerAnglesHint.y
       value: 0
       objectReference: {fileID: 0}
-    - target: {fileID: 535702951195797787, guid: 35f16650380449c78eeac51057eaff2a, type: 3}
+    - target: {fileID: 3972964382682190530, guid: 848956f3f885b9040afda3779ed0fe60, type: 3}
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 875073071404757921, guid: 35f16650380449c78eeac51057eaff2a, type: 3}
-      propertyPath: m_Name
-      value: MushroomAngryPBR
-      objectReference: {fileID: 0}
-    - target: {fileID: 5278060067821853555, guid: 35f16650380449c78eeac51057eaff2a, type: 3}
-      propertyPath: m_IsActive
-      value: 1
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
     m_AddedComponents: []
-  m_SourcePrefab: {fileID: 100100000, guid: 35f16650380449c78eeac51057eaff2a, type: 3}
---- !u!4 &2761231009614407186 stripped
+  m_SourcePrefab: {fileID: 100100000, guid: 848956f3f885b9040afda3779ed0fe60, type: 3}
+--- !u!4 &7220623185333056518 stripped
 Transform:
-  m_CorrespondingSourceObject: {fileID: 535702951195797787, guid: 35f16650380449c78eeac51057eaff2a, type: 3}
-  m_PrefabInstance: {fileID: 2395613769162772233}
+  m_CorrespondingSourceObject: {fileID: 3972964382682190530, guid: 848956f3f885b9040afda3779ed0fe60, type: 3}
+  m_PrefabInstance: {fileID: 5986973346228922052}
   m_PrefabAsset: {fileID: 0}
---- !u!1001 &4673304591303994121
+--- !u!1001 &8130637332949148292
 PrefabInstance:
   m_ObjectHideFlags: 0
   serializedVersion: 2
@@ -86,37 +70,77 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 0}
     m_Modifications:
+    - target: {fileID: 945449425208760321, guid: 4ef9cf0b807c6d74ba60784351b7ecd4, type: 3}
+      propertyPath: rank
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 945449425208760321, guid: 4ef9cf0b807c6d74ba60784351b7ecd4, type: 3}
+      propertyPath: attackPower
+      value: 20
+      objectReference: {fileID: 0}
+    - target: {fileID: 945449425208760321, guid: 4ef9cf0b807c6d74ba60784351b7ecd4, type: 3}
+      propertyPath: attackRange
+      value: 3
+      objectReference: {fileID: 0}
     - target: {fileID: 1657749507933975513, guid: 4ef9cf0b807c6d74ba60784351b7ecd4, type: 3}
       propertyPath: m_Name
-      value: Enemy_Mushroom
+      value: Enemy_Mage
+      objectReference: {fileID: 0}
+    - target: {fileID: 2495899563628843489, guid: 4ef9cf0b807c6d74ba60784351b7ecd4, type: 3}
+      propertyPath: m_Height
+      value: 1.5
       objectReference: {fileID: 0}
     - target: {fileID: 2827516876372056535, guid: 4ef9cf0b807c6d74ba60784351b7ecd4, type: 3}
       propertyPath: m_Name
-      value: Enemy_Mushroom
+      value: Enemy_Mage
       objectReference: {fileID: 0}
     - target: {fileID: 4645401483766828060, guid: 4ef9cf0b807c6d74ba60784351b7ecd4, type: 3}
       propertyPath: m_Enabled
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 4645401483766828060, guid: 4ef9cf0b807c6d74ba60784351b7ecd4, type: 3}
+      propertyPath: 'm_Materials.Array.data[0]'
+      value: 
+      objectReference: {fileID: 2100000, guid: 6961937a412162949872db24ada42cfb, type: 2}
+    - target: {fileID: 5071074307849890191, guid: 4ef9cf0b807c6d74ba60784351b7ecd4, type: 3}
+      propertyPath: _maxHP
+      value: 200
+      objectReference: {fileID: 0}
     - target: {fileID: 6274497160392044223, guid: 4ef9cf0b807c6d74ba60784351b7ecd4, type: 3}
       propertyPath: m_Enabled
       value: 0
       objectReference: {fileID: 0}
-    - target: {fileID: 7432282056635228474, guid: 4ef9cf0b807c6d74ba60784351b7ecd4, type: 3}
-      propertyPath: m_AnchorMax.x
-      value: 0
+    - target: {fileID: 6443116343119807069, guid: 4ef9cf0b807c6d74ba60784351b7ecd4, type: 3}
+      propertyPath: rank
+      value: 1
       objectReference: {fileID: 0}
-    - target: {fileID: 7432282056635228474, guid: 4ef9cf0b807c6d74ba60784351b7ecd4, type: 3}
-      propertyPath: m_AnchorMax.y
-      value: 0
+    - target: {fileID: 6443116343119807069, guid: 4ef9cf0b807c6d74ba60784351b7ecd4, type: 3}
+      propertyPath: attackPower
+      value: 15
+      objectReference: {fileID: 0}
+    - target: {fileID: 6443116343119807069, guid: 4ef9cf0b807c6d74ba60784351b7ecd4, type: 3}
+      propertyPath: attackRange
+      value: 4
+      objectReference: {fileID: 0}
+    - target: {fileID: 7762544295177896909, guid: 4ef9cf0b807c6d74ba60784351b7ecd4, type: 3}
+      propertyPath: _maxHP
+      value: 200
       objectReference: {fileID: 0}
     - target: {fileID: 8060403493178725083, guid: 4ef9cf0b807c6d74ba60784351b7ecd4, type: 3}
       propertyPath: m_Size.x
-      value: 1.1207762
+      value: 1.5813701
+      objectReference: {fileID: 0}
+    - target: {fileID: 8060403493178725083, guid: 4ef9cf0b807c6d74ba60784351b7ecd4, type: 3}
+      propertyPath: m_Size.y
+      value: 1.2590384
       objectReference: {fileID: 0}
     - target: {fileID: 8060403493178725083, guid: 4ef9cf0b807c6d74ba60784351b7ecd4, type: 3}
       propertyPath: m_Center.x
-      value: -0.004975885
+      value: 0.049906135
+      objectReference: {fileID: 0}
+    - target: {fileID: 8060403493178725083, guid: 4ef9cf0b807c6d74ba60784351b7ecd4, type: 3}
+      propertyPath: m_Center.y
+      value: 0.35375774
       objectReference: {fileID: 0}
     - target: {fileID: 9222787218964806624, guid: 4ef9cf0b807c6d74ba60784351b7ecd4, type: 3}
       propertyPath: m_LocalScale.x
@@ -171,40 +195,45 @@ PrefabInstance:
       value: 0
       objectReference: {fileID: 0}
     m_RemovedComponents:
-    - {fileID: 4217220719746605392, guid: 4ef9cf0b807c6d74ba60784351b7ecd4, type: 3}
     - {fileID: 5667092363493179327, guid: 4ef9cf0b807c6d74ba60784351b7ecd4, type: 3}
     m_RemovedGameObjects: []
     m_AddedGameObjects:
     - targetCorrespondingSourceObject: {fileID: 9222787218964806624, guid: 4ef9cf0b807c6d74ba60784351b7ecd4, type: 3}
       insertIndex: -1
-      addedObject: {fileID: 2761231009614407186}
+      addedObject: {fileID: 7220623185333056518}
     m_AddedComponents:
     - targetCorrespondingSourceObject: {fileID: 2827516876372056535, guid: 4ef9cf0b807c6d74ba60784351b7ecd4, type: 3}
       insertIndex: -1
-      addedObject: {fileID: -8567238757085646519}
+      addedObject: {fileID: -3048579385867228388}
   m_SourcePrefab: {fileID: 100100000, guid: 4ef9cf0b807c6d74ba60784351b7ecd4, type: 3}
---- !u!4 &4550612406007009513 stripped
+--- !u!4 &1092192797120682340 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 9222787218964806624, guid: 4ef9cf0b807c6d74ba60784351b7ecd4, type: 3}
-  m_PrefabInstance: {fileID: 4673304591303994121}
+  m_PrefabInstance: {fileID: 8130637332949148292}
   m_PrefabAsset: {fileID: 0}
---- !u!1 &7487149021240521438 stripped
+--- !u!4 &4364850395713475234 stripped
+Transform:
+  m_CorrespondingSourceObject: {fileID: 5496295747560091686, guid: 4ef9cf0b807c6d74ba60784351b7ecd4, type: 3}
+  m_PrefabInstance: {fileID: 8130637332949148292}
+  m_PrefabAsset: {fileID: 0}
+--- !u!1 &6334462468791909203 stripped
 GameObject:
   m_CorrespondingSourceObject: {fileID: 2827516876372056535, guid: 4ef9cf0b807c6d74ba60784351b7ecd4, type: 3}
-  m_PrefabInstance: {fileID: 4673304591303994121}
+  m_PrefabInstance: {fileID: 8130637332949148292}
   m_PrefabAsset: {fileID: 0}
---- !u!114 &-8567238757085646519
+--- !u!114 &-3048579385867228388
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 7487149021240521438}
+  m_GameObject: {fileID: 6334462468791909203}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 16e6b47691e104b45a10eb685f50ea7c, type: 3}
+  m_Script: {fileID: 11500000, guid: eb446ec16ea1e7444b43d3564480d1e7, type: 3}
   m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::MushroomEnemySkill
-  skillCooldown: 10
-  skillRange: 2
-  poisonPrefab: {fileID: 875280686190255636, guid: 9315653a07ae23b45bab24227d8ff76e, type: 3}
+  m_EditorClassIdentifier: Assembly-CSharp::MageEnemySkill
+  skillCooldown: 3
+  skillRange: 12
+  mageSpellPrefab: {fileID: 5707355075692512471, guid: f84abd49b38fc594e8a611e0f95253f3, type: 3}
+  spellSpawnPoint: {fileID: 4364850395713475234}

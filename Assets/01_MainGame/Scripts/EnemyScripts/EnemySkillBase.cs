@@ -42,6 +42,12 @@ public abstract class EnemySkillBase : MonoBehaviour
         skillTimer = 0f;
     }
 
+    //乗っ取ったときにスキルを即座に使えるようにする
+    public void ResetSkillImmediately()
+    {
+        skillTimer = skillCooldown;
+    }
+
     // 各敵がオーバーライドする
     public abstract bool TryUseSkill();
 }

@@ -82,6 +82,15 @@ public class HijackState : PlayerBaseState
 
         TargetEnemy.BecomeHijacked();
 
+        //スキルのクールダウンをリセットして即座に使えるようにする
+        EnemySkillBase skill =
+    TargetEnemy.GetComponent<EnemySkillBase>();
+
+        if (skill != null)
+        {
+            skill.ResetSkillImmediately();
+        }
+
         Machine.CC.enabled = false;
         Machine.transform.position = TargetEnemy.transform.position;
         Machine.CC.enabled = true;

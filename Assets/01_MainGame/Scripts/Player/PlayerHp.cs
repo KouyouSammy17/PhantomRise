@@ -27,6 +27,9 @@ public class PlayerHP : MonoBehaviour
 
     // 毒 DoT タスクのキャンセルソース（null = 毒なし）
     private CancellationTokenSource _poisonCts;
+    
+    // 出血 DoT タスクのキャンセルソース（null = 出血なし）
+    private CancellationTokenSource _bleedCts;
 
     private void Awake()
     {
@@ -132,4 +135,79 @@ public class PlayerHP : MonoBehaviour
             _poisonCts = null;
         }
     }
+
+    // ─────────────────────────────────────────
+    // 出血 DoT（UniTask）
+    // ─────────────────────────────────────────
+
+    /// <summary>
+    /// 出血ダメージを開始する（重複しない）
+    /// </summary>
+    /// <param name="duration">継続時間</param>
+    /// <param name="interval">ダメージ間隔</param>
+    /// <param name="damagePerTick">1回あたりの固定ダメージ</param>
+    public void ApplyBleed(
+        float duration,
+        float interval = 1f,
+        int damagePerTick = 7)
+    {
+        // すでに出血中なら無視
+        if (_bleedCts != null)
+            return;
+
+        _bleedCts =
+            CancellationTokenSource.CreateLinkedTokenSource(
+                this.GetCancellationTokenOnDestroy());
+
+        BleedAsync(
+            duration,
+            interval,
+            damagePerTick,
+            _bleedCts.Token).Forget();
+    }
+
+
+    /// <summary>
+    /// 敵が攻撃してきて出血状態になったときに、
+    /// 別の敵に乗り移ったときそのまま出血ダメージを食らったままなのを後で直す。
+    public void CancelBleed()
+    {
+        _bleedCts?.Cancel();
+    }
+
+    private async UniTaskVoid BleedAsync(
+    float duration,
+    float interval,
+    int damagePerTick,
+    CancellationToken ct)
+    {
+        try
+        {
+            float timer = 0f;
+
+            while (timer < duration)
+            {
+                await UniTask.Delay(
+                    TimeSpan.FromSeconds(interval),
+                    cancellationToken: ct);
+
+                TakeDamage(damagePerTick);
+
+                Debug.Log(
+                    $"[PlayerHP] 出血ダメージ {damagePerTick}");
+
+                timer += interval;
+            }
+        }
+        catch (OperationCanceledException)
+        {
+            Debug.Log("[PlayerHP] 出血キャンセル");
+        }
+        finally
+        {
+            _bleedCts?.Dispose();
+            _bleedCts = null;
+        }
+    }
+
 }
