@@ -8,6 +8,7 @@ public class WallScript : MonoBehaviour
     [SerializeField] private Color WallColor = new Color(0.7f,0,0,1);
     [SerializeField] private GameObject Button;
     [SerializeField] private float OpenDelayTime = 0;
+    [SerializeField] private float CloseDelayTime = 0;
     private Animator ButtonAnim;
     private Animator Anim;
     // Cache hash values
@@ -37,14 +38,19 @@ public class WallScript : MonoBehaviour
         }
         else if(ButtonAnim.GetCurrentAnimatorStateInfo(0).fullPathHash == TurnOffState && WallOpen)
         {
-            Anim.CrossFade(DefaultState,0.1f,0,0);
             WallOpen = false;
-            Col.enabled = true;
+            Invoke("Close", CloseDelayTime);
         }
     }
-    private void Open ()
+    private void Open()
     {
-        Anim.CrossFade(OpenState,0.1f,0,0);
+        Anim.CrossFade(OpenState, 1f, 0, 0);
+    }
+
+    private void Close()
+    {
+        Anim.CrossFade(DefaultState, 1f, 0, 0);
+        Col.enabled = true;
     }
 }
 }
