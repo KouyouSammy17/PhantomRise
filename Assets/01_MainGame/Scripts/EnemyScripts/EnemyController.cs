@@ -4,7 +4,8 @@ using UnityEngine.AI;
 
 public class EnemyController : MonoBehaviour
 {
-    [SerializeField] private Transform player;
+    //[SerializeField]
+    private Transform player;
 
     [SerializeField] private NavMeshAgent agent;
 
@@ -23,6 +24,8 @@ public class EnemyController : MonoBehaviour
     /// Inspector で指定しない場合は Renderer を持つ最初の子を自動検索。
     /// </summary>
     [SerializeField] private Transform VisualRoot;
+
+   
 
     /// <summary>VisualRoot を返す。未設定なら Renderer を持つ最初の子、なければ自身。</summary>
     public Transform GetVisualRoot()
@@ -102,8 +105,23 @@ public class EnemyController : MonoBehaviour
 
 
     // 外から読み取りだけ可能
-    public int AttackPower { 
-        get {return attackPower; } 
+    //public int AttackPower { 
+    //    get {return attackPower; } 
+    //}
+
+    private float damageMultiplier = 1f;
+
+    public int AttackPower =>
+        Mathf.RoundToInt(attackPower * damageMultiplier);
+
+    //敵が隠れているかどうか
+    private bool isHidden = false;
+    public bool IsHidden => isHidden;
+
+    public bool SetHidden(bool hidden)
+    {
+        isHidden = hidden;
+        return isHidden;
     }
 
     public EnemyRank Rank
@@ -137,9 +155,18 @@ public class EnemyController : MonoBehaviour
     //元の移動速度を保存する変数
     private float originalSpeed;
 
+    private BuffUIController enemyBuffUI;
+
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     protected virtual void Start()
     {
+        //バフ用
+        enemyBuffUI =
+       GetComponentInChildren<BuffUIController>();
+
+        FindAnyObjectByType<MinimapController>()?.RegisterEnemy(transform);
+
+        player = GameObject.FindGameObjectWithTag("Player")?.transform;
 
         _enemyVision = GetComponent<EnemyVision>();
         _enemyHealth = GetComponent<EnemyHealth>();
@@ -164,7 +191,7 @@ public class EnemyController : MonoBehaviour
     // Update is called once per frame
      protected virtual void Update()
     {
-        
+        Debug.Log(IsHidden);   
 
         // ダメージを受けたら一定時間プレイヤーを追いかける
         if (alertedByDamage)
@@ -191,6 +218,27 @@ public class EnemyController : MonoBehaviour
                 break;
 
             case EnemyState.Chase:
+
+                // ── スペクター透明化中なら追跡解除 ───────────
+                if (_playerMachine != null &&
+                    _playerMachine.CurrentStateName == nameof(HijackedState))
+                {
+                    EnemyController currentEnemy =
+                        _playerMachine.Hijacked.CurrentEnemy;
+
+                    if (currentEnemy != null && currentEnemy.IsHidden)
+                    {
+                        Debug.Log(name + " : プレイヤー透明化中 → 追跡解除");
+
+                        currentState = EnemyState.Patrol;
+
+                        // 念のため追跡関連リセット
+                        alertedByDamage = false;
+                        lostSightTimer = 0f;
+
+                        break;
+                    }
+                }
                 ChaseMode();
 
                 // スキル距離に入ったらスキル
@@ -230,6 +278,19 @@ public class EnemyController : MonoBehaviour
                 break;
 
             case EnemyState.Attack:
+                // ── スペクター透明化中なら攻撃解除 ───────────
+                if (_playerMachine != null &&
+      _playerMachine.CurrentStateName == nameof(HijackedState))
+                {
+                    EnemyController currentEnemy =
+                        _playerMachine.Hijacked.CurrentEnemy;
+
+                    if (currentEnemy != null && currentEnemy.IsHidden)
+                    {
+                        currentState = EnemyState.Patrol;
+                        break;
+                    }
+                }
                 AttackMode();
                 if (distance > attackRange)
                     currentState = EnemyState.Chase;
@@ -237,6 +298,7 @@ public class EnemyController : MonoBehaviour
             case EnemyState.Die:
                 // 死亡
                 Debug.Log("敵が死亡しました！");
+                FindAnyObjectByType<MinimapController>()?.UnregisterEnemy(transform);
                 Destroy(gameObject);
                 break;
             case EnemyState.Stun:
@@ -313,6 +375,8 @@ public class EnemyController : MonoBehaviour
         if (_viewCone   != null) _viewCone.gameObject.SetActive(false);
         if (_enemyHPbar != null) _enemyHPbar.gameObject.SetActive(false);
         Debug.Log($"[Enemy] {name} 乗っ取られた");
+
+       
     }
 
     /// <summary>QTE 失敗時 — フリーズ解除して Chase 状態にする</summary>
@@ -367,18 +431,37 @@ public class EnemyController : MonoBehaviour
 
         Debug.Log($"[Enemy] {name} 攻撃！ origin={origin}");
         Collider[] hits = Physics.OverlapSphere(origin, attackRange);
+        bool hitSomeone = false;
         foreach (Collider col in hits)
         {
             EnemyController other = col.GetComponentInParent<EnemyController>();
             if (other == null || other == this) continue;
-            other.TakeDamage(attackPower);
-            Debug.Log($"[Enemy] {name} → {other.name} に {attackPower} ダメージ");
+
+            other.TakeDamage(AttackPower);
+            hitSomeone = true;
+            Debug.Log($"[Enemy] {name} → {other.name} に {AttackPower} ダメージ");
+        }
+
+        // Specterなら透明化解除
+        SpecterEnemySkill specter =
+            GetComponent<SpecterEnemySkill>();
+
+        if (hitSomeone && specter != null && specter.IsInvisible)
+        {
+            specter.RemoveInvisible();
+            Debug.Log("透明化解除");
         }
     }
 
     /// <summary>他の敵から攻撃されたとき（乗っ取り攻撃など）</summary>
     public virtual void TakeDamage(int damage)
     {
+        //透明化中は無敵
+    if (IsHidden)
+        {
+            return;
+        }
+
         _enemyHealth?.TakeDamage(damage);
 
     }
@@ -476,7 +559,7 @@ public class EnemyController : MonoBehaviour
         if (state == nameof(HijackedState))
         {
             // 乗っ取り中ボディに蓄積ダメージ → HP 0 で Ghost に戻る
-            _playerMachine.PlayerHP?.TakeDamage(attackPower);
+            _playerMachine.PlayerHP?.TakeDamage(AttackPower);
         }
         else if (state == nameof(GhostState))
         {
@@ -521,6 +604,12 @@ public class EnemyController : MonoBehaviour
             attackTimer = attackCooldown;
             Debug.Log($"[Enemy] {name} 通常攻撃！");
             DealDamageToPlayer();
+            //スペクターの時は攻撃したら透明化を解除する
+            SpecterEnemySkill specter =
+                GetComponent<SpecterEnemySkill>();
+            if (specter != null) {
+                specter.RemoveInvisible();
+            }
         }
     }
 
@@ -596,5 +685,28 @@ public class EnemyController : MonoBehaviour
     protected virtual bool CanStun()
     {
         return true;   // デフォルトはスタン不可。BossController でオーバーライドしてスタン可能にする。
+    }
+
+    /// ─────────────────────────────────────────
+    /// ダメージ倍率の設定（乗っ取り中のプレイヤー攻撃用）
+    public void SetDamageMultiplier(float multiplier)
+    {
+        damageMultiplier = multiplier;
+    }
+
+    //スピード倍率の設定（自分が敵で移動するときの速さ）
+
+    public void SetSpeedMultiplier(float multiplier)
+    {
+        // プレイヤーが乗っ取っている場合
+        if (IsHijacked && _playerMachine != null)
+        {
+            _playerMachine.SetPMoveSpeedMultiplier(multiplier);
+        }
+        else
+        {
+            // 敵AIの場合
+            agent.speed = originalSpeed * multiplier;
+        }
     }
 }

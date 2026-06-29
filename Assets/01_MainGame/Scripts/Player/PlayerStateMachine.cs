@@ -472,4 +472,12 @@ public class PlayerStateMachine : MonoBehaviour
             _slowCts = null;
         }
     }
+
+
+    //スピード倍率の設定（自分が移動するときの速さ）
+    public void SetPMoveSpeedMultiplier(float multiplier)
+    {
+        _speedMultiplier= multiplier;
+    }
+
 }
