@@ -26,6 +26,12 @@ public class PlayerStateMachine : MonoBehaviour
     private float _speedMultiplier = 1f;
     private CancellationTokenSource _slowCts;
 
+    // ─── スタン ───
+    private bool _isStunned = false;
+    private CancellationTokenSource _stunCts;
+    /// <summary>スタン中は true。移動・アクション入力をすべてブロックする。</summary>
+    public bool IsStunned => _isStunned;
+
 
     [Header("=== 回避 ===")]
     [SerializeField] private float _dodgeSpeed = 12f;
@@ -233,6 +239,7 @@ public class PlayerStateMachine : MonoBehaviour
 
     private void OnHijackStarted(InputAction.CallbackContext ctx)
     {
+        if (_isStunned) return;
         // QTE 中は同じボタンをリング判定に転送
         if (_currentState == Hijack)
         {
@@ -256,12 +263,14 @@ public class PlayerStateMachine : MonoBehaviour
 
     private void OnAttackStarted(InputAction.CallbackContext ctx)
     {
+        if (_isStunned) return;
         if (_currentState != Hijacked) return;
         Hijacked.TryAttack();
     }
 
     private void OnDodgeStarted(InputAction.CallbackContext ctx)
     {
+        if (_isStunned) return;
         if (_currentState == Ghost || _currentState == Hijacked)
         {
             // HijackedState からの離脱は一時的 — モデルスワップを保持するよう通知
@@ -275,12 +284,14 @@ public class PlayerStateMachine : MonoBehaviour
 
     private void OnSkillStarted(InputAction.CallbackContext ctx)
     {
+        if (_isStunned) return;
         if (_currentState != Hijacked) return;
         Hijacked.TrySkill();
     }
 
     private void OnDisposeStarted(InputAction.CallbackContext ctx)
     {
+        if (_isStunned) return;
         // 乗っ取り中のみ有効 — Q ボタンで身体を捨てて Ghost に戻る
         if (_currentState != Hijacked) return;
         Hijacked.DisposeBody();
@@ -345,6 +356,15 @@ public class PlayerStateMachine : MonoBehaviour
     /// <summary>移動＋重力を適用（各状態から呼ぶ共通処理）</summary>
     public void ApplyMovement(float deltaTime)
     {
+        // スタン中は移動しない（重力だけ適用）
+        if (_isStunned)
+        {
+            if (CC.isGrounded) VelocityY = -2f;
+            else VelocityY += _gravity * deltaTime;
+            CC.Move(Vector3.up * VelocityY * deltaTime);
+            return;
+        }
+
         Vector3 moveDir = GetMoveDirection();
 
         if (CC.isGrounded) VelocityY = -2f;
@@ -357,6 +377,49 @@ public class PlayerStateMachine : MonoBehaviour
             Quaternion target = Quaternion.LookRotation(moveDir);
             transform.rotation = Quaternion.RotateTowards(
                 transform.rotation, target, _rotationSpeed * deltaTime);
+        }
+    }
+
+    // ─────────────────────────────────────────
+    // スタン（UniTask）
+    // ─────────────────────────────────────────
+
+    /// <summary>
+    /// プレイヤーを一時的にスタンさせる。移動・全アクション入力をブロックする。
+    /// すでにスタン中なら残り時間を上書きする。
+    /// </summary>
+    public void ApplyStun(float duration)
+    {
+        _stunCts?.Cancel();
+        _stunCts?.Dispose();
+        _stunCts = CancellationTokenSource.CreateLinkedTokenSource(
+            this.GetCancellationTokenOnDestroy());
+
+        StunAsync(duration, _stunCts.Token).Forget();
+    }
+
+    private async UniTaskVoid StunAsync(float duration, CancellationToken ct)
+    {
+        try
+        {
+            _isStunned = true;
+            Debug.Log($"[Player] スタン {duration}秒");
+
+            await UniTask.Delay(
+                TimeSpan.FromSeconds(duration),
+                cancellationToken: ct);
+
+            _isStunned = false;
+            Debug.Log("[Player] スタン解除");
+        }
+        catch (OperationCanceledException)
+        {
+            // 上書きキャンセル時 — 次の ApplyStun が _isStunned を再設定する
+        }
+        finally
+        {
+            _stunCts?.Dispose();
+            _stunCts = null;
         }
     }
 
