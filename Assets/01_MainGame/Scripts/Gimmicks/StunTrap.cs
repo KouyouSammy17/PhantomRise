@@ -18,6 +18,9 @@ public class StunTrap : MonoBehaviour
     // ─────────────────────────────────────────
 
     [Header("=== スタン設定 ===")]
+    [Tooltip("プレイヤーがトラップを踏んだときのスタン持続時間（秒）")]
+    [SerializeField] private float stunDurationPlayer = 3f;
+
     [Tooltip("ランクD（最弱）のスタン持続時間（秒）。ランクが上がるほど短くなる。")]
     [SerializeField] private float stunDurationRankD = 6f;
 
@@ -53,6 +56,22 @@ public class StunTrap : MonoBehaviour
     private void OnTriggerEnter(Collider other)
     {
         if (_onCooldown) return;
+
+        // ─── プレイヤー判定 ───
+        if (other.CompareTag("Player"))
+        {
+            PlayerStateMachine player = other.GetComponent<PlayerStateMachine>()
+                                     ?? other.GetComponentInParent<PlayerStateMachine>();
+            if (player == null) return;
+
+            player.ApplyStun(stunDurationPlayer);
+            Debug.Log($"[StunTrap] プレイヤーを {stunDurationPlayer}秒スタン！");
+
+            ActivateTrap();
+            return;
+        }
+
+        // ─── 敵判定 ───
         if (!other.CompareTag("Enemy")) return;
 
         EnemyController enemy = other.GetComponent<EnemyController>()
@@ -70,6 +89,11 @@ public class StunTrap : MonoBehaviour
         enemy.ApplyStun(stunDuration);
         Debug.Log($"[StunTrap] {enemy.name}（ランク{enemy.Rank}）を {stunDuration}秒スタン！");
 
+        ActivateTrap();
+    }
+
+    private void ActivateTrap()
+    {
         // ビジュアル切り替え
         if (activatedVisual != null) activatedVisual.SetActive(true);
         if (idleVisual      != null) idleVisual.SetActive(false);

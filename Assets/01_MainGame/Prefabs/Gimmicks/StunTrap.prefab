@@ -125,7 +125,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 3e861443fb051ed46a3b9f910273facf, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::StunTrap
-  stunDuration: 3
+  stunDurationPlayer: 2
+  stunDurationRankD: 6
+  stunDurationRankC: 4
+  stunDurationRankB: 2.5
+  stunDurationRankA: 1
   trapCooldown: 5
   activatedVisual: {fileID: 0}
   idleVisual: {fileID: 0}
