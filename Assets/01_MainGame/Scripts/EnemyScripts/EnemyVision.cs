@@ -2,7 +2,8 @@ using UnityEngine;
 
 public class EnemyVision : MonoBehaviour
 {
-    [SerializeField] private Transform player;
+    //[SerializeField]
+    private Transform player;
 
     [SerializeField] private float _chaseRange = 10f;
     public float chaseRange => _chaseRange;
@@ -21,12 +22,30 @@ public class EnemyVision : MonoBehaviour
 
     private void Start()
     {
+        player = GameObject.FindGameObjectWithTag("Player")?.transform;
+
         if (player != null)
             _playerMachine = player.GetComponent<PlayerStateMachine>();
     }
 
     public bool CanSeePlayer()
     {
+
+        //スペクター用の視認判定
+        if (_playerMachine != null &&
+    _playerMachine.CurrentStateName == nameof(HijackedState))
+        {
+            EnemyController currentEnemy =
+                _playerMachine.Hijacked.CurrentEnemy;
+
+            if (currentEnemy != null && currentEnemy.IsHidden)
+            {
+                Debug.Log("透明化中なので発見できない");
+                return false;
+            }
+        }
+
+
         Vector3 eyePosition = transform.position + Vector3.up * 1.5f;
 
         Vector3 dirToPlayer = (player.position - eyePosition).normalized;
