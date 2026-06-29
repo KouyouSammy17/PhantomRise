@@ -36,6 +36,13 @@ public abstract class EnemySkillBase : MonoBehaviour
         return skillTimer >= skillCooldown;
     }
 
+    /// <summary>
+    /// UI 用のクールダウン充填量（0 = 使用可能, 1 = 使用直後）。
+    /// Image.fillAmount に直接セットして使う。
+    /// </summary>
+    public float CooldownFillAmount =>
+        CanUseSkill() ? 0f : 1f - (skillTimer / skillCooldown);
+
     // クールダウンリセット
     protected void ResetCooldown()
     {
