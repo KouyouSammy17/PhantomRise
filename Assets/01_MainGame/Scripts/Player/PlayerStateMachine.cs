@@ -75,6 +75,14 @@ public class PlayerStateMachine : MonoBehaviour
     // 現在の状態名（デバッグ・UI 用）
     public string CurrentStateName => _currentState?.GetType().Name ?? "None";
 
+    /// <summary>
+    /// HijackedState 中、または HijackedState から一時離脱した Dodge 中のとき true。
+    /// 乗っ取り UI（HP バー・スキルアイコン）の表示判定に使う。
+    /// </summary>
+    public bool IsEffectivelyHijacked =>
+        _currentState == Hijacked ||
+        (_currentState == Dodge && Dodge.IsReturningToHijacked);
+
     // ─────────────────────────────────────────
     // シャドウゾーン
     // ─────────────────────────────────────────
