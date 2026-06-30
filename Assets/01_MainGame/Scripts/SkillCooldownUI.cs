@@ -35,7 +35,7 @@ public class SkillCooldownUI : MonoBehaviour
     private void Update()
     {
         bool isHijacked = playerMachine != null
-            && playerMachine.CurrentStateName == nameof(HijackedState);
+            && playerMachine.IsEffectivelyHijacked;
 
         // パネルの表示切り替え
         if (skillUIPanel != null)

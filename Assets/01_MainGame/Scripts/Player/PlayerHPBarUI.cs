@@ -61,7 +61,7 @@ public class PlayerHPBarUI : MonoBehaviour
     {
         if (_playerMachine == null || _hpSlider == null) return;
 
-        bool isHijacked = _playerMachine.CurrentStateName == nameof(HijackedState);
+        bool isHijacked = _playerMachine.IsEffectivelyHijacked;
 
         // 表示 / 非表示を切り替え
         if (_hpSlider.gameObject.activeSelf != isHijacked)

@@ -15,6 +15,9 @@ public class DodgeState : PlayerBaseState
 
     public bool CanDodge => _cooldownTimer <= 0f;
 
+    /// <summary>ダッジ後に HijackedState へ戻る場合 true（UI 表示維持用）</summary>
+    public bool IsReturningToHijacked => _callerState is HijackedState;
+
     public DodgeState(PlayerStateMachine machine) : base(machine) { }
 
     /// <summary>TransitionTo(Dodge) の前に必ず呼ぶ</summary>
