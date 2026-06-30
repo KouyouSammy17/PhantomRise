@@ -8081,6 +8081,18 @@ PrefabInstance:
       propertyPath: m_AnchoredPosition.y
       value: 126
       objectReference: {fileID: 0}
+    - target: {fileID: 8586106857344174418, guid: dbfb61446fdc5154b9255cc8ce0c5597, type: 3}
+      propertyPath: m_IsActive
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 8864783006332838134, guid: dbfb61446fdc5154b9255cc8ce0c5597, type: 3}
+      propertyPath: m_AnchorMax.x
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 8864783006332838134, guid: dbfb61446fdc5154b9255cc8ce0c5597, type: 3}
+      propertyPath: m_AnchorMax.y
+      value: 1
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
@@ -8270,10 +8282,6 @@ PrefabInstance:
     - target: {fileID: 6985734097682280509, guid: 5325e82fd57b7c147bf5fce36e304cb4, type: 3}
       propertyPath: m_Name
       value: UI Manager
-      objectReference: {fileID: 0}
-    - target: {fileID: 7598929936962863713, guid: 5325e82fd57b7c147bf5fce36e304cb4, type: 3}
-      propertyPath: m_AnchoredPosition.y
-      value: 99.5
       objectReference: {fileID: 0}
     - target: {fileID: 7844069034996654764, guid: 5325e82fd57b7c147bf5fce36e304cb4, type: 3}
       propertyPath: playerMachine
