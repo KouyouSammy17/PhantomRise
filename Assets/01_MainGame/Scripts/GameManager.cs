@@ -47,7 +47,8 @@ public class GameManager : MonoBehaviour
 
     [Header("=== シーン ===")]
     [SerializeField] private string gameSceneName = "";   // 空なら現在のシーンをリロード
-    [SerializeField] private string titleSceneName = "TitleScene";
+    [SerializeField] private string titleSceneName = "Title";
+    [SerializeField] private string nextStageName = "";   // 空なら次ステージなし（ゲームエンディング扱い）
 
     // ─────────────────────────────────────────
     // UnityEvents（UIManager などへ通知）
@@ -56,6 +57,8 @@ public class GameManager : MonoBehaviour
     [Header("=== イベント ===")]
     public UnityEvent OnGameClear;
     public UnityEvent OnGameOver;
+    /// <summary>次ステージが存在するときだけ発火。UIManager の ShowNextStageButton にバインドする。</summary>
+    public UnityEvent OnNextStageAvailable;
 
     // ─────────────────────────────────────────
     // 内部
@@ -78,6 +81,33 @@ public class GameManager : MonoBehaviour
 
         Debug.Log("[GameManager] ゲームクリア！");
         OnGameClear?.Invoke();
+
+        if (!string.IsNullOrEmpty(nextStageName))
+            OnNextStageAvailable?.Invoke();
+    }
+
+    // ─────────────────────────────────────────
+    // 次ステージへ
+    // ─────────────────────────────────────────
+
+    /// <summary>次ステージが存在するかどうか</summary>
+    public bool HasNextStage => !string.IsNullOrEmpty(nextStageName);
+
+    /// <summary>
+    /// ゲームクリア後に次ステージへ進む。
+    /// UIManager の NextStage ボタンからバインドする。
+    /// </summary>
+    public void LoadNextStage()
+    {
+        if (string.IsNullOrEmpty(nextStageName))
+        {
+            Debug.LogWarning("[GameManager] nextStageName が未設定です。タイトルへ戻ります。");
+            GoToTitle();
+            return;
+        }
+
+        Time.timeScale = 1f;
+        SceneManager.LoadScene(nextStageName);
     }
 
     // ─────────────────────────────────────────

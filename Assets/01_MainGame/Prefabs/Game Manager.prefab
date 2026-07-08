@@ -44,8 +44,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 8e90f3791440abe44a7837d500e218dc, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::GameManager
-  gameSceneName: NewStage
-  titleSceneName: TitleScene
+  gameSceneName: GameScene
+  titleSceneName: Title
+  nextStageName: NewStage
   OnGameClear:
     m_PersistentCalls:
       m_Calls:
@@ -76,3 +77,6 @@ MonoBehaviour:
           m_StringArgument: 
           m_BoolArgument: 0
         m_CallState: 2
+  OnNextStageAvailable:
+    m_PersistentCalls:
+      m_Calls: []

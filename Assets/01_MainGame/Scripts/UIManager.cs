@@ -20,6 +20,7 @@ public class UIManager : MonoBehaviour
     [SerializeField] private GameObject gameClearPanel;
     [SerializeField] private TextMeshProUGUI gameClearText;
     [SerializeField] private Button gameClearRestartButton;   // リスタートボタン
+    [SerializeField] private Button nextStageButton;          // 次ステージへ進むボタン
 
     [Header("=== ゲームオーバー UI ===")]
     [SerializeField] private GameObject gameOverPanel;
@@ -42,6 +43,8 @@ public class UIManager : MonoBehaviour
         // Inspector でバインドしても OK だが、コードで登録した方が確実
         gameClearRestartButton?.onClick.AddListener(OnRestartClicked);
         gameOverRestartButton?.onClick.AddListener(OnRestartClicked);
+        nextStageButton?.onClick.AddListener(OnNextStageClicked);
+        nextStageButton?.gameObject.SetActive(false); // デフォルトは非表示
     }
 
     // ─────────────────────────────────────────
@@ -55,6 +58,16 @@ public class UIManager : MonoBehaviour
 
         if (gameClearText != null)
             gameClearText.text = "STAGE CLEAR!";
+    }
+
+    /// <summary>
+    /// GameManager.OnNextStageAvailable にバインドする。
+    /// 次ステージボタンを表示し、リスタートボタンを非表示にする。
+    /// </summary>
+    public void ShowNextStageButton()
+    {
+        nextStageButton?.gameObject.SetActive(true);
+        gameClearRestartButton?.gameObject.SetActive(false);
     }
 
     /// <summary>GameManager.OnGameOver にバインドする</summary>
@@ -77,6 +90,15 @@ public class UIManager : MonoBehaviour
     public void OnRestartClicked()
     {
         GameManager.Instance?.Restart();
+    }
+
+    /// <summary>
+    /// 次ステージボタンの onClick に登録済み。
+    /// Inspector から別のボタンにバインドしても使える。
+    /// </summary>
+    public void OnNextStageClicked()
+    {
+        GameManager.Instance?.LoadNextStage();
     }
 
     // ─────────────────────────────────────────
