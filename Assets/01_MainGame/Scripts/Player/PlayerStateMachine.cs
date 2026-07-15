@@ -386,6 +386,24 @@ public class PlayerStateMachine : MonoBehaviour
             transform.rotation = Quaternion.RotateTowards(
                 transform.rotation, target, _rotationSpeed * deltaTime);
         }
+
+        // アニメーション用
+        if (CurrentStateName == nameof(HijackedState))
+        {
+            EnemyController enemy = Hijacked.CurrentEnemy;
+
+            if (enemy != null)
+            {
+                EnemyAnimation anim =
+                    enemy.GetComponent<EnemyAnimation>();
+
+                if (anim != null)
+                {
+                    bool moving = MoveInput.sqrMagnitude > 0.01f;
+                    anim.SetMove(moving);
+                }
+            }
+        }
     }
 
     // ─────────────────────────────────────────
@@ -443,6 +461,8 @@ public class PlayerStateMachine : MonoBehaviour
     /// <param name="duration">    効果時間（秒）</param>
     public void ApplySlow(float slowPercent, float duration)
     {
+        BuffUIController.Instance.ShowBuff(BuffType.SpeedDeBuff);
+
         // 既存のスロウをキャンセルして上書き（コルーチン版の StopCoroutine 相当）
         _slowCts?.Cancel();
         _slowCts?.Dispose();
@@ -476,6 +496,7 @@ public class PlayerStateMachine : MonoBehaviour
         }
         finally
         {
+            BuffUIController.Instance.HideBuff(BuffType.SpeedDeBuff);
             _slowCts?.Dispose();
             _slowCts = null;
         }

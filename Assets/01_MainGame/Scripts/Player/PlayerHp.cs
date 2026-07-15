@@ -31,6 +31,7 @@ public class PlayerHP : MonoBehaviour
     // 出血 DoT タスクのキャンセルソース（null = 出血なし）
     private CancellationTokenSource _bleedCts;
 
+
     private void Awake()
     {
         _machine = GetComponent<PlayerStateMachine>();
@@ -86,6 +87,7 @@ public class PlayerHP : MonoBehaviour
     /// <param name="percent">  1 ティックあたり現在 HP に対する割合（例: 0.1 = 10%）</param>
     public void ApplyPoison(float duration, float interval, float percent)
     {
+        BuffUIController.Instance.ShowBuff(BuffType.PoisonDeBuff);
         if (_poisonCts != null) return;  // 毒は重複しない
 
         // GameObject が Destroy されたときも自動キャンセルするようリンクする
@@ -100,6 +102,7 @@ public class PlayerHP : MonoBehaviour
     /// </summary>
     public void CancelPoison()
     {
+        BuffUIController.Instance.HideBuff(BuffType.PoisonDeBuff);
         _poisonCts?.Cancel();
     }
 
@@ -130,7 +133,7 @@ public class PlayerHP : MonoBehaviour
         }
         finally
         {
-            // 正常終了・キャンセルどちらでも必ずクリーンアップ
+            BuffUIController.Instance.HideBuff(BuffType.PoisonDeBuff);
             _poisonCts?.Dispose();
             _poisonCts = null;
         }
@@ -151,6 +154,9 @@ public class PlayerHP : MonoBehaviour
         float interval = 1f,
         int damagePerTick = 7)
     {
+
+        BuffUIController.Instance.ShowBuff(BuffType.BleedingDeBuff);
+
         // すでに出血中なら無視
         if (_bleedCts != null)
             return;
@@ -172,6 +178,7 @@ public class PlayerHP : MonoBehaviour
     /// 別の敵に乗り移ったときそのまま出血ダメージを食らったままなのを後で直す。
     public void CancelBleed()
     {
+        BuffUIController.Instance.HideBuff(BuffType.BleedingDeBuff);
         _bleedCts?.Cancel();
     }
 
@@ -205,6 +212,8 @@ public class PlayerHP : MonoBehaviour
         }
         finally
         {
+
+            BuffUIController.Instance.HideBuff(BuffType.BleedingDeBuff);
             _bleedCts?.Dispose();
             _bleedCts = null;
         }

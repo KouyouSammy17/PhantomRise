@@ -63,6 +63,9 @@ public class BossController : EnemyController
             return;
 
         bossHealth.TakeDamage(damage);
+
+        PlayHitEffect();
+
     }
 
     //private void SummonMinions()

@@ -10,13 +10,15 @@ public class DemonEnemySkill : EnemySkillBase
 
     private Coroutine buffCoroutine;
 
+    [SerializeField] private ParticleSystem BuffParticle;
 
     public override bool TryUseSkill()
     {
         if (!CanUseSkill())
             return false;
 
-       
+        enemyController.PlaySkillAnimation();
+
         ResetCooldown();
         if (buffCoroutine != null)
         {
@@ -36,6 +38,12 @@ public class DemonEnemySkill : EnemySkillBase
         {
             Bufficon.SetActive(true);   // 敵の頭上アイコン
         }
+
+        if (BuffParticle != null)
+        {
+            BuffParticle.Play();
+        }
+
         //Bufficon.SetActive(true);
         // 攻撃力を2倍にする
         enemyController.SetDamageMultiplier(2f);
@@ -52,6 +60,12 @@ public class DemonEnemySkill : EnemySkillBase
         {
             Bufficon.SetActive(false);   // 敵の頭上アイコン
         }
+
+        if (BuffParticle != null)
+        {
+            BuffParticle.Stop();
+        }
+
         Bufficon.SetActive(false);
         enemyController.SetDamageMultiplier(1f);
         enemyController.SetSpeedMultiplier(1f);

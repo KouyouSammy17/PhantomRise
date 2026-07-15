@@ -14,10 +14,16 @@ public class MageEnemySkill : EnemySkillBase
         if (!CanUseSkill())
             return false;
 
+
+        enemyController.PlaySkillAnimation();
+
+
         // 乗っ取り中はプレイヤーの位置・向きで発射する（通常時は spellSpawnPoint を使用）
-        Vector3    spawnPos = enemyController.IsHijacked
-            ? enemyController.GetAttackOrigin()
-            : spellSpawnPoint.position;
+        //Vector3    spawnPos = enemyController.IsHijacked
+        //    ? enemyController.GetAttackOrigin()
+        //    : spellSpawnPoint.position;
+        Vector3 spawnPos=spellSpawnPoint.position;
+
         Quaternion spawnRot = enemyController.IsHijacked
             ? enemyController.GetAttackRotation()
             : spellSpawnPoint.rotation;

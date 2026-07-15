@@ -10,8 +10,10 @@ public class EnemyHPbar : MonoBehaviour
     [SerializeField] private GameObject Boss;
     [SerializeField] private GameObject BossUI;
 
+    [SerializeField] private GameObject EnemyUI;
+
     // Update is called once per frame
-     void Update()
+    void Update()
     {
         HP.value = EnemyHealth.HPRatio;
 
@@ -20,11 +22,20 @@ public class EnemyHPbar : MonoBehaviour
 
             BossUI.SetActive(false);
         }
+
+        //敵のhpが0になったら敵キャンバスを非表示にする
+        if(EnemyHealth.CurrentHP <= 0)
+        {
+          EnemyUI.SetActive(false);
+        }
     }
 
     void LateUpdate()
     {
         //　カメラと同じ向きに設定
-        transform.rotation = Camera.main.transform.rotation;
+        if (BossUI == null)
+        {
+            transform.rotation = Camera.main.transform.rotation;
+        }
+        }
     }
-}

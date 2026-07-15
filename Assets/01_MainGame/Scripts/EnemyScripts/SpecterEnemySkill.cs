@@ -23,11 +23,15 @@ public class SpecterEnemySkill : EnemySkillBase
 
     [SerializeField] private GameObject bufficon;
 
+    [SerializeField] private ParticleSystem buffParticle;
+
     private Coroutine fadeCoroutine;
     public override bool TryUseSkill()
     {
         if (!CanUseSkill())
             return false;
+
+        enemyController.PlaySkillAnimation();
 
         ActivateInvisible();
 
@@ -55,6 +59,12 @@ public class SpecterEnemySkill : EnemySkillBase
         {
             bufficon.SetActive(true);
         }
+
+        if (buffParticle != null)
+        {
+            buffParticle.Play();
+        }
+        
         //bufficon.SetActive(true);
         isInvisible = true;
         // ダメージ倍率を2倍にする
@@ -82,6 +92,11 @@ public class SpecterEnemySkill : EnemySkillBase
         {
             StopCoroutine(invisibleCoroutine);
             invisibleCoroutine = null;
+        }
+
+        if (buffParticle != null)
+        {
+            buffParticle.Stop();
         }
 
         isInvisible = false;
