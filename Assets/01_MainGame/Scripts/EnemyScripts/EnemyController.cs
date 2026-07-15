@@ -1,4 +1,5 @@
 ﻿using System.Collections;
+using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.AI;
 
@@ -24,8 +25,6 @@ public class EnemyController : MonoBehaviour
     /// Inspector で指定しない場合は Renderer を持つ最初の子を自動検索。
     /// </summary>
     [SerializeField] private Transform VisualRoot;
-
-   
 
     /// <summary>VisualRoot を返す。未設定なら Renderer を持つ最初の子、なければ自身。</summary>
     public Transform GetVisualRoot()
@@ -82,6 +81,9 @@ public class EnemyController : MonoBehaviour
     //スタン状態をプレイヤーに知らせるためのインジケーター
     [SerializeField] private GameObject stunIndicator;
 
+    //敵がプレイヤーを発見したかを知らせるインジケーター
+    [SerializeField] private GameObject exclamation;
+
 
     //敵がプレイヤーを見失ってからパトロールに戻るまでの時間を計測するタイマー
     private float lostSightTimer = 0f;
@@ -92,8 +94,6 @@ public class EnemyController : MonoBehaviour
     private float alertTimer = 0f;
     [SerializeField] private float alertDuration = 5f;
 
-    private bool isTryingSkill = false;
-
     //継承する
     private EnemyVision _enemyVision;
     private EnemyHealth _enemyHealth;
@@ -102,6 +102,8 @@ public class EnemyController : MonoBehaviour
     private EnemyViewCone _viewCone;            // 視野コーン表示
     private EnemyHPbar _enemyHPbar;            // 敵 HP バー
     private BossSkill _bossSkill;                    // ボス専用スキル
+    private EnemyBuffUI _enemyBuffUI; // 敵バフコントローラー
+    private EnemyAnimation enemyAnimation;
 
 
     // 外から読み取りだけ可能
@@ -150,19 +152,27 @@ public class EnemyController : MonoBehaviour
     /// <summary>現在スタン状態かどうか（C ランク以上の乗っ取り判定に使用）</summary>
     public bool IsStunned => currentState == EnemyState.Stun;
 
+
+    //乗っ取ったときの攻撃のクールタイム
+    private float hijackedAttackCooldown = 1f;
+
+    private float hijackedAttackTimer = 0f;
+
     //蜘蛛の糸に当たった時に移動速度を遅くするためのコルーチン
     private Coroutine slowCoroutine;
     //元の移動速度を保存する変数
     private float originalSpeed;
 
-    private BuffUIController enemyBuffUI;
+    //スピードデバフのパーティクル
+    [SerializeField] private ParticleSystem speedDebuffParticle;
+    //攻撃が当たったときのパーティクル
+    [SerializeField] private ParticleSystem hitParticle;
+
 
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     protected virtual void Start()
     {
-        //バフ用
-        enemyBuffUI =
-       GetComponentInChildren<BuffUIController>();
+        enemyAnimation= GetComponent<EnemyAnimation>();
 
         FindAnyObjectByType<MinimapController>()?.RegisterEnemy(transform);
 
@@ -175,6 +185,7 @@ public class EnemyController : MonoBehaviour
         _viewCone   = GetComponentInChildren<EnemyViewCone>();
         _enemyHPbar = GetComponentInChildren<EnemyHPbar>();
         _bossSkill = GetComponent<BossSkill>();
+        _enemyBuffUI = GetComponent<EnemyBuffUI>();
 
         agent = GetComponent<NavMeshAgent>();
         currentState= EnemyState.Patrol;
@@ -186,12 +197,22 @@ public class EnemyController : MonoBehaviour
 
         originalSpeed = agent.speed;
 
+        // デフォルトは通常攻撃と同じ間隔
+        hijackedAttackCooldown = attackCooldown;   
+
     }
 
     // Update is called once per frame
      protected virtual void Update()
     {
-        Debug.Log(IsHidden);   
+
+        // 乗っ取り中でもタイマーだけ更新する
+        if (hijackedAttackTimer > 0f)
+        {
+            hijackedAttackTimer -= Time.deltaTime;
+        }
+
+
 
         // ダメージを受けたら一定時間プレイヤーを追いかける
         if (alertedByDamage)
@@ -214,7 +235,12 @@ public class EnemyController : MonoBehaviour
                 PatrolMode();
                 
                 if (_enemyVision.CanSeePlayer())
+                {
+                    
                     currentState = EnemyState.Chase;
+                    StartCoroutine(DiscoveryPlayer());
+                }
+                
                 break;
 
             case EnemyState.Chase:
@@ -242,21 +268,21 @@ public class EnemyController : MonoBehaviour
                 ChaseMode();
 
                 // スキル距離に入ったらスキル
-                if (distance <= _enemySkill.SkillRange)
-                {
-                    if (_enemySkill != null && !isTryingSkill)
-                    {
-                        isTryingSkill = true;
-                        _enemySkill.TryUseSkill();
-                    }
-                }
-                else
-                {
-                    isTryingSkill = false;
-                }
+                //if (distance <= _enemySkill.SkillRange)
+                //{
+                //    if (_enemySkill != null && !isTryingSkill)
+                //    {
+                //        isTryingSkill = true;
+                //        _enemySkill.TryUseSkill();
+                //    }
+                //}
+                //else
+                //{
+                //    isTryingSkill = false;
+                //}
 
                 if (distance < attackRange)
-                    currentState = EnemyState.Attack;
+                currentState = EnemyState.Attack;
                 //else if (!_enemyVision.CanSeePlayer())
                 //    currentState = EnemyState.Patrol;
                 if (!alertedByDamage)
@@ -299,7 +325,12 @@ public class EnemyController : MonoBehaviour
                 // 死亡
                 Debug.Log("敵が死亡しました！");
                 FindAnyObjectByType<MinimapController>()?.UnregisterEnemy(transform);
-                Destroy(gameObject);
+                enemyAnimation.PlayDie();
+                //アイコンを消す
+                _enemyBuffUI?.HideAll();
+                //動きを止める
+                agent.isStopped = true;
+                //Destroy(gameObject,1f);
                 break;
             case EnemyState.Stun:
                 Debug.Log("現在スタン中");
@@ -345,17 +376,7 @@ public class EnemyController : MonoBehaviour
                 currentState = EnemyState.Die;
             }
 
-       
-
         }
-
-
-        //スペースキーを押すとダメージを受ける（テスト用）
-        //if (Input.GetKeyDown(KeyCode.Space) == true)
-        //{
-        //    enemyHealth.TakeDamage(5);
-
-        //}
     }
 
     // ─────────────────────────────────────────
@@ -375,8 +396,6 @@ public class EnemyController : MonoBehaviour
         if (_viewCone   != null) _viewCone.gameObject.SetActive(false);
         if (_enemyHPbar != null) _enemyHPbar.gameObject.SetActive(false);
         Debug.Log($"[Enemy] {name} 乗っ取られた");
-
-       
     }
 
     /// <summary>QTE 失敗時 — フリーズ解除して Chase 状態にする</summary>
@@ -390,6 +409,8 @@ public class EnemyController : MonoBehaviour
         if (_viewCone   != null) _viewCone.gameObject.SetActive(true);
         if (_enemyHPbar != null) _enemyHPbar.gameObject.SetActive(true);
         Debug.Log($"[Enemy] {name} プレイヤーを発見！");
+        // 追跡開始時にスタンインディケーターを消す
+        stunIndicator.SetActive(false);
     }
 
     /// <summary>QTE 開始時に HijackState.Enter() から呼ぶ — AI を一時停止</summary>
@@ -423,13 +444,21 @@ public class EnemyController : MonoBehaviour
     /// <summary>乗っ取り中に攻撃ボタンが押されたとき — 範囲内の他の敵にダメージ</summary>
     public void PerformAttack()
     {
-    
+
+        if (hijackedAttackTimer > 0)
+        {
+            return; // 攻撃クールタイム中は何もしない
+        }
+
+        hijackedAttackTimer=hijackedAttackCooldown;
+
         // 乗っ取り中はプレイヤーの現在位置を基点にする（EnemyController 自体は動かない）
         Vector3 origin = (IsHijacked && _playerMachine != null)
             ? _playerMachine.transform.position
             : transform.position;
 
         Debug.Log($"[Enemy] {name} 攻撃！ origin={origin}");
+        enemyAnimation.PlayAttack();
         Collider[] hits = Physics.OverlapSphere(origin, attackRange);
         bool hitSomeone = false;
         foreach (Collider col in hits)
@@ -439,6 +468,7 @@ public class EnemyController : MonoBehaviour
 
             other.TakeDamage(AttackPower);
             hitSomeone = true;
+           
             Debug.Log($"[Enemy] {name} → {other.name} に {AttackPower} ダメージ");
         }
 
@@ -462,9 +492,24 @@ public class EnemyController : MonoBehaviour
             return;
         }
 
+        //enemyAnimation.PlayHit();
+
+        //敵からの攻撃を受けた時に出すパーティクル
+        //hitParticle.Play();
+        PlayHitEffect();
+
         _enemyHealth?.TakeDamage(damage);
 
     }
+
+
+    //ボスなどもダメージを受けた時にパーティクルを出すための関数
+    protected void PlayHitEffect()
+    {
+        
+        hitParticle.Play();
+    }
+
 
     /// <summary>乗っ取り中に HP が 0 になったとき HijackedState から呼ぶ</summary>
     public void OnHijackedEnemyDied()
@@ -545,6 +590,7 @@ public class EnemyController : MonoBehaviour
         
         //プレイヤーを追跡するロジック
         agent.SetDestination(player.position);
+
     }
 
     /// <summary>
@@ -603,6 +649,7 @@ public class EnemyController : MonoBehaviour
         {
             attackTimer = attackCooldown;
             Debug.Log($"[Enemy] {name} 通常攻撃！");
+            enemyAnimation.PlayAttack();
             DealDamageToPlayer();
             //スペクターの時は攻撃したら透明化を解除する
             SpecterEnemySkill specter =
@@ -631,7 +678,6 @@ public class EnemyController : MonoBehaviour
         Debug.Log($"[Enemy] {name} ダメージを受けたので追跡開始");
     }
 
-
     //
     /// <summary>
     /// 外部（スタントラップなど）からスタンを適用する。
@@ -657,7 +703,7 @@ public class EnemyController : MonoBehaviour
         {
             StopCoroutine(slowCoroutine);
         }
-
+ 
         slowCoroutine = StartCoroutine(
             SlowCoroutine(slowPercent, duration));
     }
@@ -672,7 +718,13 @@ public class EnemyController : MonoBehaviour
         Debug.Log(
             $"{name} の移動速度が {(int)(slowPercent * 100)}% 低下");
 
+        _enemyBuffUI?.ShowSpeedDebuff(duration);
+        //デバフパーティクルを表示する
+        speedDebuffParticle.Play();
+
         yield return new WaitForSeconds(duration);
+
+        speedDebuffParticle.Stop();
 
         agent.speed = originalSpeed;
 
@@ -709,4 +761,17 @@ public class EnemyController : MonoBehaviour
             agent.speed = originalSpeed * multiplier;
         }
     }
+
+    public void PlaySkillAnimation()
+    {
+        enemyAnimation.PlaySkill();
+    }
+
+    IEnumerator DiscoveryPlayer()
+    {
+        exclamation.SetActive(true);
+        yield return new WaitForSeconds(1f);
+        exclamation.SetActive(false);
+    }
+
 }

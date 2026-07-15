@@ -19,6 +19,8 @@ public class SkeletonEnemySkill : EnemySkillBase
         if (!CanUseSkill())
             return false;
 
+        enemyController.PlaySkillAnimation();
+
         // 乗っ取り中はプレイヤーの位置・向きで発射する（通常時は webSpawnPoint を使用）
         Vector3    spawnPos = enemyController.IsHijacked
             ? enemyController.GetAttackOrigin()

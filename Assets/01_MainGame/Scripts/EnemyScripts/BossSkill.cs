@@ -27,6 +27,8 @@ public class BossSkill : EnemySkillBase
         if (!CanUseSkill() || isUsingSkill)
             return false;
 
+        enemyController.PlaySkillAnimation();
+
         StartCoroutine(ShockwaveAttack());
 
         return true;

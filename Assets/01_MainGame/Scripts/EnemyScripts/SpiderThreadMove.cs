@@ -1,3 +1,4 @@
+using Unity.VisualScripting;
 using UnityEngine;
 
 public class SpiderThreadMove : MonoBehaviour
@@ -82,8 +83,12 @@ public class SpiderThreadMove : MonoBehaviour
 
             // 乗っ取り中にスキルを使った場合 → 他の敵にダメージ
             EnemyController enemy = target.GetComponentInParent<EnemyController>();
+           // EnemyBuffController buffController = target.GetComponentInParent<EnemyBuffController>();
             if (enemy != null && !enemy.IsHijacked&&enemy != owner)
             {
+                //敵のアイコンを表示する
+                //buffController.ShowSpeedDebuff(6f);
+
                 _hasHit = true;
                 enemy.TakeDamage(damage);
                 Debug.Log($"[SpiderThread] {enemy.name} に {damage} ダメージ");

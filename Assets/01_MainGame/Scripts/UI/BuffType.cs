@@ -2,6 +2,11 @@ using UnityEngine;
     public enum BuffType
     {
         DemonBuff,
-        SpecterBuff
-    }
+        SpecterBuff,
+        SpeedDeBuff,
+        PoisonDeBuff,
+        BleedingDeBuff,
+
+
+}
     

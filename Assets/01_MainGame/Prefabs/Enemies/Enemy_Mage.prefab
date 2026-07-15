@@ -82,6 +82,10 @@ PrefabInstance:
       propertyPath: attackRange
       value: 3
       objectReference: {fileID: 0}
+    - target: {fileID: 1062475011605121447, guid: 4ef9cf0b807c6d74ba60784351b7ecd4, type: 3}
+      propertyPath: m_LocalPosition.y
+      value: 1.12
+      objectReference: {fileID: 0}
     - target: {fileID: 1657749507933975513, guid: 4ef9cf0b807c6d74ba60784351b7ecd4, type: 3}
       propertyPath: m_Name
       value: Enemy_Mage
@@ -94,6 +98,14 @@ PrefabInstance:
       propertyPath: m_Name
       value: Enemy_Mage
       objectReference: {fileID: 0}
+    - target: {fileID: 4253820397701921194, guid: 4ef9cf0b807c6d74ba60784351b7ecd4, type: 3}
+      propertyPath: m_LocalPosition.x
+      value: -0.138
+      objectReference: {fileID: 0}
+    - target: {fileID: 4253820397701921194, guid: 4ef9cf0b807c6d74ba60784351b7ecd4, type: 3}
+      propertyPath: m_LocalPosition.z
+      value: 0.14
+      objectReference: {fileID: 0}
     - target: {fileID: 4645401483766828060, guid: 4ef9cf0b807c6d74ba60784351b7ecd4, type: 3}
       propertyPath: m_Enabled
       value: 0
@@ -105,6 +117,10 @@ PrefabInstance:
     - target: {fileID: 5071074307849890191, guid: 4ef9cf0b807c6d74ba60784351b7ecd4, type: 3}
       propertyPath: _maxHP
       value: 200
+      objectReference: {fileID: 0}
+    - target: {fileID: 5164545839933940896, guid: 4ef9cf0b807c6d74ba60784351b7ecd4, type: 3}
+      propertyPath: m_IsActive
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 6274497160392044223, guid: 4ef9cf0b807c6d74ba60784351b7ecd4, type: 3}
       propertyPath: m_Enabled
@@ -141,6 +157,10 @@ PrefabInstance:
     - target: {fileID: 8060403493178725083, guid: 4ef9cf0b807c6d74ba60784351b7ecd4, type: 3}
       propertyPath: m_Center.y
       value: 0.35375774
+      objectReference: {fileID: 0}
+    - target: {fileID: 8177876927593807261, guid: 4ef9cf0b807c6d74ba60784351b7ecd4, type: 3}
+      propertyPath: m_IsActive
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 9222787218964806624, guid: 4ef9cf0b807c6d74ba60784351b7ecd4, type: 3}
       propertyPath: m_LocalScale.x
@@ -205,6 +225,9 @@ PrefabInstance:
     - targetCorrespondingSourceObject: {fileID: 2827516876372056535, guid: 4ef9cf0b807c6d74ba60784351b7ecd4, type: 3}
       insertIndex: -1
       addedObject: {fileID: -3048579385867228388}
+    - targetCorrespondingSourceObject: {fileID: 2827516876372056535, guid: 4ef9cf0b807c6d74ba60784351b7ecd4, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 2860209645680872563}
   m_SourcePrefab: {fileID: 100100000, guid: 4ef9cf0b807c6d74ba60784351b7ecd4, type: 3}
 --- !u!4 &1092192797120682340 stripped
 Transform:
@@ -237,3 +260,15 @@ MonoBehaviour:
   skillRange: 12
   mageSpellPrefab: {fileID: 5707355075692512471, guid: f84abd49b38fc594e8a611e0f95253f3, type: 3}
   spellSpawnPoint: {fileID: 4364850395713475234}
+--- !u!114 &2860209645680872563
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6334462468791909203}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: dcc101f241bd541459d349022cff1231, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::EnemyAnimation

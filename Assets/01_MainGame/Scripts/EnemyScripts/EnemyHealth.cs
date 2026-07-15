@@ -1,4 +1,6 @@
+using System;
 using System.Collections;
+using Unity.VisualScripting;
 using UnityEngine;
 
 public class EnemyHealth : MonoBehaviour
@@ -16,10 +18,17 @@ public class EnemyHealth : MonoBehaviour
 
     private Coroutine bleedCoroutine;
 
+    private EnemyBuffUI enemyBuffUI;
+
+    //回復エフェクト
+    [SerializeField] private ParticleSystem healEffect;
+
+
     protected virtual void Start()
     {
         currentHP = maxHP;
         enemyController = GetComponent<EnemyController>();
+        enemyBuffUI = GetComponent<EnemyBuffUI>();
     }
 
     public int CurrentHP => currentHP;
@@ -43,6 +52,15 @@ public class EnemyHealth : MonoBehaviour
     public virtual void Heal(int healAmount)
     {
         currentHP = Mathf.Min(maxHP, currentHP + healAmount);
+        StartCoroutine(HealEfects());
+    }
+
+    //回復エフェクトを再生するためのメソッド
+    public virtual IEnumerator HealEfects()
+    {
+        healEffect.Play();
+        yield return new WaitForSeconds(2f);
+        healEffect.Stop();
     }
 
     public virtual IEnumerator InvincibleTime(float time)
@@ -76,6 +94,9 @@ public class EnemyHealth : MonoBehaviour
     {
         float timer = 0f;
 
+        // 毒状態のアイコンを表示
+        enemyBuffUI?.ShowPoisonDebuff(duration);
+
         while (timer < duration)
         {
             yield return new WaitForSeconds(interval);
@@ -106,6 +127,9 @@ public class EnemyHealth : MonoBehaviour
     private IEnumerator BleedCoroutine(float duration)
     {
         float timer = 0f;
+
+        // 出血状態のアイコンを表示
+        enemyBuffUI?.ShowBloodDebuff(duration);
 
         while (timer < duration)
         {

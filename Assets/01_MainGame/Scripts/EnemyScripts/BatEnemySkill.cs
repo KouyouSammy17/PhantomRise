@@ -1,4 +1,5 @@
 using UnityEngine;
+using System.Collections;
 
 public class BatEnemySkill : EnemySkillBase
 {
@@ -6,10 +7,25 @@ public class BatEnemySkill : EnemySkillBase
     [SerializeField] private GameObject bitePrefab;
     [SerializeField] private Transform biteSpawnPoint;
 
+    private float delay = 0.5f;
+
     public override bool TryUseSkill()
     {
         if (!CanUseSkill())
             return false;
+
+        enemyController.PlaySkillAnimation();
+
+        StartCoroutine(SpawnBiteAfterDelay());
+
+        ResetCooldown();
+
+        return true;
+    }
+
+    private IEnumerator SpawnBiteAfterDelay()
+    {
+        yield return new WaitForSeconds(delay);
 
         Vector3 spawnPos;
         Quaternion spawnRot;
@@ -48,12 +64,10 @@ public class BatEnemySkill : EnemySkillBase
         // プレイヤーとの衝突を無視
         if (enemyController.IsHijacked)
         {
-
             PlayerStateMachine machine =
-            FindAnyObjectByType<PlayerStateMachine>();
+                FindAnyObjectByType<PlayerStateMachine>();
 
-            Collider biteCollider =
-                obj.GetComponent<Collider>();
+            Collider biteCollider = obj.GetComponent<Collider>();
 
             if (machine != null && biteCollider != null)
             {
@@ -70,9 +84,5 @@ public class BatEnemySkill : EnemySkillBase
         }
 
         Debug.Log("吸血！");
-
-        ResetCooldown();
-
-        return true;
     }
 }
