@@ -23,12 +23,15 @@ public class EnemyHealth : MonoBehaviour
     //回復エフェクト
     [SerializeField] private ParticleSystem healEffect;
 
+    private EnemyAudio enemyAudio;
+
 
     protected virtual void Start()
     {
         currentHP = maxHP;
         enemyController = GetComponent<EnemyController>();
         enemyBuffUI = GetComponent<EnemyBuffUI>();
+        enemyAudio = GetComponent<EnemyAudio>();
     }
 
     public int CurrentHP => currentHP;
@@ -47,6 +50,9 @@ public class EnemyHealth : MonoBehaviour
         Debug.Log("敵がダメージを受けました！現在のHP: " + currentHP);
 
         enemyController?.AlertDamage();
+
+        //音
+        enemyAudio?.PlayHitSE();
     }
 
     public virtual void Heal(int healAmount)

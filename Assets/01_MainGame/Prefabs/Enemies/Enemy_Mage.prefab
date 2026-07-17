@@ -70,6 +70,14 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 0}
     m_Modifications:
+    - target: {fileID: 809926345217269769, guid: 4ef9cf0b807c6d74ba60784351b7ecd4, type: 3}
+      propertyPath: eSkillSE
+      value: 
+      objectReference: {fileID: 8300000, guid: 9cbc2dca56cdfb54db9d3859d7104c16, type: 3}
+    - target: {fileID: 809926345217269769, guid: 4ef9cf0b807c6d74ba60784351b7ecd4, type: 3}
+      propertyPath: eAttackSE
+      value: 
+      objectReference: {fileID: 8300000, guid: 68ac7c55765933d40835defbccf9f137, type: 3}
     - target: {fileID: 945449425208760321, guid: 4ef9cf0b807c6d74ba60784351b7ecd4, type: 3}
       propertyPath: rank
       value: 1

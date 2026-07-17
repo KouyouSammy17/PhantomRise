@@ -78,6 +78,18 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 0}
     m_Modifications:
+    - target: {fileID: 809926345217269769, guid: 4ef9cf0b807c6d74ba60784351b7ecd4, type: 3}
+      propertyPath: eHitSE
+      value: 
+      objectReference: {fileID: 8300000, guid: d8689ea5259f2b343b619858102accad, type: 3}
+    - target: {fileID: 809926345217269769, guid: 4ef9cf0b807c6d74ba60784351b7ecd4, type: 3}
+      propertyPath: eSkillSE
+      value: 
+      objectReference: {fileID: 8300000, guid: b1804a1d32ab95c40bb314e450dcfdef, type: 3}
+    - target: {fileID: 809926345217269769, guid: 4ef9cf0b807c6d74ba60784351b7ecd4, type: 3}
+      propertyPath: eAttackSE
+      value: 
+      objectReference: {fileID: 8300000, guid: bc6c2ce5281ae9c4f84509a3b6e4e4d3, type: 3}
     - target: {fileID: 1062475011605121447, guid: 4ef9cf0b807c6d74ba60784351b7ecd4, type: 3}
       propertyPath: m_LocalPosition.y
       value: 1.098
