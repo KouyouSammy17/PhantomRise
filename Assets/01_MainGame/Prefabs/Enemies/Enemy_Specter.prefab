@@ -606,7 +606,7 @@ MonoBehaviour:
   normalMat: {fileID: 2100000, guid: 6723be8cdee44449b8119517cb64a388, type: 2}
   invisibleMat: {fileID: 2100000, guid: 04d05da06beeb4c4292f21c0c386da0e, type: 2}
   bufficon: {fileID: 6696025257337698450}
-  buffParticle: {fileID: 0}
+  buffParticle: {fileID: 19831716, guid: bb23163a0b24b99489c01eeb4b18a215, type: 3}
 --- !u!114 &4683551196166367137
 MonoBehaviour:
   m_ObjectHideFlags: 0

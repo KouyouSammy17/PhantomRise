@@ -548,7 +548,7 @@ MonoBehaviour:
   skillCooldown: 20
   skillRange: 8
   Bufficon: {fileID: 2060425553367516409}
-  BuffParticle: {fileID: 0}
+  BuffParticle: {fileID: 19831716, guid: bb23163a0b24b99489c01eeb4b18a215, type: 3}
 --- !u!114 &3680005518512066918
 MonoBehaviour:
   m_ObjectHideFlags: 0
