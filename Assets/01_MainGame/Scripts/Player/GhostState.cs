@@ -26,6 +26,9 @@ public class GhostState : PlayerBaseState
     {
         Machine.VelocityY = 0f;
 
+        // アクション（Hijack/Die）のロックを解除して Idle に戻す
+        Machine.GhostAnim?.ResetToIdle();
+
         if (_resuming)
         {
             // Dodge から戻ってきた → タイマーをそのまま引き継ぐ

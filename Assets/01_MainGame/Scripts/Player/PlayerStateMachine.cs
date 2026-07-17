@@ -105,6 +105,12 @@ public class PlayerStateMachine : MonoBehaviour
 
     public PlayerHP PlayerHP { get; private set; }
 
+    /// <summary>幽霊モデルのアニメーション制御（CrossFade 方式）</summary>
+    public GhostAnimation GhostAnim { get; private set; }
+
+    /// <summary>幽霊モデルのディゾルブ演出（シェーダーの _Dissolve を駆動）</summary>
+    public GhostDissolveEffect DissolveFx { get; private set; }
+
     [Header("=== QTE UI ===")]
     [SerializeField] private HijackQTEUI hijackQTEUI;
 
@@ -165,6 +171,12 @@ public class PlayerStateMachine : MonoBehaviour
 
         // PlayerHP コンポーネントがなければ自動追加（プレハブに未アタッチでも動く）
         PlayerHP = GetComponent<PlayerHP>() ?? gameObject.AddComponent<PlayerHP>();
+
+        // GhostAnimation も同様に自動追加
+        GhostAnim = GetComponent<GhostAnimation>() ?? gameObject.AddComponent<GhostAnimation>();
+
+        // ディゾルブ演出も自動追加
+        DissolveFx = GetComponent<GhostDissolveEffect>() ?? gameObject.AddComponent<GhostDissolveEffect>();
 
         hijackQTEUI?.Initialize(Hijack);
 
@@ -388,7 +400,11 @@ public class PlayerStateMachine : MonoBehaviour
         }
 
         // アニメーション用
-        if (CurrentStateName == nameof(HijackedState))
+        if (CurrentStateName == nameof(GhostState))
+        {
+            GhostAnim?.SetMove(MoveInput.sqrMagnitude > 0.01f);
+        }
+        else if (CurrentStateName == nameof(HijackedState))
         {
             EnemyController enemy = Hijacked.CurrentEnemy;
 
