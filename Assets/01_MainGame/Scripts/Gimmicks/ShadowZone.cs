@@ -19,13 +19,6 @@ using UnityEngine;
 
 public class ShadowZone : MonoBehaviour
 {
-    [Header("=== 演出（任意）===")]
-    [Tooltip("ゾーン内に入ったときに有効化するビジュアル（暗いフォグなど）")]
-    public GameObject ZoneVisualActive;
-
-    [Tooltip("ゾーン外のデフォルトビジュアル")]
-    public GameObject ZoneVisualIdle;
-
     // ─────────────────────────────────────────
     // トリガー判定
     // ─────────────────────────────────────────
@@ -41,9 +34,6 @@ public class ShadowZone : MonoBehaviour
         machine.IsInShadowZone = true;
         Debug.Log("[ShadowZone] プレイヤーがシャドウゾーンに入った");
 
-        // ビジュアル切り替え
-        if (ZoneVisualActive != null) ZoneVisualActive.SetActive(true);
-        if (ZoneVisualIdle   != null) ZoneVisualIdle.SetActive(false);
     }
 
     private void OnTriggerExit(Collider other)
@@ -57,9 +47,6 @@ public class ShadowZone : MonoBehaviour
         machine.IsInShadowZone = false;
         Debug.Log("[ShadowZone] プレイヤーがシャドウゾーンから出た");
 
-        // ビジュアル切り替え
-        if (ZoneVisualActive != null) ZoneVisualActive.SetActive(false);
-        if (ZoneVisualIdle   != null) ZoneVisualIdle.SetActive(true);
     }
 
 #if UNITY_EDITOR

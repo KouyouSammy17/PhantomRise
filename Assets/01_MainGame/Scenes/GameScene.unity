@@ -3114,6 +3114,7 @@ MonoBehaviour:
   _animator: {fileID: 268101137507845660}
   _crossFadeTime: 0.1
   _attackAnimTime: 0.7
+  _dieAnimTime: 1.33
 --- !u!1001 &3433377383384656286
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -3404,6 +3405,14 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 9119720823115310743, guid: 6c5b81c970658cf4e88aa6262f9b0840, type: 3}
+      propertyPath: idleVisual
+      value: 
+      objectReference: {fileID: 5625733165965871918, guid: ce12f4ba5683e264ca9931fe664aac33, type: 3}
+    - target: {fileID: 9119720823115310743, guid: 6c5b81c970658cf4e88aa6262f9b0840, type: 3}
+      propertyPath: activatedVisual
+      value: 
+      objectReference: {fileID: 1814315751473787963, guid: e9459def1a517a24ba482f9e639df7ff, type: 3}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
