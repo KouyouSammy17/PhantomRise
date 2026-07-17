@@ -10,7 +10,7 @@ public class SpiderThreadMove : MonoBehaviour
     [SerializeField] private int damage = 10;
 
     // 生成直後に自分自身に当たらないようにする猶予時間（秒）
-    [SerializeField] private float spawnGrace = 0.15f;
+    [SerializeField] private float spawnGrace = 0f;
     private float _graceTimer = 0f;
 
     // 二重ヒット防止フラグ
@@ -47,12 +47,20 @@ public class SpiderThreadMove : MonoBehaviour
 
     private void OnTriggerEnter(Collider other)
     {
+        Debug.Log(other.name);
+
         // 猶予時間中はヒット判定をスキップ（自分自身への誤ヒット防止）
         if (_graceTimer < spawnGrace) return;
 
         HandleHit(other.gameObject);
 
-        Debug.Log("当たった");
+       // Debug.Log("当たった");
+    }
+
+
+    private void OnTriggerStay(Collider other)
+    {
+        HandleHit(other.gameObject);
     }
 
 
@@ -62,6 +70,12 @@ public class SpiderThreadMove : MonoBehaviour
 
         if (target.CompareTag("Player"))
         {
+
+            // 自分（乗っ取り中）が撃った弾ならプレイヤーには当てない
+            if (owner != null && owner.IsHijacked)
+                return;
+
+
             _hasHit = true;
 
             // 乗っ取り中は PlayerHP にダメージを与える

@@ -104,6 +104,7 @@ public class EnemyController : MonoBehaviour
     private BossSkill _bossSkill;                    // ボス専用スキル
     private EnemyBuffUI _enemyBuffUI; // 敵バフコントローラー
     private EnemyAnimation enemyAnimation;
+    private EnemyAudio enemyAudio;
 
 
     // 外から読み取りだけ可能
@@ -168,11 +169,14 @@ public class EnemyController : MonoBehaviour
     //攻撃が当たったときのパーティクル
     [SerializeField] private ParticleSystem hitParticle;
 
+    private bool deathprocessed = false; // 死亡処理が既に行われたかどうかのフラグ
+
 
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     protected virtual void Start()
     {
-        enemyAnimation= GetComponent<EnemyAnimation>();
+        enemyAudio = GetComponent<EnemyAudio>();
+        enemyAnimation = GetComponent<EnemyAnimation>();
 
         FindAnyObjectByType<MinimapController>()?.RegisterEnemy(transform);
 
@@ -186,6 +190,7 @@ public class EnemyController : MonoBehaviour
         _enemyHPbar = GetComponentInChildren<EnemyHPbar>();
         _bossSkill = GetComponent<BossSkill>();
         _enemyBuffUI = GetComponent<EnemyBuffUI>();
+        
 
         agent = GetComponent<NavMeshAgent>();
         currentState= EnemyState.Patrol;
@@ -298,6 +303,11 @@ public class EnemyController : MonoBehaviour
                         if (lostSightTimer >= lostSightDuration)
                         {
                             currentState = EnemyState.Patrol;
+
+                            if (_viewCone != null)
+                            {
+                                _viewCone.gameObject.SetActive(true);
+                            }
                         }
                     }
                 }
@@ -323,14 +333,20 @@ public class EnemyController : MonoBehaviour
                 break;
             case EnemyState.Die:
                 // 死亡
-                Debug.Log("敵が死亡しました！");
-                FindAnyObjectByType<MinimapController>()?.UnregisterEnemy(transform);
-                enemyAnimation.PlayDie();
-                //アイコンを消す
-                _enemyBuffUI?.HideAll();
-                //動きを止める
-                agent.isStopped = true;
-                //Destroy(gameObject,1f);
+                if (!deathprocessed)
+                {
+                    deathprocessed = true;
+                    Debug.Log("敵が死亡しました！");
+                    FindAnyObjectByType<MinimapController>()?.UnregisterEnemy(transform);
+                    enemyAnimation.PlayDie();
+                    //アイコンを消す
+                    _enemyBuffUI?.HideAll();
+                    //動きを止める
+                    agent.isStopped = true;
+                    //音
+                    enemyAudio.PlayDeathSE();
+                    //Destroy(gameObject,1f);
+                }
                 break;
             case EnemyState.Stun:
                 Debug.Log("現在スタン中");
@@ -343,6 +359,8 @@ public class EnemyController : MonoBehaviour
         if (_enemyHealth.CurrentHP <= 0 && currentState != EnemyState.Die&& rank == EnemyRank.D)
         {
             currentState = EnemyState.Die;
+           
+
         }
 
 
@@ -515,6 +533,7 @@ public class EnemyController : MonoBehaviour
     public void OnHijackedEnemyDied()
     {
         Debug.Log($"[Enemy] {name} 乗っ取り中に死亡");
+
         Destroy(gameObject);
     }
 
@@ -561,6 +580,8 @@ public class EnemyController : MonoBehaviour
                 nameof(SetNextPatrolPoint),
                 1f);
         }
+
+      
     }
 
     void SetNextPatrolPoint()
@@ -590,6 +611,11 @@ public class EnemyController : MonoBehaviour
         
         //プレイヤーを追跡するロジック
         agent.SetDestination(player.position);
+
+        if (_viewCone != null)
+        {
+            _viewCone.gameObject.SetActive(false);
+        }
 
     }
 
@@ -633,10 +659,12 @@ public class EnemyController : MonoBehaviour
         if (_enemySkill != null)
         {
             bool usedSkill = _enemySkill.TryUseSkill();
+           
 
             // スキルを使ったら通常攻撃しない
             if (usedSkill)
             {
+                enemyAudio.PlaySkillSE();
                 attackTimer = attackCooldown;
                 return;
             }
@@ -650,6 +678,7 @@ public class EnemyController : MonoBehaviour
             attackTimer = attackCooldown;
             Debug.Log($"[Enemy] {name} 通常攻撃！");
             enemyAnimation.PlayAttack();
+            enemyAudio.PlayAttackSE();
             DealDamageToPlayer();
             //スペクターの時は攻撃したら透明化を解除する
             SpecterEnemySkill specter =

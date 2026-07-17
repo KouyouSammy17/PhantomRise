@@ -50,12 +50,22 @@ public class SlashMove : MonoBehaviour
         HandleHit(other.gameObject);
     }
 
+    private void OnTriggerStay(Collider other)
+    {
+        HandleHit(other.gameObject);
+    }
+
     private void HandleHit(GameObject target)
     {
         if (_hasHit) return;
 
         if (target.CompareTag("Player"))
         {
+
+            // 自分（乗っ取り中）が撃った弾ならプレイヤーには当てない
+            if (owner != null && owner.IsHijacked)
+                return;
+
             _hasHit = true;
 
             // 乗っ取り中は PlayerHP にダメージを与える

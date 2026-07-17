@@ -85,6 +85,11 @@ public class MageSpellMove : MonoBehaviour
         Debug.Log("当たった");
     }
 
+    private void OnTriggerStay(Collider other)
+    {
+        HandleHit(other.gameObject);
+    }
+
 
     private void HandleHit(GameObject target)
     {
@@ -92,6 +97,12 @@ public class MageSpellMove : MonoBehaviour
 
         if (target.CompareTag("Player"))
         {
+
+            // 自分（乗っ取り中）が撃った弾ならプレイヤーには当てない
+            if (owner != null && owner.IsHijacked)
+                return;
+
+
             _hasHit = true;
 
             // 乗っ取り中は PlayerHP にダメージを与える
