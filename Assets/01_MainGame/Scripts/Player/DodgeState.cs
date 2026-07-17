@@ -36,6 +36,10 @@ public class DodgeState : PlayerBaseState
             _dodgeDir = -Machine.transform.forward;
 
         Machine.VelocityY = 0f;
+
+        // 幽霊状態からの回避なら走りアニメーション（乗っ取り中はモデル非表示なので無害）
+        Machine.GhostAnim?.SetMove(true);
+
         Debug.Log($"[Dodge] Enter — 方向 {_dodgeDir}");
     }
 

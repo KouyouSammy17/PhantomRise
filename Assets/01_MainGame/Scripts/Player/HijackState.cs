@@ -9,6 +9,8 @@
 // ⑤ OnQTEFail  : 失敗 → 元の状態に戻る（通常: Ghost / 転送: HijackedState）
 // ============================================================
 
+using System;
+using Cysharp.Threading.Tasks;
 using UnityEngine;
 
 public class HijackState : PlayerBaseState
@@ -18,6 +20,9 @@ public class HijackState : PlayerBaseState
 
     // QTE 終了後に戻る状態（null = Ghost / Machine.Hijacked = 転送）
     private PlayerBaseState _callerState;
+
+    // 攻撃アニメーション再生待ち中の二重実行防止
+    private bool _successRunning;
 
     public HijackState(PlayerStateMachine machine) : base(machine) { }
 
@@ -65,6 +70,9 @@ public class HijackState : PlayerBaseState
         // QTE 中は敵の AI を止めておく
         TargetEnemy?.FreezeForQTE();
 
+        // 乗っ取りアニメーション（ghost_attack_shift）
+        Machine.GhostAnim?.PlayHijack();
+
         Debug.Log($"[Hijack] QTE 開始 → {TargetEnemy?.name}");
         OnQTEStart?.Invoke(TargetEnemy);
     }
@@ -78,6 +86,46 @@ public class HijackState : PlayerBaseState
 
     public void OnQTESuccess()
     {
+        if (_successRunning) return;
+        SuccessAsync().Forget();
+    }
+
+    /// <summary>
+    /// QTE 成功 → 攻撃アニメーション（ghost_attack）を再生し、
+    /// 完了を待ってから乗っ取りを成立させる。
+    /// 転送時は幽霊モデルが非表示なのでアニメーション待ちをスキップする。
+    /// </summary>
+    private async UniTaskVoid SuccessAsync()
+    {
+        _successRunning = true;
+
+        bool isTransfer = _callerState == Machine.Hijacked;
+
+        if (!isTransfer)
+        {
+            Machine.GhostAnim?.PlayAttack();
+
+            float wait = Machine.GhostAnim != null ? Machine.GhostAnim.AttackAnimTime : 0f;
+            if (wait > 0f)
+            {
+                await UniTask.Delay(
+                    TimeSpan.FromSeconds(wait),
+                    cancellationToken: Machine.GetCancellationTokenOnDestroy());
+            }
+        }
+
+        _successRunning = false;
+
+        // アニメーション中に敵が消えた場合は Ghost に戻る
+        if (TargetEnemy == null)
+        {
+            Debug.Log("[Hijack] ターゲット消失 → Ghost に戻る");
+            _callerState = null;
+            Machine.Ghost.Resume();
+            Machine.TransitionTo(Machine.Ghost);
+            return;
+        }
+
         Debug.Log("[Hijack] 成功！");
 
         TargetEnemy.BecomeHijacked();

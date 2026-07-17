@@ -2908,6 +2908,18 @@ PrefabInstance:
       propertyPath: m_UIInputModule
       value: 
       objectReference: {fileID: 1968274761}
+    - target: {fileID: 2164386747498942713, guid: dbfb61446fdc5154b9255cc8ce0c5597, type: 3}
+      propertyPath: m_ActionEvents.Array.size
+      value: 18
+      objectReference: {fileID: 0}
+    - target: {fileID: 2164386747498942713, guid: dbfb61446fdc5154b9255cc8ce0c5597, type: 3}
+      propertyPath: m_ActionEvents.Array.data[17].m_ActionId
+      value: 32313042-8bba-4f9b-bd2c-463a2c6ef2cf
+      objectReference: {fileID: 0}
+    - target: {fileID: 2164386747498942713, guid: dbfb61446fdc5154b9255cc8ce0c5597, type: 3}
+      propertyPath: m_ActionEvents.Array.data[17].m_ActionName
+      value: 'Player/Dispose[/Keyboard/q]'
+      objectReference: {fileID: 0}
     - target: {fileID: 2168904730547505651, guid: dbfb61446fdc5154b9255cc8ce0c5597, type: 3}
       propertyPath: m_Pivot.x
       value: 0
@@ -3045,7 +3057,10 @@ PrefabInstance:
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
-    m_AddedComponents: []
+    m_AddedComponents:
+    - targetCorrespondingSourceObject: {fileID: 2251856728320947923, guid: dbfb61446fdc5154b9255cc8ce0c5597, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 268101137507845662}
   m_SourcePrefab: {fileID: 100100000, guid: dbfb61446fdc5154b9255cc8ce0c5597, type: 3}
 --- !u!4 &268101137507845657 stripped
 Transform:
@@ -3068,12 +3083,37 @@ MonoBehaviour:
   m_CorrespondingSourceObject: {fileID: 4303073340821829473, guid: dbfb61446fdc5154b9255cc8ce0c5597, type: 3}
   m_PrefabInstance: {fileID: 268101137507845656}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 0}
+  m_GameObject: {fileID: 268101137507845661}
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 12c40aba392314e479a60e9b68efe757, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::PlayerStateMachine
+--- !u!95 &268101137507845660 stripped
+Animator:
+  m_CorrespondingSourceObject: {fileID: 950450130641985323, guid: dbfb61446fdc5154b9255cc8ce0c5597, type: 3}
+  m_PrefabInstance: {fileID: 268101137507845656}
+  m_PrefabAsset: {fileID: 0}
+--- !u!1 &268101137507845661 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 2251856728320947923, guid: dbfb61446fdc5154b9255cc8ce0c5597, type: 3}
+  m_PrefabInstance: {fileID: 268101137507845656}
+  m_PrefabAsset: {fileID: 0}
+--- !u!114 &268101137507845662
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 268101137507845661}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 35e77b1718adc094387e0a15c8a53892, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::GhostAnimation
+  _animator: {fileID: 268101137507845660}
+  _crossFadeTime: 0.1
+  _attackAnimTime: 0.7
 --- !u!1001 &3433377383384656286
 PrefabInstance:
   m_ObjectHideFlags: 0
