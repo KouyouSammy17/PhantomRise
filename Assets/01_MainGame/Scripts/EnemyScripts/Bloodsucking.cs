@@ -33,6 +33,11 @@ public class Bloodsucking : MonoBehaviour
         HandleHit(other.gameObject);
     }
 
+    private void OnTriggerStay(Collider other)
+    {
+        HandleHit(other.gameObject);
+    }
+
     private void HandleHit(GameObject target)
     {
         if (_hasHit)

@@ -70,6 +70,10 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 0}
     m_Modifications:
+    - target: {fileID: 221236301236523720, guid: 4ef9cf0b807c6d74ba60784351b7ecd4, type: 3}
+      propertyPath: m_Sprite
+      value: 
+      objectReference: {fileID: 21300000, guid: 26fc130cfb80b4eda827b5649065a9f1, type: 3}
     - target: {fileID: 809926345217269769, guid: 4ef9cf0b807c6d74ba60784351b7ecd4, type: 3}
       propertyPath: eSkillSE
       value: 
@@ -138,9 +142,19 @@ PrefabInstance:
       propertyPath: 'm_Materials.Array.data[0]'
       value: 
       objectReference: {fileID: 2100000, guid: 6961937a412162949872db24ada42cfb, type: 2}
+    - target: {fileID: 4756305259862447443, guid: 4ef9cf0b807c6d74ba60784351b7ecd4, type: 3}
+      propertyPath: m_AnchoredPosition.x
+      value: 51.51
+      objectReference: {fileID: 0}
     - target: {fileID: 5164545839933940896, guid: 4ef9cf0b807c6d74ba60784351b7ecd4, type: 3}
       propertyPath: m_IsActive
       value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 5180669368348163072, guid: 4ef9cf0b807c6d74ba60784351b7ecd4, type: 3}
+      propertyPath: m_text
+      value: 'C
+
+'
       objectReference: {fileID: 0}
     - target: {fileID: 6274497160392044223, guid: 4ef9cf0b807c6d74ba60784351b7ecd4, type: 3}
       propertyPath: m_Enabled
@@ -164,11 +178,11 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 7531744829160149756, guid: 4ef9cf0b807c6d74ba60784351b7ecd4, type: 3}
       propertyPath: m_AnchoredPosition.x
-      value: 26.15
+      value: 39.63
       objectReference: {fileID: 0}
     - target: {fileID: 7531744829160149756, guid: 4ef9cf0b807c6d74ba60784351b7ecd4, type: 3}
       propertyPath: m_AnchoredPosition.y
-      value: 21.01
+      value: 26.37
       objectReference: {fileID: 0}
     - target: {fileID: 7762544295177896909, guid: 4ef9cf0b807c6d74ba60784351b7ecd4, type: 3}
       propertyPath: _maxHP
@@ -189,6 +203,10 @@ PrefabInstance:
     - target: {fileID: 8060403493178725083, guid: 4ef9cf0b807c6d74ba60784351b7ecd4, type: 3}
       propertyPath: m_Center.y
       value: 0.35375774
+      objectReference: {fileID: 0}
+    - target: {fileID: 8075276811189004232, guid: 4ef9cf0b807c6d74ba60784351b7ecd4, type: 3}
+      propertyPath: m_AnchoredPosition.x
+      value: 43.65
       objectReference: {fileID: 0}
     - target: {fileID: 8177876927593807261, guid: 4ef9cf0b807c6d74ba60784351b7ecd4, type: 3}
       propertyPath: m_IsActive
@@ -291,5 +309,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::BatEnemySkill
   skillCooldown: 3
   skillRange: 1
+  SkillName: "\u5438\u8840"
+  SkillDescription: "\u5F53\u305F\u3063\u305F\u76F8\u624B\u306B\u4E0E\u3048\u305F\u30C0\u30E1\u30FC\u30B8\u3068\u540C\u3058\u5206\u3060\u3051HP\u3092\u5438\u53CE\u3059\u308B\n"
+  skillID: bat
   bitePrefab: {fileID: 3023999648932019501, guid: 01bdc0c3dd0a9824daf88d726d063144, type: 3}
   biteSpawnPoint: {fileID: 4364850395713475234}

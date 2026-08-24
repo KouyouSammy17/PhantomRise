@@ -86,18 +86,35 @@ public class WerewolfChargeAttack : MonoBehaviour
             // ─────────────────────────────
             // ④ 敵に当たった場合
             // ─────────────────────────────
-            EnemyHealth enemyHP =
-                hit.collider.GetComponentInParent<EnemyHealth>();
+            EnemyController enemy =
+    hit.collider.GetComponentInParent<EnemyController>();
 
-            if (enemyHP != null)
+            if (enemy != null)
             {
+                // 乗っ取り中のみ敵に攻撃できる
+                if (owner == null || !owner.IsHijacked)
+                    return;
+
+                // 自分には当てない
+                if (enemy == owner)
+                    return;
+
+                // 乗っ取られている敵にも当てない（必要なら）
+                if (enemy.IsHijacked)
+                    return;
+
                 hasHit = true;
-                enemyHP.TakeDamage(damage);
-                enemyHP.ApplyBleed(bleedDuration);
+
+                enemy.TakeDamage(damage);
+
+                EnemyHealth hp = enemy.GetComponent<EnemyHealth>();
+                hp?.ApplyBleed(bleedDuration);
+
                 Debug.Log("敵に当たった");
+
                 return;
             }
-         }
+        }
 
 
 

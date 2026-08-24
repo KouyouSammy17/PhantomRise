@@ -70,6 +70,10 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 0}
     m_Modifications:
+    - target: {fileID: 221236301236523720, guid: 4ef9cf0b807c6d74ba60784351b7ecd4, type: 3}
+      propertyPath: m_Sprite
+      value: 
+      objectReference: {fileID: 21300000, guid: 752a9e2bdbf2d46839d44c37ab18a187, type: 3}
     - target: {fileID: 809926345217269769, guid: 4ef9cf0b807c6d74ba60784351b7ecd4, type: 3}
       propertyPath: eSkillSE
       value: 
@@ -98,6 +102,14 @@ PrefabInstance:
       propertyPath: m_Name
       value: Enemy_Mage
       objectReference: {fileID: 0}
+    - target: {fileID: 1870846349812241890, guid: 4ef9cf0b807c6d74ba60784351b7ecd4, type: 3}
+      propertyPath: m_IsActive
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 2161541503602205033, guid: 4ef9cf0b807c6d74ba60784351b7ecd4, type: 3}
+      propertyPath: m_IsActive
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 2495899563628843489, guid: 4ef9cf0b807c6d74ba60784351b7ecd4, type: 3}
       propertyPath: m_Height
       value: 1.5
@@ -122,6 +134,14 @@ PrefabInstance:
       propertyPath: 'm_Materials.Array.data[0]'
       value: 
       objectReference: {fileID: 2100000, guid: 6961937a412162949872db24ada42cfb, type: 2}
+    - target: {fileID: 4756305259862447443, guid: 4ef9cf0b807c6d74ba60784351b7ecd4, type: 3}
+      propertyPath: m_AnchoredPosition.x
+      value: 53.43
+      objectReference: {fileID: 0}
+    - target: {fileID: 4756305259862447443, guid: 4ef9cf0b807c6d74ba60784351b7ecd4, type: 3}
+      propertyPath: m_AnchoredPosition.y
+      value: 25.53
+      objectReference: {fileID: 0}
     - target: {fileID: 5071074307849890191, guid: 4ef9cf0b807c6d74ba60784351b7ecd4, type: 3}
       propertyPath: _maxHP
       value: 200
@@ -129,6 +149,10 @@ PrefabInstance:
     - target: {fileID: 5164545839933940896, guid: 4ef9cf0b807c6d74ba60784351b7ecd4, type: 3}
       propertyPath: m_IsActive
       value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 5180669368348163072, guid: 4ef9cf0b807c6d74ba60784351b7ecd4, type: 3}
+      propertyPath: m_text
+      value: B
       objectReference: {fileID: 0}
     - target: {fileID: 6274497160392044223, guid: 4ef9cf0b807c6d74ba60784351b7ecd4, type: 3}
       propertyPath: m_Enabled
@@ -145,6 +169,22 @@ PrefabInstance:
     - target: {fileID: 6443116343119807069, guid: 4ef9cf0b807c6d74ba60784351b7ecd4, type: 3}
       propertyPath: attackRange
       value: 4
+      objectReference: {fileID: 0}
+    - target: {fileID: 7432282056635228474, guid: 4ef9cf0b807c6d74ba60784351b7ecd4, type: 3}
+      propertyPath: m_AnchorMax.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 7432282056635228474, guid: 4ef9cf0b807c6d74ba60784351b7ecd4, type: 3}
+      propertyPath: m_AnchorMax.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 7531744829160149756, guid: 4ef9cf0b807c6d74ba60784351b7ecd4, type: 3}
+      propertyPath: m_AnchoredPosition.x
+      value: 41.65
+      objectReference: {fileID: 0}
+    - target: {fileID: 7531744829160149756, guid: 4ef9cf0b807c6d74ba60784351b7ecd4, type: 3}
+      propertyPath: m_AnchoredPosition.y
+      value: 26.19
       objectReference: {fileID: 0}
     - target: {fileID: 7762544295177896909, guid: 4ef9cf0b807c6d74ba60784351b7ecd4, type: 3}
       propertyPath: _maxHP
@@ -166,9 +206,17 @@ PrefabInstance:
       propertyPath: m_Center.y
       value: 0.35375774
       objectReference: {fileID: 0}
+    - target: {fileID: 8075276811189004232, guid: 4ef9cf0b807c6d74ba60784351b7ecd4, type: 3}
+      propertyPath: m_AnchoredPosition.x
+      value: 43.9
+      objectReference: {fileID: 0}
     - target: {fileID: 8177876927593807261, guid: 4ef9cf0b807c6d74ba60784351b7ecd4, type: 3}
       propertyPath: m_IsActive
       value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 8747226657593243566, guid: 4ef9cf0b807c6d74ba60784351b7ecd4, type: 3}
+      propertyPath: m_AnchoredPosition.x
+      value: 9.9
       objectReference: {fileID: 0}
     - target: {fileID: 9222787218964806624, guid: 4ef9cf0b807c6d74ba60784351b7ecd4, type: 3}
       propertyPath: m_LocalScale.x
@@ -233,9 +281,6 @@ PrefabInstance:
     - targetCorrespondingSourceObject: {fileID: 2827516876372056535, guid: 4ef9cf0b807c6d74ba60784351b7ecd4, type: 3}
       insertIndex: -1
       addedObject: {fileID: -3048579385867228388}
-    - targetCorrespondingSourceObject: {fileID: 2827516876372056535, guid: 4ef9cf0b807c6d74ba60784351b7ecd4, type: 3}
-      insertIndex: -1
-      addedObject: {fileID: 2860209645680872563}
   m_SourcePrefab: {fileID: 100100000, guid: 4ef9cf0b807c6d74ba60784351b7ecd4, type: 3}
 --- !u!4 &1092192797120682340 stripped
 Transform:
@@ -266,17 +311,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::MageEnemySkill
   skillCooldown: 3
   skillRange: 12
+  SkillName: "\u9B54\u6CD5\u5F3E"
+  SkillDescription: "\u524D\u65B9\u306B\u8FFD\u5C3E\u3059\u308B\u9B54\u6CD5\u306E\u5F3E\u3092\u767A\u5C04\u3059\u308B"
+  skillID: mage
   mageSpellPrefab: {fileID: 5707355075692512471, guid: f84abd49b38fc594e8a611e0f95253f3, type: 3}
   spellSpawnPoint: {fileID: 4364850395713475234}
---- !u!114 &2860209645680872563
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 6334462468791909203}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: dcc101f241bd541459d349022cff1231, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::EnemyAnimation

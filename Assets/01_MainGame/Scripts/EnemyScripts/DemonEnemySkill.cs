@@ -12,6 +12,8 @@ public class DemonEnemySkill : EnemySkillBase
 
     [SerializeField] private ParticleSystem BuffParticle;
 
+
+
     public override bool TryUseSkill()
     {
         if (!CanUseSkill())
@@ -30,9 +32,12 @@ public class DemonEnemySkill : EnemySkillBase
 
     private IEnumerator BuffRoutine()
     {
+       
+
+        //プレイヤーが乗っ取った敵の場合は、UIにバフアイコンを表示する
         if (enemyController.IsHijacked)
         {
-            BuffUIController.Instance.ShowBuff(BuffType.DemonBuff);
+            FindAnyObjectByType<PlayerStateMachine>()?.StartDemonBuff(10f);
         }
         else
         {
@@ -51,15 +56,16 @@ public class DemonEnemySkill : EnemySkillBase
         enemyController.SetSpeedMultiplier(1.5f);
         Debug.Log("デーモンのバフ開始");
         yield return new WaitForSeconds(10f);
+
         // バフを解除する
-        if (enemyController.IsHijacked)
-        {
-            BuffUIController.Instance.HideBuff(BuffType.DemonBuff);
-        }
-        else
-        {
+        //if (enemyController.IsHijacked)
+        //{
+        //    BuffUIController.Instance.HideBuff(BuffType.DemonBuff);
+        //}
+        
+        
             Bufficon.SetActive(false);   // 敵の頭上アイコン
-        }
+        
 
         if (BuffParticle != null)
         {

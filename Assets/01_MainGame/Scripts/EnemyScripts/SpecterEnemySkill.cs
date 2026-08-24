@@ -53,7 +53,8 @@ public class SpecterEnemySkill : EnemySkillBase
     {
         if (enemyController.IsHijacked)
         {
-            BuffUIController.Instance.ShowBuff(BuffType.SpecterBuff);
+            //BuffUIController.Instance.ShowBuff(BuffType.SpecterBuff);
+            FindAnyObjectByType<PlayerStateMachine>()?.StartSpecterBuff(invisibleDuration);
         }
         else
         {
@@ -69,7 +70,7 @@ public class SpecterEnemySkill : EnemySkillBase
         isInvisible = true;
         // ダメージ倍率を2倍にする
         enemyController.SetDamageMultiplier(2f);
-        //敵の時の速さを2倍にする
+        //敵の時の速さを1.5倍にする
         enemyController.SetSpeedMultiplier(1.5f);
         // 見た目を透明化
         SetInvisible(true);
@@ -101,14 +102,10 @@ public class SpecterEnemySkill : EnemySkillBase
 
         isInvisible = false;
 
-        if (enemyController.IsHijacked)
-        {
-            BuffUIController.Instance.HideBuff(BuffType.SpecterBuff);
-        }
-        else
-        {
-            bufficon.SetActive(false);
-        }
+        BuffUIController.Instance.HideBuff(BuffType.SpecterBuff);
+       
+        bufficon.SetActive(false);
+        
         //bufficon.SetActive(false);
 
         enemyController.SetHidden(false);

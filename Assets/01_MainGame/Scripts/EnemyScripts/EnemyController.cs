@@ -2,6 +2,7 @@
 using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.AI;
+using static EnemyController;
 
 public class EnemyController : MonoBehaviour
 {
@@ -100,12 +101,11 @@ public class EnemyController : MonoBehaviour
     private EnemySkillBase _enemySkill;
     private PlayerStateMachine _playerMachine;  // 乗っ取りシステム用キャッシュ
     private EnemyViewCone _viewCone;            // 視野コーン表示
-    private EnemyHPbar _enemyHPbar;            // 敵 HP バー
+    private EnemyHPbar _enemyHPbar;            // 敵 on バー
     private BossSkill _bossSkill;                    // ボス専用スキル
     private EnemyBuffUI _enemyBuffUI; // 敵バフコントローラー
-    private EnemyAnimation enemyAnimation;
+    protected EnemyAnimation enemyAnimation;
     private EnemyAudio enemyAudio;
-
 
     // 外から読み取りだけ可能
     //public int AttackPower { 
@@ -170,6 +170,8 @@ public class EnemyController : MonoBehaviour
     [SerializeField] private ParticleSystem hitParticle;
 
     private bool deathprocessed = false; // 死亡処理が既に行われたかどうかのフラグ
+
+    //敵のランクを画面に出す
 
 
     // Start is called once before the first execution of Update after the MonoBehaviour is created
@@ -238,12 +240,17 @@ public class EnemyController : MonoBehaviour
         {
             case EnemyState.Patrol:
                 PatrolMode();
-                
+                if (_viewCone != null)
+                {
+                    _viewCone.gameObject.SetActive(true);
+                }
+
                 if (_enemyVision.CanSeePlayer())
                 {
                     
                     currentState = EnemyState.Chase;
                     StartCoroutine(DiscoveryPlayer());
+                    
                 }
                 
                 break;
@@ -304,10 +311,7 @@ public class EnemyController : MonoBehaviour
                         {
                             currentState = EnemyState.Patrol;
 
-                            if (_viewCone != null)
-                            {
-                                _viewCone.gameObject.SetActive(true);
-                            }
+                         
                         }
                     }
                 }
@@ -333,23 +337,13 @@ public class EnemyController : MonoBehaviour
                 break;
             case EnemyState.Die:
                 // 死亡
-                if (!deathprocessed)
-                {
-                    deathprocessed = true;
-                    Debug.Log("敵が死亡しました！");
-                    FindAnyObjectByType<MinimapController>()?.UnregisterEnemy(transform);
-                    enemyAnimation.PlayDie();
-                    //アイコンを消す
-                    _enemyBuffUI?.HideAll();
-                    //動きを止める
-                    agent.isStopped = true;
-                    //音
-                    enemyAudio.PlayDeathSE();
-                    //Destroy(gameObject,1f);
-                }
+                OnDie();
                 break;
             case EnemyState.Stun:
                 Debug.Log("現在スタン中");
+                //スタンアニメーション
+                enemyAnimation.SetStun(true);
+
                 agent.isStopped = true;
                 break;
         }
@@ -377,6 +371,7 @@ public class EnemyController : MonoBehaviour
                 stunIndicator.SetActive(true);
                 currentState = EnemyState.Stun;
 
+               
                 float stunTime = 0f;
                 if (rank == EnemyRank.C)
                     stunTime = 8f;
@@ -406,8 +401,24 @@ public class EnemyController : MonoBehaviour
     {
         IsQTETarget = false;   // QTE フリーズを解除（IsHijacked で完全停止に移行）
         IsHijacked = true;
+        // スキル説明表示
+        EnemySkillBase skill = GetComponent<EnemySkillBase>();
+
+        // 乗っ取り成功時に敵のランクを表示
+        FindAnyObjectByType<EnemyRankUI>()?.ShowRank(this);
+
+        //乗っ取った際に自分のアイコンを消す
+        _enemyBuffUI?.HideAll();
+
+        if (skill != null)
+        {
+            FindAnyObjectByType<HijackSkillUI>()
+                ?.ShowSkill(skill);
+        }
         //乗っ取ったらスタンインディケーターを消す
         stunIndicator.SetActive(false);
+        //スタンアニメーション停止
+        enemyAnimation.SetStun(false);
         agent.enabled = false;   // NavMeshAgent を完全無効化
         var col = GetComponent<Collider>();
         if (col) col.enabled = false;
@@ -557,6 +568,8 @@ public class EnemyController : MonoBehaviour
         {
             stunIndicator.SetActive(false);
             //isStunned = false;
+            //スタンアニメーション停止
+            enemyAnimation.SetStun(false);
             currentState = EnemyState.Patrol; // スタン状態からパトロール状態に戻る
             Debug.Log("敵がスタン状態から回復しました！");
         }
@@ -802,5 +815,37 @@ public class EnemyController : MonoBehaviour
         yield return new WaitForSeconds(1f);
         exclamation.SetActive(false);
     }
+
+
+    protected virtual void OnDie()
+    {
+        if (deathprocessed)
+            return;
+
+        deathprocessed = true;
+
+        Debug.Log("敵が死亡しました！");
+        StartCoroutine(EnemyDeath());
+
+    }
+
+    IEnumerator EnemyDeath()
+    {
+        FindAnyObjectByType<MinimapController>()?.UnregisterEnemy(transform);
+
+        enemyAnimation.PlayDie();
+
+        _enemyBuffUI?.HideAll();
+
+        agent.isStopped = true;
+
+        CancelInvoke(nameof(RecoverFromStun));
+
+        enemyAudio.PlayDeathSE();
+
+        yield return new WaitForSeconds(1.5f);
+        Destroy(gameObject);
+    }   
+    
 
 }

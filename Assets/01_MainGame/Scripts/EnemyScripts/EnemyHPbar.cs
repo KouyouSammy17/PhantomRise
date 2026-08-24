@@ -5,7 +5,7 @@ public class EnemyHPbar : MonoBehaviour
 {
 
     public Slider HP;
-    public EnemyHealth EnemyHealth;
+    [SerializeField] private EnemyHealth EnemyHealth;
 
     [SerializeField] private GameObject Boss;
     [SerializeField] private GameObject BossUI;
@@ -15,9 +15,10 @@ public class EnemyHPbar : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
+       
         HP.value = EnemyHealth.HPRatio;
 
-        if (BossUI!=null&&Boss == null)
+        if (BossUI!=null&& EnemyHealth.CurrentHP <= 0)
         {
 
             BossUI.SetActive(false);
@@ -26,7 +27,11 @@ public class EnemyHPbar : MonoBehaviour
         //敵のhpが0になったら敵キャンバスを非表示にする
         if(EnemyHealth.CurrentHP <= 0)
         {
-          EnemyUI.SetActive(false);
+            if (EnemyUI == null)
+                return;
+
+            EnemyUI.SetActive(false);
+           
         }
     }
 

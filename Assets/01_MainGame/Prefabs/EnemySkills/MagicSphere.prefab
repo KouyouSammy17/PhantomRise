@@ -129,7 +129,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::MageSpellMove
   speed: 10
-  damage: 40
+  spelldamage: 40
   spawnGrace: 0.15
   rotateSpeed: 1.2
 --- !u!54 &125588300122989928

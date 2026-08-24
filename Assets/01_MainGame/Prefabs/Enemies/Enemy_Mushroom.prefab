@@ -103,6 +103,14 @@ PrefabInstance:
       propertyPath: m_Name
       value: Enemy_Mushroom
       objectReference: {fileID: 0}
+    - target: {fileID: 1870846349812241890, guid: 4ef9cf0b807c6d74ba60784351b7ecd4, type: 3}
+      propertyPath: m_IsActive
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 2161541503602205033, guid: 4ef9cf0b807c6d74ba60784351b7ecd4, type: 3}
+      propertyPath: m_IsActive
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 2827516876372056535, guid: 4ef9cf0b807c6d74ba60784351b7ecd4, type: 3}
       propertyPath: m_Name
       value: Enemy_Mushroom
@@ -127,6 +135,14 @@ PrefabInstance:
       propertyPath: m_Enabled
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 4756305259862447443, guid: 4ef9cf0b807c6d74ba60784351b7ecd4, type: 3}
+      propertyPath: m_AnchoredPosition.x
+      value: 52.34
+      objectReference: {fileID: 0}
+    - target: {fileID: 5164545839933940896, guid: 4ef9cf0b807c6d74ba60784351b7ecd4, type: 3}
+      propertyPath: m_IsActive
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 6274497160392044223, guid: 4ef9cf0b807c6d74ba60784351b7ecd4, type: 3}
       propertyPath: m_Enabled
       value: 0
@@ -139,6 +155,14 @@ PrefabInstance:
       propertyPath: m_AnchorMax.y
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 7531744829160149756, guid: 4ef9cf0b807c6d74ba60784351b7ecd4, type: 3}
+      propertyPath: m_AnchoredPosition.x
+      value: 39.46
+      objectReference: {fileID: 0}
+    - target: {fileID: 7531744829160149756, guid: 4ef9cf0b807c6d74ba60784351b7ecd4, type: 3}
+      propertyPath: m_AnchoredPosition.y
+      value: 26.44
+      objectReference: {fileID: 0}
     - target: {fileID: 8060403493178725083, guid: 4ef9cf0b807c6d74ba60784351b7ecd4, type: 3}
       propertyPath: m_Size.x
       value: 1.1207762
@@ -146,6 +170,10 @@ PrefabInstance:
     - target: {fileID: 8060403493178725083, guid: 4ef9cf0b807c6d74ba60784351b7ecd4, type: 3}
       propertyPath: m_Center.x
       value: -0.004975885
+      objectReference: {fileID: 0}
+    - target: {fileID: 8075276811189004232, guid: 4ef9cf0b807c6d74ba60784351b7ecd4, type: 3}
+      propertyPath: m_AnchoredPosition.x
+      value: 44
       objectReference: {fileID: 0}
     - target: {fileID: 9222787218964806624, guid: 4ef9cf0b807c6d74ba60784351b7ecd4, type: 3}
       propertyPath: m_LocalScale.x
@@ -211,9 +239,6 @@ PrefabInstance:
     - targetCorrespondingSourceObject: {fileID: 2827516876372056535, guid: 4ef9cf0b807c6d74ba60784351b7ecd4, type: 3}
       insertIndex: -1
       addedObject: {fileID: -8567238757085646519}
-    - targetCorrespondingSourceObject: {fileID: 2827516876372056535, guid: 4ef9cf0b807c6d74ba60784351b7ecd4, type: 3}
-      insertIndex: -1
-      addedObject: {fileID: 8737427672325186453}
   m_SourcePrefab: {fileID: 100100000, guid: 4ef9cf0b807c6d74ba60784351b7ecd4, type: 3}
 --- !u!4 &4550612406007009513 stripped
 Transform:
@@ -239,17 +264,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::MushroomEnemySkill
   skillCooldown: 10
   skillRange: 2
+  SkillName: "\u6BD2"
+  SkillDescription: "\u5F53\u305F\u3063\u305F\u6575\u3092\u6BD2\u72B6\u614B\u3092\u3059\u308B"
+  skillID: mushroom
   poisonPrefab: {fileID: 875280686190255636, guid: 9315653a07ae23b45bab24227d8ff76e, type: 3}
   animator: {fileID: 8120535682337864808}
---- !u!114 &8737427672325186453
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 7487149021240521438}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: dcc101f241bd541459d349022cff1231, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::EnemyAnimation

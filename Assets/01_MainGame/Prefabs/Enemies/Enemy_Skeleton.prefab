@@ -78,6 +78,22 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 0}
     m_Modifications:
+    - target: {fileID: 221236301236523720, guid: 4ef9cf0b807c6d74ba60784351b7ecd4, type: 3}
+      propertyPath: m_Sprite
+      value: 
+      objectReference: {fileID: 21300000, guid: 26fc130cfb80b4eda827b5649065a9f1, type: 3}
+    - target: {fileID: 221236301236523720, guid: 4ef9cf0b807c6d74ba60784351b7ecd4, type: 3}
+      propertyPath: m_Color.b
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 221236301236523720, guid: 4ef9cf0b807c6d74ba60784351b7ecd4, type: 3}
+      propertyPath: m_Color.g
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 221236301236523720, guid: 4ef9cf0b807c6d74ba60784351b7ecd4, type: 3}
+      propertyPath: m_Color.r
+      value: 1
+      objectReference: {fileID: 0}
     - target: {fileID: 809926345217269769, guid: 4ef9cf0b807c6d74ba60784351b7ecd4, type: 3}
       propertyPath: eHitSE
       value: 
@@ -95,6 +111,10 @@ PrefabInstance:
       value: 1.098
       objectReference: {fileID: 0}
     - target: {fileID: 1870846349812241890, guid: 4ef9cf0b807c6d74ba60784351b7ecd4, type: 3}
+      propertyPath: m_IsActive
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 2161541503602205033, guid: 4ef9cf0b807c6d74ba60784351b7ecd4, type: 3}
       propertyPath: m_IsActive
       value: 0
       objectReference: {fileID: 0}
@@ -118,9 +138,23 @@ PrefabInstance:
       propertyPath: m_Enabled
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 4756305259862447443, guid: 4ef9cf0b807c6d74ba60784351b7ecd4, type: 3}
+      propertyPath: m_AnchoredPosition.x
+      value: 52.48
+      objectReference: {fileID: 0}
+    - target: {fileID: 4756305259862447443, guid: 4ef9cf0b807c6d74ba60784351b7ecd4, type: 3}
+      propertyPath: m_AnchoredPosition.y
+      value: 26.13
+      objectReference: {fileID: 0}
     - target: {fileID: 5164545839933940896, guid: 4ef9cf0b807c6d74ba60784351b7ecd4, type: 3}
       propertyPath: m_IsActive
       value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 5180669368348163072, guid: 4ef9cf0b807c6d74ba60784351b7ecd4, type: 3}
+      propertyPath: m_text
+      value: 'C
+
+'
       objectReference: {fileID: 0}
     - target: {fileID: 6443116343119807069, guid: 4ef9cf0b807c6d74ba60784351b7ecd4, type: 3}
       propertyPath: rank
@@ -156,11 +190,11 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 7531744829160149756, guid: 4ef9cf0b807c6d74ba60784351b7ecd4, type: 3}
       propertyPath: m_AnchoredPosition.x
-      value: 27.5
+      value: 39.22
       objectReference: {fileID: 0}
     - target: {fileID: 7531744829160149756, guid: 4ef9cf0b807c6d74ba60784351b7ecd4, type: 3}
       propertyPath: m_AnchoredPosition.y
-      value: 22.6
+      value: 26.16
       objectReference: {fileID: 0}
     - target: {fileID: 7762544295177896909, guid: 4ef9cf0b807c6d74ba60784351b7ecd4, type: 3}
       propertyPath: maxHP
@@ -193,6 +227,10 @@ PrefabInstance:
     - target: {fileID: 8060403493178725083, guid: 4ef9cf0b807c6d74ba60784351b7ecd4, type: 3}
       propertyPath: m_Center.z
       value: 0.06847
+      objectReference: {fileID: 0}
+    - target: {fileID: 8075276811189004232, guid: 4ef9cf0b807c6d74ba60784351b7ecd4, type: 3}
+      propertyPath: m_AnchoredPosition.x
+      value: 42.63
       objectReference: {fileID: 0}
     - target: {fileID: 8177876927593807261, guid: 4ef9cf0b807c6d74ba60784351b7ecd4, type: 3}
       propertyPath: m_IsActive
@@ -261,9 +299,6 @@ PrefabInstance:
     - targetCorrespondingSourceObject: {fileID: 2827516876372056535, guid: 4ef9cf0b807c6d74ba60784351b7ecd4, type: 3}
       insertIndex: -1
       addedObject: {fileID: -5714315866886243194}
-    - targetCorrespondingSourceObject: {fileID: 2827516876372056535, guid: 4ef9cf0b807c6d74ba60784351b7ecd4, type: 3}
-      insertIndex: -1
-      addedObject: {fileID: 3043569243317601620}
   m_SourcePrefab: {fileID: 100100000, guid: 4ef9cf0b807c6d74ba60784351b7ecd4, type: 3}
 --- !u!4 &280522438609719374 stripped
 Transform:
@@ -299,19 +334,10 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::SkeletonEnemySkill
   skillCooldown: 5
   skillRange: 6
+  SkillName: "3\u9023\u6483"
+  SkillDescription: "\u65AC\u6483\u30923\u3064\u98DB\u3070\u3059"
+  skillID: Skelton
   SlashPrefab: {fileID: 2078651765059141772, guid: 91987f8d5a96adf4591c4345303c03ff, type: 3}
   slashSpawnPoint: {fileID: 3485700809582975880}
   slashCount: 3
   slashInterval: 0.3
---- !u!114 &3043569243317601620
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 6567420515636949625}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: dcc101f241bd541459d349022cff1231, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::EnemyAnimation
