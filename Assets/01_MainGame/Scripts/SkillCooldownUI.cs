@@ -45,6 +45,13 @@ public class SkillCooldownUI : MonoBehaviour
     // 現在追跡中の敵スキル
     private EnemySkillBase _trackedSkill;
 
+    private void Awake()
+    {
+        // Inspector で未アサインでもシーンから自動取得する
+        if (playerMachine == null)
+            playerMachine = FindAnyObjectByType<PlayerStateMachine>();
+    }
+
     private void Update()
     {
         bool isHijacked = playerMachine != null
