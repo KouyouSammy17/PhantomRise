@@ -311,7 +311,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::MageEnemySkill
   skillCooldown: 3
   skillRange: 12
-  SkillName: "\u9B54\u6CD5\u5F3E"
+  skillName: MagicSphere
+  skillIcon: {fileID: 21300000, guid: cc83ded8aa1946b1847f5722417b701e, type: 3}
   SkillDescription: "\u524D\u65B9\u306B\u8FFD\u5C3E\u3059\u308B\u9B54\u6CD5\u306E\u5F3E\u3092\u767A\u5C04\u3059\u308B"
   skillID: mage
   mageSpellPrefab: {fileID: 5707355075692512471, guid: f84abd49b38fc594e8a611e0f95253f3, type: 3}
