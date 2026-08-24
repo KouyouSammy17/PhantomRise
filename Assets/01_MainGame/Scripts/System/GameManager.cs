@@ -48,6 +48,8 @@ public class GameManager : MonoBehaviour
     [Header("=== シーン ===")]
     [SerializeField] private string gameSceneName = "";   // 空なら現在のシーンをリロード
     [SerializeField] private string titleSceneName = "TitleScene";
+    [SerializeField] private string tutorialSceneName = "Tutorials";
+    [SerializeField] private string stage2SceneName = "Stage2";
 
     // ─────────────────────────────────────────
     // UnityEvents（UIManager などへ通知）
@@ -131,5 +133,24 @@ public class GameManager : MonoBehaviour
     {
         Time.timeScale = 1f;
         SceneManager.LoadScene(titleSceneName);
+    }
+
+    /// <summary>
+    /// チュートリアルシーンへ遷移する。
+    /// </summary>
+    public void GoToTutorial()
+    {
+        Time.timeScale = 1f;
+        SceneManager.LoadScene(tutorialSceneName);
+    }
+
+    /// <summary>
+    /// ステージ2へ遷移する。
+    /// ステージ1クリア後の「次へ」ボタンなどから呼ぶ。
+    /// </summary>
+    public void GoToStage2()
+    {
+        Time.timeScale = 1f;
+        SceneManager.LoadScene(stage2SceneName);
     }
 }
