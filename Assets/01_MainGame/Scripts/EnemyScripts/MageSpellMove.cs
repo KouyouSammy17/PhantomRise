@@ -6,7 +6,9 @@ public class MageSpellMove : MonoBehaviour
     private Rigidbody rb;
 
     /// <summary>MageEnemySkill から生成時に設定されるダメージ量</summary>
-    [SerializeField] private int damage = 10;
+   // [SerializeField] private int damage = 10;
+
+    [SerializeField] private int spelldamage = 10;
 
     // 生成直後に自分自身に当たらないようにする猶予時間（秒）
     [SerializeField] private float spawnGrace = 0.15f;
@@ -23,11 +25,11 @@ public class MageSpellMove : MonoBehaviour
     //追尾するためのtransform
     private Transform target;
 
-    public int Damage
-    {
-        get => damage;
-        set => damage = value;
-    }
+    //public int Damage
+    //{
+    //    get => damage;
+    //    set => damage = value;
+    //}
 
     public void SetOwner(EnemyController enemy)
     {
@@ -109,9 +111,9 @@ public class MageSpellMove : MonoBehaviour
             PlayerStateMachine machine = target.GetComponentInParent<PlayerStateMachine>();
             if (machine != null && machine.CurrentStateName == nameof(HijackedState))
             {
-                machine.PlayerHP?.TakeDamage(damage);
+                machine.PlayerHP?.TakeDamage(spelldamage);
                
-                Debug.Log($"[MageSpell] 乗っ取り中プレイヤーに {damage} ダメージ");
+                Debug.Log($"[MageSpell] 乗っ取り中プレイヤーに {spelldamage} ダメージ");
             }
             Destroy(gameObject);
         }
@@ -126,8 +128,8 @@ public class MageSpellMove : MonoBehaviour
             if (enemy != null && !enemy.IsHijacked && enemy != owner)
             {
                 _hasHit = true;
-                enemy.TakeDamage(damage);
-                Debug.Log($"[MageSpell] {enemy.name} に {damage} ダメージ");
+                enemy.TakeDamage(spelldamage);
+                Debug.Log($"[MageSpell] {enemy.name} に {spelldamage} ダメージ");
 
               
                 Destroy(gameObject);

@@ -22,8 +22,14 @@ public class BossSkill : EnemySkillBase
     // スキル使用中かどうかを外部から確認できるようにするプロパティ
     public bool IsUsingSkill => isUsingSkill;
 
+   [SerializeField] private BossController controller;
+
     public override bool TryUseSkill()
     {
+        if (controller != null && controller.IsDead)
+            return false;
+
+
         if (!CanUseSkill() || isUsingSkill)
             return false;
 
@@ -36,6 +42,9 @@ public class BossSkill : EnemySkillBase
 
     private IEnumerator ShockwaveAttack()
     {
+        if(controller.IsDead)
+            yield break;
+
         Debug.Log("ボスが衝撃波を発動しました。");
        
         //スキルが発動したらagentの動きを止める
@@ -66,6 +75,17 @@ public class BossSkill : EnemySkillBase
 
         while (currentScale < targetScale)
         {
+            if (controller.IsDead)
+            {
+                Destroy(warning);
+                Destroy(wave);
+
+                isUsingSkill = false;
+                yield break;
+            }
+
+
+
             Debug.Log("SkillRange = " + SkillRange);
             Debug.Log("TargetScale = " + targetScale);
             // 時間の経過に合わせて広がる
@@ -104,6 +124,15 @@ public class BossSkill : EnemySkillBase
         //    "AttackRadius = " +
         //    attackRadius);
 
+
+        if (controller.IsDead)
+        {
+            Destroy(warning);
+            Destroy(wave);
+
+            isUsingSkill = false;
+            yield break;
+        }
 
         // 波が端まで到達（目標サイズと重なった）直後に攻撃判定を行う
         // ====== 攻撃 ======

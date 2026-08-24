@@ -10,6 +10,7 @@ using Cysharp.Threading.Tasks;
 using UnityEngine;
 using UnityEngine.Events;
 using UnityEngine.InputSystem;
+using System.Collections;
 
 [RequireComponent(typeof(CharacterController))]
 [RequireComponent(typeof(PlayerInput))]
@@ -150,6 +151,15 @@ public class PlayerStateMachine : MonoBehaviour
     private InputAction _dodgeAction;
     private InputAction _skillAction;
     private InputAction _disposeAction;
+
+    // ─────────────────────────────────────────
+    // プレイヤーのバフUI表示
+    // ─────────────────────────────────────────
+
+    private Coroutine demonBuffCoroutine;
+    private Coroutine specterBuffCoroutine;
+
+
 
     // ─────────────────────────────────────────
     // Unity ライフサイクル
@@ -403,6 +413,8 @@ public class PlayerStateMachine : MonoBehaviour
         if (CurrentStateName == nameof(GhostState))
         {
             GhostAnim?.SetMove(MoveInput.sqrMagnitude > 0.01f);
+            //幽霊の時は敵のランクを消す
+            FindAnyObjectByType<EnemyRankUI>()?.HideRank();
         }
         else if (CurrentStateName == nameof(HijackedState))
         {
@@ -523,6 +535,89 @@ public class PlayerStateMachine : MonoBehaviour
     public void SetPMoveSpeedMultiplier(float multiplier)
     {
         _speedMultiplier= multiplier;
+    }
+
+    // ─────────────────────────────────────────
+    // デーモンのバフ（コルーチン）
+    //  ─────────────────────────────────────────
+
+
+    public void StartDemonBuff(float duration)
+    {
+        if (demonBuffCoroutine != null)
+            StopCoroutine(demonBuffCoroutine);
+
+        demonBuffCoroutine = StartCoroutine(DemonBuffRoutine(duration));
+    }
+
+
+    private IEnumerator DemonBuffRoutine(float duration)
+    {
+        BuffUIController.Instance.ShowBuff(BuffType.DemonBuff);
+
+        yield return new WaitForSeconds(duration);
+
+        BuffUIController.Instance.HideBuff(BuffType.DemonBuff);
+
+        demonBuffCoroutine = null;
+    }
+
+    public void StopDemonBuff()
+    {
+        if (demonBuffCoroutine != null)
+        {
+            StopCoroutine(demonBuffCoroutine);
+            demonBuffCoroutine = null;
+        }
+
+        // UI解除
+        BuffUIController.Instance.HideBuff(BuffType.DemonBuff);
+
+        // デーモンバフ効果解除
+        SetPMoveSpeedMultiplier(1f);
+
+        Debug.Log("デーモンバフ解除");
+    }
+
+    // ─────────────────────────────────────────
+    // スペクターのバフ（コルーチン）
+    //  ─────────────────────────────────────────
+
+    public void StartSpecterBuff(float duration)
+    {
+        if (specterBuffCoroutine != null)
+            StopCoroutine(specterBuffCoroutine);
+
+        specterBuffCoroutine = StartCoroutine(SpecterBuffRoutine(duration));
+    }
+
+
+    private IEnumerator SpecterBuffRoutine(float duration)
+    {
+        BuffUIController.Instance.ShowBuff(BuffType.SpecterBuff);
+
+        yield return new WaitForSeconds(duration);
+
+        BuffUIController.Instance.HideBuff(BuffType.SpecterBuff);
+
+        specterBuffCoroutine = null;
+    }
+
+    public void StopSpecterBuff()
+    {
+        if (specterBuffCoroutine != null)
+        {
+            StopCoroutine(specterBuffCoroutine);
+            specterBuffCoroutine = null;
+        }
+
+        // UI解除
+        BuffUIController.Instance.HideBuff(BuffType.SpecterBuff);
+
+        // スペクターバフ効果解除
+        SetPMoveSpeedMultiplier(1f);
+
+        Debug.Log("スペクターバフ解除");
     }
 
 }

@@ -29,8 +29,18 @@ public class BossController : EnemyController
 
     private bool isInvincible;
 
+    //private EnemyAnimation enemyAnimation;
+
+    private NavMeshAgent Bossagent;
+
+    [SerializeField]private bool isDie=false;
+
+    public bool IsDead => isDie;
+
     protected override void Start()
     {
+        //enemyAnimation = GetComponent<EnemyAnimation>();
+        Bossagent = GetComponent<NavMeshAgent>();
         base.Start();
 
         summonTimer = summonCooldown;
@@ -45,7 +55,7 @@ public class BossController : EnemyController
 
         if (bossHealth.CurrentHP <= 0)
         {
-            Die();
+            OnDie();
             return;
         }
 
@@ -118,13 +128,45 @@ public class BossController : EnemyController
         return !immuneToBurn;
     }
 
-    private void Die()
+    //private void Die()
+    //{
+    //    if(isdead)
+    //        return;
+
+    //    isdead = true;
+
+
+    //    Debug.Log("ボス撃破");
+
+    //   // GameManager.Instance.TriggerGameClear();
+
+    //    StartCoroutine(Clear());
+
+
+
+    //}
+
+    protected override void OnDie()
     {
+        if (isDie) return;
+
+
+        isDie = true;
+
         Debug.Log("ボス撃破");
 
-        GameManager.Instance.TriggerGameClear();
-
-        Destroy(gameObject);
+        StartCoroutine(Clear());
     }
+
+    private IEnumerator Clear()
+    {
+        enemyAnimation.PlayDie();
+        Bossagent.isStopped = true;
+
+        yield return new WaitForSeconds(1.5f);
+        //Destroy(gameObject);
+        GameManager.Instance.TriggerGameClear();
+    }
+
 
 }

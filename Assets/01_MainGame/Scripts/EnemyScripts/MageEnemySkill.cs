@@ -30,7 +30,7 @@ public class MageEnemySkill : EnemySkillBase
 
         GameObject obj = Instantiate(mageSpellPrefab, spawnPos, spawnRot);
 
-        // 魔法にダメージ値を渡す
+        // 魔法を発射する際に、オーナー情報を設定する
         MageSpellMove spell = obj.GetComponent<MageSpellMove>();
 
         //spell.SetOwner(GetComponent<EnemyController>()); // オーナー設定
@@ -39,7 +39,7 @@ public class MageEnemySkill : EnemySkillBase
         if (spell != null)
         {
             spell.SetOwner(enemyController);
-            spell.Damage = enemyController.AttackPower;
+            //spell.Damage = enemyController.AttackPower;
 
             Transform target = null;
 

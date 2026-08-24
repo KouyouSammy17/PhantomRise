@@ -14,6 +14,21 @@ public abstract class EnemySkillBase : MonoBehaviour
 
     public float SkillRange => skillRange;
 
+
+
+
+    // UI 用のスキル名と説明
+    public string SkillName;
+    [TextArea]
+    public string SkillDescription;
+
+    [Header("スキル設定")]
+    [SerializeField] private string skillID;
+
+    public string SkillID => skillID;
+
+
+
     protected virtual void Start()
     {
         enemyController = GetComponent<EnemyController>();

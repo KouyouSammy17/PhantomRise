@@ -19,6 +19,7 @@ public class EnemyAnimation : MonoBehaviour
     private Coroutine attackCoroutine;
     private Coroutine skillCoroutine;
     private Coroutine hitCoroutine;
+    private Coroutine stunCoroutine;
 
     // ←追加
     private bool useAgentMove = true;
@@ -117,7 +118,7 @@ public class EnemyAnimation : MonoBehaviour
         // 死亡アニメーション時間
         yield return new WaitForSeconds(1f);
 
-        Destroy(gameObject);
+        //Destroy(gameObject);
     }
 
     //被ダメージ時のアニメーション
@@ -141,5 +142,50 @@ public class EnemyAnimation : MonoBehaviour
 
         isPlayingAction= false;
 
+    }
+
+    //被ダメージ時のアニメーション
+    //public void PlayStun()
+    //{
+    //    if (isDead) return;
+
+    //    if (stunCoroutine != null)
+    //        StopCoroutine(stunCoroutine);
+
+    //    stunCoroutine = StartCoroutine(StunRoutine());
+
+    //}
+
+    ////スタンアニメーション
+    //private IEnumerator StunRoutine()
+    //{
+    //    isPlayingAction = true;
+
+    //    animator.SetTrigger("Stun");
+
+    //    yield return new WaitForSeconds(1f); 
+        
+    //    isPlayingAction = false;
+
+    //}
+
+    public void SetStun(bool stun)
+    {
+       if (isDead == true)
+        {
+            return;
+        }
+
+        Debug.Log($"SetStun : {stun}");
+
+        animator.SetBool("Stun", stun);
+
+       
+        isPlayingAction = stun;
+        // スタン中は移動アニメーションを止める
+        if (stun)
+        {
+            animator.SetBool("Move", false);
+        }
     }
 }

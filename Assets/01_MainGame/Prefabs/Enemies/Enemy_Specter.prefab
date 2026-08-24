@@ -185,7 +185,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: 0, y: 0}
+  m_AnchoredPosition: {x: -7.46, y: 0}
   m_SizeDelta: {x: 100, y: 100}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!1 &7583692798395415570
@@ -423,6 +423,22 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 0}
     m_Modifications:
+    - target: {fileID: 221236301236523720, guid: 4ef9cf0b807c6d74ba60784351b7ecd4, type: 3}
+      propertyPath: m_Sprite
+      value: 
+      objectReference: {fileID: 21300000, guid: 752a9e2bdbf2d46839d44c37ab18a187, type: 3}
+    - target: {fileID: 221236301236523720, guid: 4ef9cf0b807c6d74ba60784351b7ecd4, type: 3}
+      propertyPath: m_Color.b
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 221236301236523720, guid: 4ef9cf0b807c6d74ba60784351b7ecd4, type: 3}
+      propertyPath: m_Color.g
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 221236301236523720, guid: 4ef9cf0b807c6d74ba60784351b7ecd4, type: 3}
+      propertyPath: m_Color.r
+      value: 1
+      objectReference: {fileID: 0}
     - target: {fileID: 809926345217269769, guid: 4ef9cf0b807c6d74ba60784351b7ecd4, type: 3}
       propertyPath: eSkillSE
       value: 
@@ -471,9 +487,19 @@ PrefabInstance:
       propertyPath: 'm_Materials.Array.data[0]'
       value: 
       objectReference: {fileID: 2100000, guid: 04d05da06beeb4c4292f21c0c386da0e, type: 2}
+    - target: {fileID: 4756305259862447443, guid: 4ef9cf0b807c6d74ba60784351b7ecd4, type: 3}
+      propertyPath: m_AnchoredPosition.x
+      value: 62.66
+      objectReference: {fileID: 0}
     - target: {fileID: 5164545839933940896, guid: 4ef9cf0b807c6d74ba60784351b7ecd4, type: 3}
       propertyPath: m_IsActive
       value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 5180669368348163072, guid: 4ef9cf0b807c6d74ba60784351b7ecd4, type: 3}
+      propertyPath: m_text
+      value: 'B
+
+'
       objectReference: {fileID: 0}
     - target: {fileID: 6443116343119807069, guid: 4ef9cf0b807c6d74ba60784351b7ecd4, type: 3}
       propertyPath: rank
@@ -497,7 +523,11 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 7531744829160149756, guid: 4ef9cf0b807c6d74ba60784351b7ecd4, type: 3}
       propertyPath: m_AnchoredPosition.x
-      value: 25.1
+      value: 50.92
+      objectReference: {fileID: 0}
+    - target: {fileID: 7531744829160149756, guid: 4ef9cf0b807c6d74ba60784351b7ecd4, type: 3}
+      propertyPath: m_AnchoredPosition.y
+      value: 25.69
       objectReference: {fileID: 0}
     - target: {fileID: 7762544295177896909, guid: 4ef9cf0b807c6d74ba60784351b7ecd4, type: 3}
       propertyPath: _maxHP
@@ -505,7 +535,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 8075276811189004232, guid: 4ef9cf0b807c6d74ba60784351b7ecd4, type: 3}
       propertyPath: m_AnchoredPosition.x
-      value: 56.02
+      value: 48.56
       objectReference: {fileID: 0}
     - target: {fileID: 8075276811189004232, guid: 4ef9cf0b807c6d74ba60784351b7ecd4, type: 3}
       propertyPath: m_AnchoredPosition.y
@@ -570,15 +600,12 @@ PrefabInstance:
       insertIndex: 0
       addedObject: {fileID: 6765316550764710585}
     - targetCorrespondingSourceObject: {fileID: 6264205318217654041, guid: 4ef9cf0b807c6d74ba60784351b7ecd4, type: 3}
-      insertIndex: -1
+      insertIndex: 5
       addedObject: {fileID: 6552198670299125542}
     m_AddedComponents:
     - targetCorrespondingSourceObject: {fileID: 2827516876372056535, guid: 4ef9cf0b807c6d74ba60784351b7ecd4, type: 3}
       insertIndex: -1
       addedObject: {fileID: 6287128912779391231}
-    - targetCorrespondingSourceObject: {fileID: 2827516876372056535, guid: 4ef9cf0b807c6d74ba60784351b7ecd4, type: 3}
-      insertIndex: -1
-      addedObject: {fileID: 4683551196166367137}
   m_SourcePrefab: {fileID: 100100000, guid: 4ef9cf0b807c6d74ba60784351b7ecd4, type: 3}
 --- !u!1 &1105029668325424456 stripped
 GameObject:
@@ -599,6 +626,9 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::SpecterEnemySkill
   skillCooldown: 10
   skillRange: 8
+  SkillName: "\u900F\u660E\u5316"
+  SkillDescription: "5\u79D2\u9593\u900F\u660E\u306B\u306A\u308A\u3001\n1\u56DE\u653B\u6483\u3059\u308B\u307E\u3067\u30B9\u30D4\u30FC\u30C9\u3068\u653B\u6483\u529B\u304C\u4E0A\u304C\u308B"
+  skillID: Specter
   invisibleDuration: 5
   bodyRenderers:
   - {fileID: 6765316550769630193}
@@ -607,18 +637,6 @@ MonoBehaviour:
   invisibleMat: {fileID: 2100000, guid: 04d05da06beeb4c4292f21c0c386da0e, type: 2}
   bufficon: {fileID: 6696025257337698450}
   buffParticle: {fileID: 19831716, guid: bb23163a0b24b99489c01eeb4b18a215, type: 3}
---- !u!114 &4683551196166367137
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1105029668325424456}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: dcc101f241bd541459d349022cff1231, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::EnemyAnimation
 --- !u!4 &6311070449169145727 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 9222787218964806624, guid: 4ef9cf0b807c6d74ba60784351b7ecd4, type: 3}

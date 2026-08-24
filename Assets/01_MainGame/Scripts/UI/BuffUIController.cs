@@ -3,7 +3,10 @@ using UnityEngine;
 
 public class BuffUIController : MonoBehaviour
 {
-
+    //─────────────────────────────────────────
+    /// <summary>
+    /// プレイヤー用のバフUIコントローラーのシングルトンインスタンス
+    /// </summary>
     public static BuffUIController Instance;
 
     [SerializeField] private GameObject demonIcon;

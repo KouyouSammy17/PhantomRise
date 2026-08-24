@@ -185,6 +185,10 @@ public class HijackedState : PlayerBaseState
     {
         Debug.Log($"[Hijacked] ボディ転送: {_enemy?.name} → {newEnemy.name}");
 
+        // 乗っ取る敵が変わるので現在のバフUIを解除
+        Machine.StopDemonBuff();
+        Machine.StopSpecterBuff();
+
         EnemyController oldEnemy = _enemy;
 
         // ── 旧ビジュアルを元の親に戻す ──────────────────
