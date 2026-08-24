@@ -37,11 +37,15 @@ public class EnemyAnimation : MonoBehaviour
     {
         UpdateMoveAnimation();
     }
-
-    private void UpdateMoveAnimation()
+     private void UpdateMoveAnimation()
     {
         // 攻撃・スキル中は移動アニメーション変更しない
         if (isPlayingAction)
+            return;
+
+        // 乗っ取り中は agent が無効 → velocity が常に 0 になり
+        // SetMove() の値を上書きしてしまうのでスキップ
+        if (agent == null || !agent.enabled)
             return;
 
         bool moving = agent.velocity.magnitude > 0.1f;

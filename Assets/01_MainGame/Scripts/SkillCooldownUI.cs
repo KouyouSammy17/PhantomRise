@@ -6,16 +6,20 @@
 //   ・playerMachine  — PlayerStateMachine を Inspector でアサイン
 //   ・cooldownMask   — Image (Type: Filled, Fill Method: Radial360 など)
 //   ・skillUIPanel   — このまるごとの親パネル（乗っ取り中のみ表示）
+//   ・skillIconImage — スキルアイコン表示用 Image（SkillIcon そのもの）
+//   ・skillNameText  — スキル名表示用 TextMeshProUGUI（任意）
 //
 // 動作:
 //   ・HijackedState 中のみパネルを表示
 //   ・現在乗っ取っている敵の EnemySkillBase から CooldownFillAmount を読み取り
 //     cooldownMask.fillAmount に反映（0 = 使用可能, 1 = クールダウン中）
+//   ・敵ごとの SkillIcon / SkillName（EnemySkillBase で設定）に自動で切り替え
 //   ・ボディ転送後も自動で新しい敵のスキルに切り替わる
 // ============================================================
 
 using UnityEngine;
 using UnityEngine.UI;
+using TMPro;
 
 public class SkillCooldownUI : MonoBehaviour
 {
@@ -28,6 +32,15 @@ public class SkillCooldownUI : MonoBehaviour
 
     /// <summary>スキル UI 全体のパネル（乗っ取り中のみ表示）</summary>
     [SerializeField] private GameObject skillUIPanel;
+
+    /// <summary>スキルアイコン表示用 Image（敵ごとに自動で差し替わる）</summary>
+    [SerializeField] private Image skillIconImage;
+
+    /// <summary>スキル名表示用テキスト（未アサインでも可）</summary>
+    [SerializeField] private TextMeshProUGUI skillNameText;
+
+    /// <summary>SkillIcon が未設定の敵に使うフォールバックアイコン</summary>
+    [SerializeField] private Sprite defaultIcon;
 
     // 現在追跡中の敵スキル
     private EnemySkillBase _trackedSkill;
@@ -55,11 +68,18 @@ public class SkillCooldownUI : MonoBehaviour
             // 敵が変わったとき（転送後）に再キャッシュ
             EnemySkillBase skill = enemy.GetComponent<EnemySkillBase>();
             if (skill != _trackedSkill)
+            {
                 _trackedSkill = skill;
+                RefreshSkillVisual();
+            }
         }
         else
         {
-            _trackedSkill = null;
+            if (_trackedSkill != null)
+            {
+                _trackedSkill = null;
+                RefreshSkillVisual();
+            }
         }
 
         // クールダウンを反映
@@ -67,5 +87,31 @@ public class SkillCooldownUI : MonoBehaviour
             cooldownMask.fillAmount = _trackedSkill != null
                 ? _trackedSkill.CooldownFillAmount
                 : 0f;
+    }
+
+    /// <summary>
+    /// 追跡中のスキルに合わせてアイコンとスキル名を更新する。
+    /// 敵が切り替わったとき（乗っ取り・ボディ転送）に呼ばれる。
+    /// </summary>
+    private void RefreshSkillVisual()
+    {
+        // アイコン
+        if (skillIconImage != null)
+        {
+            Sprite icon = _trackedSkill != null && _trackedSkill.SkillIcon != null
+                ? _trackedSkill.SkillIcon
+                : defaultIcon;
+
+            if (icon != null)
+                skillIconImage.sprite = icon;
+        }
+
+        // スキル名
+        if (skillNameText != null)
+        {
+            skillNameText.text = _trackedSkill != null
+                ? _trackedSkill.SkillName
+                : "";
+        }
     }
 }
