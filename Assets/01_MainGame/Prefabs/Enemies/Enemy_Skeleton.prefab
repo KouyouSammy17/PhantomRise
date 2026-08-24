@@ -334,7 +334,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::SkeletonEnemySkill
   skillCooldown: 5
   skillRange: 6
-  SkillName: "3\u9023\u6483"
+  skillName: TripleSlash
+  skillIcon: {fileID: 21300000, guid: 5069775d81704c7591b297ebff5b5ca7, type: 3}
   SkillDescription: "\u65AC\u6483\u30923\u3064\u98DB\u3070\u3059"
   skillID: Skelton
   SlashPrefab: {fileID: 2078651765059141772, guid: 91987f8d5a96adf4591c4345303c03ff, type: 3}

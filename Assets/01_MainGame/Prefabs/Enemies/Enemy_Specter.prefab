@@ -626,7 +626,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::SpecterEnemySkill
   skillCooldown: 10
   skillRange: 8
-  SkillName: "\u900F\u660E\u5316"
+  skillName: Invisible
+  skillIcon: {fileID: 21300000, guid: 2c2a868fc9c84b1fb7528a202683c9b7, type: 3}
   SkillDescription: "5\u79D2\u9593\u900F\u660E\u306B\u306A\u308A\u3001\n1\u56DE\u653B\u6483\u3059\u308B\u307E\u3067\u30B9\u30D4\u30FC\u30C9\u3068\u653B\u6483\u529B\u304C\u4E0A\u304C\u308B"
   skillID: Specter
   invisibleDuration: 5

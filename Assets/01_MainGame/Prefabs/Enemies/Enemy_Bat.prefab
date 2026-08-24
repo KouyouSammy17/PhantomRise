@@ -309,7 +309,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::BatEnemySkill
   skillCooldown: 3
   skillRange: 1
-  SkillName: "\u5438\u8840"
+  skillName: Bloodsucking
+  skillIcon: {fileID: 21300000, guid: ba63880fbf224c1c98b44e5226ba95b5, type: 3}
   SkillDescription: "\u5F53\u305F\u3063\u305F\u76F8\u624B\u306B\u4E0E\u3048\u305F\u30C0\u30E1\u30FC\u30B8\u3068\u540C\u3058\u5206\u3060\u3051HP\u3092\u5438\u53CE\u3059\u308B\n"
   skillID: bat
   bitePrefab: {fileID: 3023999648932019501, guid: 01bdc0c3dd0a9824daf88d726d063144, type: 3}
