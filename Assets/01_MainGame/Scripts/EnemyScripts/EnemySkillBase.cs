@@ -14,11 +14,17 @@ public abstract class EnemySkillBase : MonoBehaviour
 
     public float SkillRange => skillRange;
 
+    [Header("スキルUI表示")]
+    /// <summary>スキル名（乗っ取り中の SkillCooldownUI に表示される）</summary>
+    [SerializeField] private string skillName = "スキル";
 
+    /// <summary>スキルアイコン（Assets/01_MainGame/Sprites/SkillIcons のスプライトをアサイン）</summary>
+    [SerializeField] private Sprite skillIcon;
 
+    public string SkillName => skillName;
+    public Sprite SkillIcon => skillIcon;
 
     // UI 用のスキル名と説明
-    public string SkillName;
     [TextArea]
     public string SkillDescription;
 
