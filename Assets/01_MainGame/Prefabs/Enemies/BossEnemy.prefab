@@ -1,5 +1,80 @@
 %YAML 1.1
 %TAG !u! tag:unity3d.com,2011:
+--- !u!1 &1145567319204238459
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1749080367960002944}
+  - component: {fileID: 9106854094588943607}
+  m_Layer: 0
+  m_Name: CinemachineCamera Boss
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &1749080367960002944
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1145567319204238459}
+  serializedVersion: 2
+  m_LocalRotation: {x: -0, y: -0.9999999, z: -0.00052356074, w: 0}
+  m_LocalPosition: {x: -0.02, y: 1.3466667, z: 4.1600037}
+  m_LocalScale: {x: 0.6666665, y: 0.6666667, z: 0.6666665}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 803548001275172412}
+  m_LocalEulerAnglesHint: {x: -0.06, y: -180, z: 0}
+--- !u!114 &9106854094588943607
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1145567319204238459}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f9dfa5b682dcd46bda6128250e975f58, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Unity.Cinemachine::Unity.Cinemachine.CinemachineCamera
+  Priority:
+    Enabled: 1
+    m_Value: 0
+  OutputChannel: 1
+  StandbyUpdate: 2
+  m_StreamingVersion: 20241001
+  m_LegacyPriority: 0
+  Target:
+    TrackingTarget: {fileID: 0}
+    LookAtTarget: {fileID: 0}
+    CustomLookAtTarget: 0
+  Lens:
+    FieldOfView: 60.000004
+    OrthographicSize: 5
+    NearClipPlane: 0.3
+    FarClipPlane: 1000
+    Dutch: 0
+    ModeOverride: 0
+    PhysicalProperties:
+      GateFit: 2
+      SensorSize: {x: 21.946, y: 16.002}
+      LensShift: {x: 0, y: 0}
+      FocusDistance: 10
+      Iso: 200
+      ShutterSpeed: 0.005
+      Aperture: 16
+      BladeCount: 5
+      Curvature: {x: 2, y: 11}
+      BarrelClipping: 0.25
+      Anamorphism: 0
+  BlendHint: 0
 --- !u!1 &2312490869078163904
 GameObject:
   m_ObjectHideFlags: 0
@@ -247,7 +322,6 @@ GameObject:
   - component: {fileID: 5575619950700798681}
   - component: {fileID: 3134472640766373428}
   - component: {fileID: 4503699562866260743}
-  - component: {fileID: 6845512943714602714}
   - component: {fileID: 7268187441387026962}
   - component: {fileID: 8143774219302382700}
   - component: {fileID: -3982661420836953551}
@@ -279,6 +353,7 @@ Transform:
   - {fileID: 1231535248498154573}
   - {fileID: 6257546851339076502}
   - {fileID: 2288016415216409776}
+  - {fileID: 1749080367960002944}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 180, z: 0}
 --- !u!65 &5591701256694190763
@@ -367,10 +442,7 @@ MonoBehaviour:
   attackPower: 30
   attackRange: 5
   attackCooldown: 2
-  patrolPoints:
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
+  patrolPoints: []
   stunIndicator: {fileID: 0}
   exclamation: {fileID: 6571051158960857350}
   lostSightDuration: 3
@@ -382,6 +454,9 @@ MonoBehaviour:
   summonCooldown: 15
   immuneToPoison: 1
   immuneToBurn: 1
+  bossStopDistance: 3
+  bossAttackRange: 5
+  bossAttackCooldown: 2
   isDie: 0
   startInactive: 1
 --- !u!114 &3134472640766373428
@@ -423,28 +498,7 @@ MonoBehaviour:
   warningTime: 1
   shockwaveSpeed: 15
   agent: {fileID: 547475900661319100}
-  controller: {fileID: 0}
---- !u!114 &6845512943714602714
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 4948271245640352368}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: eb30623e40b5fab4a968f6fd8e97b5b9, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::EnemyVision
-  _chaseRange: 10
-  _viewAngle: 90
-  obstacleMask:
-    serializedVersion: 2
-    m_Bits: 128
-  playerMask:
-    serializedVersion: 2
-    m_Bits: 64
-  shadowRangeMultiplier: 0.3
+  controller: {fileID: 5575619950700798681}
 --- !u!114 &7268187441387026962
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -960,7 +1014,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!4 &3217763493829831845
 Transform:
   m_ObjectHideFlags: 0
@@ -1045,7 +1099,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 32b0faf98685dbc41ae9a3badbdb3e21, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::EnemyViewCone
-  enemyVision: {fileID: 6845512943714602714}
+  enemyVision: {fileID: 0}
   meshResolution: 40
 --- !u!1001 &3481263520143687932
 PrefabInstance:
