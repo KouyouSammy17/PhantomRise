@@ -7,7 +7,7 @@ using static EnemyController;
 public class EnemyController : MonoBehaviour
 {
     //[SerializeField]
-    private Transform player;
+    protected Transform player;
 
     [SerializeField] private NavMeshAgent agent;
 
@@ -120,6 +120,8 @@ public class EnemyController : MonoBehaviour
     //敵が隠れているかどうか
     private bool isHidden = false;
     public bool IsHidden => isHidden;
+
+    public float AttackRange => attackRange;    
 
     public bool SetHidden(bool hidden)
     {
@@ -340,7 +342,7 @@ public class EnemyController : MonoBehaviour
                 OnDie();
                 break;
             case EnemyState.Stun:
-                Debug.Log("現在スタン中");
+                //Debug.Log("現在スタン中");
                 //スタンアニメーション
                 enemyAnimation.SetStun(true);
 

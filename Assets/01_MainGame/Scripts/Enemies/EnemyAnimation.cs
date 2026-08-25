@@ -20,6 +20,7 @@ public class EnemyAnimation : MonoBehaviour
     private Coroutine skillCoroutine;
     private Coroutine hitCoroutine;
     private Coroutine stunCoroutine;
+    private Coroutine tauntingCoroutine;
 
     // ←追加
     private bool useAgentMove = true;
@@ -62,12 +63,13 @@ public class EnemyAnimation : MonoBehaviour
 
     private IEnumerator AttackRoutine()
     {
+    
         isPlayingAction = true;
 
         animator.SetTrigger("Attack");
 
         // アニメーション長さに合わせる
-        yield return new WaitForSeconds(1f);
+        yield return new WaitForSeconds(0.5f);
 
         isPlayingAction = false;
     }
@@ -180,7 +182,7 @@ public class EnemyAnimation : MonoBehaviour
             return;
         }
 
-        Debug.Log($"SetStun : {stun}");
+       // Debug.Log($"SetStun : {stun}");
 
         animator.SetBool("Stun", stun);
 
@@ -191,5 +193,34 @@ public class EnemyAnimation : MonoBehaviour
         {
             animator.SetBool("Move", false);
         }
+    }
+
+    public void PlayTaunting()
+    {
+        if (isDead)
+            return;
+
+        if (tauntingCoroutine != null)
+            StopCoroutine(tauntingCoroutine);
+
+        tauntingCoroutine = StartCoroutine(TauntingRoutine());
+    }
+
+    private IEnumerator TauntingRoutine()
+    {
+        isPlayingAction = true;
+
+        // 移動アニメーションを停止
+        animator.SetBool("Move", false);
+
+        // Tauntingアニメーションを再生
+        animator.SetTrigger("Taunting");
+
+        // Tauntingアニメーションの長さに合わせる
+        yield return new WaitForSeconds(2f);
+
+        isPlayingAction = false;
+
+        tauntingCoroutine = null;
     }
 }

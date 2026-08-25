@@ -620,4 +620,15 @@ public class PlayerStateMachine : MonoBehaviour
         Debug.Log("スペクターバフ解除");
     }
 
+    //ボス演出の時にプレイヤーの操作を止める
+    public void StopMode()
+    {
+        _isStunned = true;
+    }
+
+    public void ResumeMode()
+    {
+        _isStunned = false;
+    }
+
 }
