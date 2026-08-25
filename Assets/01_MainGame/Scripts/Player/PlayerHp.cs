@@ -9,6 +9,7 @@ using System.Threading;
 using Cysharp.Threading.Tasks;
 using UnityEngine;
 using UnityEngine.Events;
+using System.Collections;
 
 public class PlayerHP : MonoBehaviour
 {
@@ -30,6 +31,11 @@ public class PlayerHP : MonoBehaviour
     
     // 出血 DoT タスクのキャンセルソース（null = 出血なし）
     private CancellationTokenSource _bleedCts;
+
+
+
+    //回復エフェクト
+    [SerializeField] private ParticleSystem healEffect;
 
 
     private void Awake()
@@ -56,7 +62,16 @@ public class PlayerHP : MonoBehaviour
 
         CurrentHP = Mathf.Min(MaxHP, CurrentHP + amount);
         _onHPChanged?.Invoke(CurrentHP, MaxHP);
+        StartCoroutine(HealEfects());
         Debug.Log($"[PlayerHP] +{amount} 回復 → {CurrentHP}/{MaxHP}");
+    }
+
+    //回復エフェクトを再生するためのメソッド
+    public virtual IEnumerator HealEfects()
+    {
+        healEffect.Play();
+        yield return new WaitForSeconds(2f);
+        healEffect.Stop();
     }
 
     /// <summary>乗っ取り状態で敵の攻撃を受けたとき呼ぶ</summary>
