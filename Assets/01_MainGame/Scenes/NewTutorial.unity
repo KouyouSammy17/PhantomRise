@@ -35876,6 +35876,14 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 0}
     m_Modifications:
+    - target: {fileID: 294895933611147987, guid: 5325e82fd57b7c147bf5fce36e304cb4, type: 3}
+      propertyPath: m_IsActive
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 1833522916906311424, guid: 5325e82fd57b7c147bf5fce36e304cb4, type: 3}
+      propertyPath: m_IsActive
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 2852914072743597766, guid: 5325e82fd57b7c147bf5fce36e304cb4, type: 3}
       propertyPath: Boss
       value: 
@@ -35920,6 +35928,18 @@ PrefabInstance:
       propertyPath: playerMachine
       value: 
       objectReference: {fileID: 268101137507845661}
+    - target: {fileID: 8288360256280509010, guid: 5325e82fd57b7c147bf5fce36e304cb4, type: 3}
+      propertyPath: m_LocalPosition.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 8497730517716599308, guid: 5325e82fd57b7c147bf5fce36e304cb4, type: 3}
+      propertyPath: m_AnchorMax.x
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 8497730517716599308, guid: 5325e82fd57b7c147bf5fce36e304cb4, type: 3}
+      propertyPath: m_AnchorMax.y
+      value: 1
+      objectReference: {fileID: 0}
     - target: {fileID: 9031186118975090734, guid: 5325e82fd57b7c147bf5fce36e304cb4, type: 3}
       propertyPath: m_Pivot.x
       value: 0
