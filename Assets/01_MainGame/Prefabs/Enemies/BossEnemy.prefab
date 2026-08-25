@@ -251,6 +251,7 @@ GameObject:
   - component: {fileID: 7268187441387026962}
   - component: {fileID: 8143774219302382700}
   - component: {fileID: -3982661420836953551}
+  - component: {fileID: 5244450322856719226}
   m_Layer: 0
   m_Name: BossEnemy
   m_TagString: Enemy
@@ -266,7 +267,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 4948271245640352368}
   serializedVersion: 2
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalRotation: {x: 0, y: 1, z: 0, w: 0}
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1.5, y: 1.5, z: 1.5}
   m_ConstrainProportionsScale: 0
@@ -277,8 +278,9 @@ Transform:
   - {fileID: 8955454445016708061}
   - {fileID: 1231535248498154573}
   - {fileID: 6257546851339076502}
+  - {fileID: 2288016415216409776}
   m_Father: {fileID: 0}
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 180, z: 0}
 --- !u!65 &5591701256694190763
 BoxCollider:
   m_ObjectHideFlags: 0
@@ -361,7 +363,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::BossController
   agent: {fileID: 547475900661319100}
   VisualRoot: {fileID: 803548001275172412}
-  rank: 3
+  rank: 2
   attackPower: 30
   attackRange: 5
   attackCooldown: 2
@@ -380,6 +382,8 @@ MonoBehaviour:
   summonCooldown: 15
   immuneToPoison: 1
   immuneToBurn: 1
+  isDie: 0
+  startInactive: 1
 --- !u!114 &3134472640766373428
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -409,12 +413,17 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::BossSkill
   skillCooldown: 5
   skillRange: 7
+  skillName: "\u30B9\u30AD\u30EB"
+  skillIcon: {fileID: 0}
+  SkillDescription: 
+  skillID: 
   damage: 30
   warningPrefab: {fileID: 7633596098751999110, guid: 3551847361a6097428249701870e4c9e, type: 3}
   shockwavePrefab: {fileID: 7633596098751999110, guid: b94b073226d4df84daf84b123d417b11, type: 3}
   warningTime: 1
   shockwaveSpeed: 15
   agent: {fileID: 547475900661319100}
+  controller: {fileID: 0}
 --- !u!114 &6845512943714602714
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -562,6 +571,21 @@ MonoBehaviour:
   eSkillSE: {fileID: 8300000, guid: aab208881b1c6744ea43b0fa371f9339, type: 3}
   eDeathSE: {fileID: 8300000, guid: 44c3c877541b28146bd60f1d37eec3a9, type: 3}
   eHitSE: {fileID: 8300000, guid: d8689ea5259f2b343b619858102accad, type: 3}
+--- !u!114 &5244450322856719226
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4948271245640352368}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: cdc8e43c5a881c340931186b054c1348, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::EnemyBuffUI
+  SpeedDebufficon: {fileID: 0}
+  poisonicon: {fileID: 0}
+  bloodicon: {fileID: 0}
 --- !u!1 &4960187866816049238
 GameObject:
   m_ObjectHideFlags: 0
@@ -887,6 +911,37 @@ BoxCollider:
   serializedVersion: 3
   m_Size: {x: 1, y: 1, z: 1}
   m_Center: {x: 0, y: 0, z: 0}
+--- !u!1 &6758952229702704203
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 2288016415216409776}
+  m_Layer: 0
+  m_Name: CameraTransform
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &2288016415216409776
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6758952229702704203}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 1, z: 0, w: 0}
+  m_LocalPosition: {x: -0.06, y: 1.61, z: 3}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 803548001275172412}
+  m_LocalEulerAnglesHint: {x: 0, y: 180, z: 0}
 --- !u!1 &7206312570116150191
 GameObject:
   m_ObjectHideFlags: 0

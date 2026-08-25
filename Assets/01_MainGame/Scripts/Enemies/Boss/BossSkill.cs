@@ -86,8 +86,8 @@ public class BossSkill : EnemySkillBase
 
 
 
-            Debug.Log("SkillRange = " + SkillRange);
-            Debug.Log("TargetScale = " + targetScale);
+            //Debug.Log("SkillRange = " + SkillRange);
+            //Debug.Log("TargetScale = " + targetScale);
             // 時間の経過に合わせて広がる
             currentScale += shockwaveSpeed * Time.deltaTime;
 
