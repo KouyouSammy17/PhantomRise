@@ -10,6 +10,11 @@ public class EnemyAudio : MonoBehaviour
     [SerializeField] private AudioClip eDeathSE;
     //[SerializeField] private AudioClip emovesSE;
     [SerializeField] private AudioClip eHitSE;
+    [SerializeField] private AudioClip eQTEFailureSE;
+    [SerializeField] private AudioClip eQTESuccessSE;
+    //[SerializeField] private AudioClip eTakeOverSE;
+
+
 
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()
@@ -46,4 +51,23 @@ public class EnemyAudio : MonoBehaviour
     {
         e_AudioSource.PlayOneShot(eHitSE);
     }
+
+
+    public void PlayQTEFSE()
+    {
+        e_AudioSource.PlayOneShot(eQTEFailureSE);
+    }
+
+    public void PlayQTESSE()
+    {
+        e_AudioSource.PlayOneShot(eQTESuccessSE);
+    }
+    
+    //public void PlayTakeOverSE()
+    //{
+    //    e_AudioSource.PlayOneShot(eTakeOverSE);
+    //}
+
+
+
 }

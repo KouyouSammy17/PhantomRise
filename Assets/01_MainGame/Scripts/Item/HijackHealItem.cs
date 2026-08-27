@@ -25,6 +25,9 @@ public class HijackHealItem : MonoBehaviour
     [Tooltip("取得時に生成するエフェクト Prefab（省略可）")]
     public GameObject PickupEffectPrefab;
 
+    [SerializeField] private AudioSource HealItemAudio;
+
+
     // ─────────────────────────────────────────
     // トリガー判定
     // ─────────────────────────────────────────
@@ -44,6 +47,8 @@ public class HijackHealItem : MonoBehaviour
             Debug.Log("[HijackHealItem] 乗っ取り中でないため取得できません");
             return;
         }
+
+        HealItemAudio.Play();
 
         // HP 回復
         machine.PlayerHP.Heal(HealAmount);

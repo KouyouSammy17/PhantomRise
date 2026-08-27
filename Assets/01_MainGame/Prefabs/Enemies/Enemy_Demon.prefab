@@ -34,7 +34,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: -6.94, y: 10.5}
+  m_AnchoredPosition: {x: -6.94, y: 10.79}
   m_SizeDelta: {x: 100, y: 100}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!1 &5671963632345909220
@@ -395,6 +395,22 @@ PrefabInstance:
       propertyPath: m_IsActive
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 2482974601185296508, guid: 4ef9cf0b807c6d74ba60784351b7ecd4, type: 3}
+      propertyPath: m_AnchorMax.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 2482974601185296508, guid: 4ef9cf0b807c6d74ba60784351b7ecd4, type: 3}
+      propertyPath: m_AnchorMax.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 2482974602658426886, guid: 4ef9cf0b807c6d74ba60784351b7ecd4, type: 3}
+      propertyPath: m_LocalPosition.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 2482974602658426886, guid: 4ef9cf0b807c6d74ba60784351b7ecd4, type: 3}
+      propertyPath: m_AnchoredPosition.y
+      value: 20
+      objectReference: {fileID: 0}
     - target: {fileID: 2827516876372056535, guid: 4ef9cf0b807c6d74ba60784351b7ecd4, type: 3}
       propertyPath: m_Name
       value: Enemy_Demon
@@ -582,7 +598,7 @@ MonoBehaviour:
   skillRange: 8
   skillName: Buff
   skillIcon: {fileID: 21300000, guid: a4274d4da3bc4196a42f80177f9a3042, type: 3}
-  SkillDescription: "\u653B\u6483\u529B\u3068\u30B9\u30D4\u30FC\u30C9\u309210\u79D2\u9593\u30A2\u30C3\u30D7"
+  SkillDescription: "\u653B\u6483\u529B\u3068\u30B9\u30D4\u30FC\u30C9\u309210\u79D2\u30A2\u30C3\u30D7"
   skillID: deamon
   Bufficon: {fileID: 2060425553367516409}
   BuffParticle: {fileID: 19831716, guid: bb23163a0b24b99489c01eeb4b18a215, type: 3}

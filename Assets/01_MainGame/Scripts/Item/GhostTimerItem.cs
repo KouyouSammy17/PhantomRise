@@ -24,6 +24,8 @@ public class GhostTimerItem : MonoBehaviour
     [Tooltip("取得時に生成するエフェクト Prefab（省略可）")]
     [SerializeField] private GameObject PickupEffectPrefab;
 
+    [SerializeField] private AudioSource ItemAudio;
+
     // ─────────────────────────────────────────
     // トリガー判定
     // ─────────────────────────────────────────
@@ -40,6 +42,8 @@ public class GhostTimerItem : MonoBehaviour
         // Ghost 状態または Hijacked 状態のときだけ受け取れる
         string state = machine.CurrentStateName;
         if (state != nameof(GhostState) && state != nameof(HijackedState)) return;
+
+        ItemAudio.Play();
 
         // タイマー延長
         machine.AddGhostTime(TimeBonus);

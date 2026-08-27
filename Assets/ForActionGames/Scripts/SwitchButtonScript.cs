@@ -17,6 +17,8 @@ public class SwitchButtonScript : MonoBehaviour
     // Objects that be able to contact with the button.
     [SerializeField] private GameObject[] ContactableObjects;
 
+     [SerializeField] private AudioSource SwitchAudio;
+
     void Start()
     {
         anim = this.GetComponent<Animator>();
@@ -35,7 +37,11 @@ public class SwitchButtonScript : MonoBehaviour
                 {
                     ButtonOn = true;
                     anim.CrossFade(TurnOnState,0.1f,0,0);
-                }
+                        if (SwitchAudio != null)
+                        {
+                            SwitchAudio.Play();
+                        }
+                    }
                 break;
             }
         }

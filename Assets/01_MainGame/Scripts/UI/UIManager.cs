@@ -29,6 +29,8 @@ public class UIManager : MonoBehaviour
     [Header("=== 幽霊タイマー UI ===")]
     [SerializeField] private TextMeshProUGUI ghostTimerText;
 
+  
+
     // ─────────────────────────────────────────
     // Unity ライフサイクル
     // ─────────────────────────────────────────
@@ -51,6 +53,7 @@ public class UIManager : MonoBehaviour
     /// <summary>GameManager.OnGameClear にバインドする</summary>
     public void ShowGameClear()
     {
+      
         gameClearPanel?.SetActive(true);
 
         if (gameClearText != null)
@@ -60,6 +63,7 @@ public class UIManager : MonoBehaviour
     /// <summary>GameManager.OnGameOver にバインドする</summary>
     public void ShowGameOver()
     {
+       
         gameOverPanel?.SetActive(true);
 
         if (gameOverText != null)

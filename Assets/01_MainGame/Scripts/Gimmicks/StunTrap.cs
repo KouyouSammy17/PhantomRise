@@ -53,30 +53,78 @@ public class StunTrap : MonoBehaviour
     // トリガー判定
     // ─────────────────────────────────────────
 
+    //private void OnTriggerEnter(Collider other)
+    //{
+    //    if (_onCooldown) return;
+
+    //    // ─── プレイヤー判定 ───
+    //    if (other.CompareTag("Player"))
+    //    {
+    //        PlayerStateMachine player = other.GetComponent<PlayerStateMachine>()
+    //                                 ?? other.GetComponentInParent<PlayerStateMachine>();
+    //        if (player == null) return;
+
+    //        player.ApplyStun(stunDurationPlayer);
+    //        Debug.Log($"[StunTrap] プレイヤーを {stunDurationPlayer}秒スタン！");
+
+    //        ActivateTrap();
+    //        return;
+    //    }
+
+    //    // ─── 敵判定 ───
+    //    if (!other.CompareTag("Enemy")) return;
+
+    //    EnemyController enemy = other.GetComponent<EnemyController>()
+    //                         ?? other.GetComponentInParent<EnemyController>();
+    //    if (enemy == null) return;
+
+    //    // ボスはスタントラップ無効
+    //    if (enemy is BossController)
+    //    {
+    //        Debug.Log($"[StunTrap] {enemy.name} はボスのためスタン無効");
+    //        return;
+    //    }
+
+    //    float stunDuration = GetStunDurationForRank(enemy.Rank);
+    //    enemy.ApplyStun(stunDuration);
+    //    Debug.Log($"[StunTrap] {enemy.name}（ランク{enemy.Rank}）を {stunDuration}秒スタン！");
+
+    //    ActivateTrap();
+    //}
+
     private void OnTriggerEnter(Collider other)
     {
         if (_onCooldown) return;
 
-        // ─── プレイヤー判定 ───
-        if (other.CompareTag("Player"))
-        {
-            PlayerStateMachine player = other.GetComponent<PlayerStateMachine>()
-                                     ?? other.GetComponentInParent<PlayerStateMachine>();
-            if (player == null) return;
+        // =========================================
+        // プレイヤー判定
+        // =========================================
 
+        PlayerStateMachine player = other.GetComponent<PlayerStateMachine>()
+                                 ?? other.GetComponentInParent<PlayerStateMachine>();
+
+        if (player != null)
+        {
             player.ApplyStun(stunDurationPlayer);
+
             Debug.Log($"[StunTrap] プレイヤーを {stunDurationPlayer}秒スタン！");
 
             ActivateTrap();
             return;
         }
 
-        // ─── 敵判定 ───
-        if (!other.CompareTag("Enemy")) return;
+        // =========================================
+        // 敵判定
+        // =========================================
+
+        if (!other.CompareTag("Enemy"))
+            return;
 
         EnemyController enemy = other.GetComponent<EnemyController>()
                              ?? other.GetComponentInParent<EnemyController>();
-        if (enemy == null) return;
+
+        if (enemy == null)
+            return;
 
         // ボスはスタントラップ無効
         if (enemy is BossController)
@@ -86,8 +134,12 @@ public class StunTrap : MonoBehaviour
         }
 
         float stunDuration = GetStunDurationForRank(enemy.Rank);
+
         enemy.ApplyStun(stunDuration);
-        Debug.Log($"[StunTrap] {enemy.name}（ランク{enemy.Rank}）を {stunDuration}秒スタン！");
+
+        Debug.Log(
+            $"[StunTrap] {enemy.name}（ランク{enemy.Rank}）を {stunDuration}秒スタン！"
+        );
 
         ActivateTrap();
     }
