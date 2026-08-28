@@ -6,14 +6,14 @@ EditorBuildSettings:
   serializedVersion: 2
   m_Scenes:
   - enabled: 1
-    path: Assets/01_MainGame/Scenes/Title.unity
-    guid: 6d5cc5f2d918e934f96e1ff1b60e1451
+    path: Assets/01_MainGame/Scenes/NewTitle.unity
+    guid: cdd6d4bedca35d242bb8f892b8147a0f
   - enabled: 1
-    path: Assets/01_MainGame/Scenes/GameScene.unity
-    guid: 99c9720ab356a0642a771bea13969a05
+    path: Assets/01_MainGame/Scenes/NewTutorial.unity
+    guid: 3b19138cb8db0c64d9372c3b2c3dbe32
   - enabled: 1
-    path: Assets/01_MainGame/Scenes/NewStage.unity
-    guid: 317a2007c24a37f40bbff5d84aa48774
+    path: Assets/01_MainGame/Scenes/Stage2.unity
+    guid: d3a831603694e93409c70c191c023635
   m_configObjects:
     com.unity.input.settings: {fileID: 11400000, guid: 9a7bb944644ba0c4dbe55a67ff300a60, type: 2}
     com.unity.input.settings.actions: {fileID: -944628639613478452, guid: 052faaac586de48259a63d0c4782560b, type: 3}

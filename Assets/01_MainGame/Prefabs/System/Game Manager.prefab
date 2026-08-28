@@ -46,9 +46,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 8e90f3791440abe44a7837d500e218dc, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::GameManager
-  gameSceneName: NewStage
-  titleSceneName: TitleScene
-  tutorialSceneName: Tutorials
+  gameSceneName: NewTutorial
+  titleSceneName: NewTitle
+  tutorialSceneName: NewTutorial
   stage2SceneName: Stage2
   OnGameClear:
     m_PersistentCalls:
@@ -83,7 +83,7 @@ MonoBehaviour:
   gameClearSound: {fileID: 8300000, guid: b2a5d9d76bdd6d84bbdea41f9c23e467, type: 3}
   gameOverSound: {fileID: 8300000, guid: dda94f400fb78884a834355bc2eccfe9, type: 3}
   UISound: {fileID: 8300000, guid: 3b16a88f240d6dd4eb70b5efc4e09f8a, type: 3}
-  audioSource: {fileID: 0}
+  audioSource: {fileID: 6008767537843197331}
   bossRoomTrigger: {fileID: 0}
   stageBGM: {fileID: 1286995635959360122}
 --- !u!114 &1286995635959360122
@@ -110,7 +110,7 @@ AudioSource:
   serializedVersion: 4
   OutputAudioMixerGroup: {fileID: 0}
   m_audioClip: {fileID: 0}
-  m_Resource: {fileID: 8300000, guid: 9877bdb8be38fdc419594337a12e1d43, type: 3}
+  m_Resource: {fileID: 8300000, guid: 51829c678bc35c14796b4e4cc1c5ac8d, type: 3}
   m_PlayOnAwake: 0
   m_Volume: 1
   m_Pitch: 1
