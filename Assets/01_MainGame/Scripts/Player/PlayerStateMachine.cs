@@ -11,6 +11,7 @@ using UnityEngine;
 using UnityEngine.Events;
 using UnityEngine.InputSystem;
 using System.Collections;
+using Unity.VisualScripting;
 
 [RequireComponent(typeof(CharacterController))]
 [RequireComponent(typeof(PlayerInput))]
@@ -124,6 +125,16 @@ public class PlayerStateMachine : MonoBehaviour
     [SerializeField] private GameObject _playerVisual;
     public GameObject PlayerVisual => _playerVisual;
 
+    [Header("=== エフェクト ===")]
+
+    //スタンインディケーター
+    [SerializeField] private GameObject stunIndicator;
+
+    //スピードダウンパーティクル
+    [SerializeField] private ParticleSystem speedDownParticle;
+
+
+
     // ─────────────────────────────────────────
     // パラメーター用パブリックゲッター（backward compatibility）
     // ─────────────────────────────────────────
@@ -158,8 +169,6 @@ public class PlayerStateMachine : MonoBehaviour
 
     private Coroutine demonBuffCoroutine;
     private Coroutine specterBuffCoroutine;
-
-
 
     // ─────────────────────────────────────────
     // Unity ライフサイクル
@@ -444,11 +453,38 @@ public class PlayerStateMachine : MonoBehaviour
     /// </summary>
     public void ApplyStun(float duration)
     {
+        // ─────────────────────────────
+        // 乗っ取り中
+        // ─────────────────────────────
+        if (_currentState == Hijacked)
+        {
+            EnemyController currentEnemy = Hijacked.CurrentEnemy;
+
+            if (currentEnemy != null)
+            {
+                // 乗っ取っている敵の頭上に表示
+                currentEnemy.ShowStunIndicator();
+                currentEnemy.SetStunAnimation(true);
+            }
+        }
+        // ─────────────────────────────
+        // 通常のプレイヤー
+        // ─────────────────────────────
+        else
+        {
+            if (stunIndicator != null)
+            {
+                stunIndicator.SetActive(true);
+            }
+        }
+
         _stunCts?.Cancel();
         _stunCts?.Dispose();
+
         _stunCts = CancellationTokenSource.CreateLinkedTokenSource(
             this.GetCancellationTokenOnDestroy());
 
+        
         StunAsync(duration, _stunCts.Token).Forget();
     }
 
@@ -464,6 +500,25 @@ public class PlayerStateMachine : MonoBehaviour
                 cancellationToken: ct);
 
             _isStunned = false;
+           
+            if (_currentState == Hijacked)
+            {
+                EnemyController currentEnemy = Hijacked.CurrentEnemy;
+
+                if (currentEnemy != null)
+                {
+                    currentEnemy.HideStunIndicator();
+                    currentEnemy.SetStunAnimation(false);
+                }
+            }
+            else
+            {
+                if (stunIndicator != null)
+                {
+                    stunIndicator.SetActive(false);
+                }
+            }
+
             Debug.Log("[Player] スタン解除");
         }
         catch (OperationCanceledException)
@@ -490,6 +545,8 @@ public class PlayerStateMachine : MonoBehaviour
     public void ApplySlow(float slowPercent, float duration)
     {
         BuffUIController.Instance.ShowBuff(BuffType.SpeedDeBuff);
+
+        speedDownParticle.Play();
 
         // 既存のスロウをキャンセルして上書き（コルーチン版の StopCoroutine 相当）
         _slowCts?.Cancel();

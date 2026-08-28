@@ -31,7 +31,7 @@ public class HijackSkillUI : MonoBehaviour
 
         panel.SetActive(true);
 
-        skillNameText.text = skill.SkillName;
+        //skillNameText.text = skill.SkillName;
         descriptionText.text = skill.SkillDescription;
 
         if (hideCoroutine != null)
@@ -43,7 +43,7 @@ public class HijackSkillUI : MonoBehaviour
 
     IEnumerator HideRoutine()
     {
-        yield return new WaitForSecondsRealtime(5f);
+        yield return new WaitForSecondsRealtime(3f);
 
         skillNameText.text = "";
         descriptionText.text = "";

@@ -294,7 +294,7 @@ MonoBehaviour:
   skillRange: 8
   skillName: Thread
   skillIcon: {fileID: 21300000, guid: 9562337a95b5429db6e1f4d947fada6d, type: 3}
-  SkillDescription: "\u5F53\u305F\u3063\u305F\u6575\u306E\u30B9\u30D4\u30FC\u30C9\u309290%\u30C0\u30A6\u30F3"
+  SkillDescription: "\u6575\u306E\u30B9\u30D4\u30FC\u30C9\u309290%\u30C0\u30A6\u30F3"
   skillID: spider
   spiderWebPrefab: {fileID: 2582457696800422401, guid: 4fe466b0d5037b745832954a37705c3f, type: 3}
   webSpawnPoint: {fileID: 6047385579717259320}

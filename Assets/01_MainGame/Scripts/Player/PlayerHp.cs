@@ -37,6 +37,10 @@ public class PlayerHP : MonoBehaviour
     //回復エフェクト
     [SerializeField] private ParticleSystem healEffect;
 
+    //ダメージ音
+    [SerializeField] private AudioClip damageSound;
+    [SerializeField] private AudioSource damageAudioSource;
+
 
     private void Awake()
     {
@@ -82,6 +86,11 @@ public class PlayerHP : MonoBehaviour
         CurrentHP = Mathf.Max(0, CurrentHP - damage);
         _onHPChanged?.Invoke(CurrentHP, MaxHP);
         Debug.Log($"[PlayerHP] -{damage} → {CurrentHP}/{MaxHP}");
+        // ダメージ音を再生
+        if (damageSound != null)
+        {
+            damageAudioSource.PlayOneShot(damageSound);
+        }
 
         if (CurrentHP <= 0)
         {

@@ -82,6 +82,26 @@ public class EnemyController : MonoBehaviour
     //スタン状態をプレイヤーに知らせるためのインジケーター
     [SerializeField] private GameObject stunIndicator;
 
+    public void ShowStunIndicator()
+    {
+        if (stunIndicator != null)
+            stunIndicator.SetActive(true);
+    }
+
+    public void HideStunIndicator()
+    {
+        if (stunIndicator != null)
+            stunIndicator.SetActive(false);
+    }
+
+    public void SetStunAnimation(bool stun)
+    {
+        if (enemyAnimation != null)
+        {
+            enemyAnimation.SetStun(stun);
+        }
+    }
+
     //敵がプレイヤーを発見したかを知らせるインジケーター
     [SerializeField] private GameObject exclamation;
 
@@ -172,9 +192,6 @@ public class EnemyController : MonoBehaviour
     [SerializeField] private ParticleSystem hitParticle;
 
     private bool deathprocessed = false; // 死亡処理が既に行われたかどうかのフラグ
-
-    //敵のランクを画面に出す
-
 
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     protected virtual void Start()
@@ -401,6 +418,10 @@ public class EnemyController : MonoBehaviour
     /// <summary>QTE 成功時に HijackState から呼ぶ</summary>
     public void BecomeHijacked()
     {
+        //QTE成功音
+        enemyAudio?.PlayQTESSE();
+
+
         IsQTETarget = false;   // QTE フリーズを解除（IsHijacked で完全停止に移行）
         IsHijacked = true;
         // スキル説明表示
@@ -432,6 +453,10 @@ public class EnemyController : MonoBehaviour
     /// <summary>QTE 失敗時 — フリーズ解除して Chase 状態にする</summary>
     public void AlertChase()
     {
+        //QTE失敗音
+        enemyAudio?.PlayQTEFSE();
+
+
         if (IsHijacked) return;
         IsQTETarget = false;
         currentState = EnemyState.Chase;
@@ -489,7 +514,11 @@ public class EnemyController : MonoBehaviour
             : transform.position;
 
         Debug.Log($"[Enemy] {name} 攻撃！ origin={origin}");
+        //攻撃アニメーション
         enemyAnimation.PlayAttack();
+        //攻撃SE
+        enemyAudio?.PlayAttackSE();
+
         Collider[] hits = Physics.OverlapSphere(origin, attackRange);
         bool hitSomeone = false;
         foreach (Collider col in hits)
@@ -554,8 +583,12 @@ public class EnemyController : MonoBehaviour
     public void PerformSkill()
     {
         if (_enemySkill == null) return;
-        _enemySkill.TryUseSkill();
-        Debug.Log($"[Enemy] {name} スキル発動！");
+        bool usedSkill = _enemySkill.TryUseSkill();
+        if (usedSkill)
+        {
+            enemyAudio?.PlaySkillSE();
+            Debug.Log($"[Enemy] {name} スキル発動！");
+        }
     }
 
 

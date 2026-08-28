@@ -19,6 +19,8 @@ public class WallScript : MonoBehaviour
     private bool WallOpen = false;
     private BoxCollider Col;
 
+   [SerializeField] private AudioSource WallAudio;
+
     void Start()
     {
         SkinnedMeshRenderer mesh = this.transform.Find("Wall").gameObject.GetComponent<SkinnedMeshRenderer>();
@@ -45,12 +47,20 @@ public class WallScript : MonoBehaviour
     private void Open()
     {
         Anim.CrossFade(OpenState, 1f, 0, 0);
+        if (WallAudio != null)
+        {
+            WallAudio.Play();
+        }
     }
 
     private void Close()
     {
         Anim.CrossFade(DefaultState, 1f, 0, 0);
         Col.enabled = true;
-    }
+            if (WallAudio != null)
+            {
+                WallAudio.Play();
+            }
+        }
 }
 }

@@ -59,6 +59,16 @@ public class GameManager : MonoBehaviour
     public UnityEvent OnGameClear;
     public UnityEvent OnGameOver;
 
+    //ゲームクリアとゲームオーバーの音を鳴らす
+    [SerializeField] private AudioClip gameClearSound;
+    [SerializeField] private AudioClip gameOverSound;
+
+    [SerializeField] private AudioClip UISound;
+   [SerializeField] private AudioSource audioSource;
+
+    [SerializeField] private BossRoomTrigger bossRoomTrigger;
+    [SerializeField] private StageBGM stageBGM;
+
     // ─────────────────────────────────────────
     // 内部
     // ─────────────────────────────────────────
@@ -79,6 +89,10 @@ public class GameManager : MonoBehaviour
         Time.timeScale = 0f;
 
         Debug.Log("[GameManager] ゲームクリア！");
+        bossRoomTrigger.StopBossBGM();
+        stageBGM.StopStageBGM();
+        audioSource.PlayOneShot(gameClearSound); // ゲームクリア音を再生
+
         OnGameClear?.Invoke();
     }
 
@@ -95,8 +109,10 @@ public class GameManager : MonoBehaviour
 
         _state = GameState.GameOver;
         Time.timeScale = 0f;
-
         Debug.Log("[GameManager] ゲームオーバー");
+        bossRoomTrigger.StopBossBGM();
+        stageBGM.StopStageBGM();
+        audioSource.PlayOneShot(gameOverSound); // ゲームオーバー音を再生
         OnGameOver?.Invoke();
     }
 
@@ -106,12 +122,17 @@ public class GameManager : MonoBehaviour
 
     public void Restart()
     {
-        Time.timeScale = 1f;
+        stageBGM.StopStageBGM();
+        //audioSource.PlayOneShot(UISound);
+        //Time.timeScale = 1f;
         string scene = string.IsNullOrEmpty(gameSceneName)
             ? SceneManager.GetActiveScene().name
             : gameSceneName;
-        SceneManager.LoadScene(scene);
+        //SceneManager.LoadScene(scene);
+
+        LoadSceneWithUISound(scene);
     }
+
 
     /// <summary>
     /// タイトル画面からゲームシーンへ遷移する。
@@ -119,11 +140,14 @@ public class GameManager : MonoBehaviour
     /// </summary>
     public void LoadGameScene()
     {
-        Time.timeScale = 1f;
+        stageBGM.StopStageBGM();
+        //audioSource.PlayOneShot(UISound);
+        //Time.timeScale = 1f;
         string scene = string.IsNullOrEmpty(gameSceneName)
             ? SceneManager.GetActiveScene().name
             : gameSceneName;
-        SceneManager.LoadScene(scene);
+        // SceneManager.LoadScene(scene);
+        LoadSceneWithUISound(scene);
     }
 
     /// <summary>
@@ -131,8 +155,11 @@ public class GameManager : MonoBehaviour
     /// </summary>
     public void GoToTitle()
     {
-        Time.timeScale = 1f;
-        SceneManager.LoadScene(titleSceneName);
+        stageBGM.StopStageBGM();
+        //audioSource.PlayOneShot(UISound);
+        //Time.timeScale = 1f;
+        // SceneManager.LoadScene(titleSceneName);
+        LoadSceneWithUISound(titleSceneName);    
     }
 
     /// <summary>
@@ -140,8 +167,11 @@ public class GameManager : MonoBehaviour
     /// </summary>
     public void GoToTutorial()
     {
-        Time.timeScale = 1f;
-        SceneManager.LoadScene(tutorialSceneName);
+        stageBGM.StopStageBGM();
+        //audioSource.PlayOneShot(UISound);
+        //Time.timeScale = 1f;
+        //SceneManager.LoadScene(tutorialSceneName);
+        LoadSceneWithUISound(tutorialSceneName);
     }
 
     /// <summary>
@@ -150,7 +180,27 @@ public class GameManager : MonoBehaviour
     /// </summary>
     public void GoToStage2()
     {
-        Time.timeScale = 1f;
-        SceneManager.LoadScene(stage2SceneName);
+        stageBGM.StopStageBGM();
+        //audioSource.PlayOneShot(UISound);
+        //Time.timeScale = 1f;
+       // SceneManager.LoadScene(stage2SceneName);
+        LoadSceneWithUISound(stage2SceneName);
     }
+
+    private void LoadSceneWithUISound(string sceneName)
+    {
+        StartCoroutine(LoadSceneWithUISoundCoroutine(sceneName));
+    }
+
+    private System.Collections.IEnumerator LoadSceneWithUISoundCoroutine(string sceneName)
+    {
+        audioSource.PlayOneShot(UISound);
+
+        yield return new WaitForSecondsRealtime(0.2f);
+
+        Time.timeScale = 1f;
+        SceneManager.LoadScene(sceneName);
+    }
+
+
 }

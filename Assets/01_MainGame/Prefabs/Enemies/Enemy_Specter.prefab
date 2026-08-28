@@ -185,7 +185,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: -7.46, y: 0}
+  m_AnchoredPosition: {x: -7.46, y: 0.52}
   m_SizeDelta: {x: 100, y: 100}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!1 &7583692798395415570
@@ -459,6 +459,14 @@ PrefabInstance:
       propertyPath: m_IsActive
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 2482974601185296508, guid: 4ef9cf0b807c6d74ba60784351b7ecd4, type: 3}
+      propertyPath: m_AnchorMax.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 2482974601185296508, guid: 4ef9cf0b807c6d74ba60784351b7ecd4, type: 3}
+      propertyPath: m_AnchorMax.y
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 2827516876372056535, guid: 4ef9cf0b807c6d74ba60784351b7ecd4, type: 3}
       propertyPath: m_Name
       value: Enemy_Specter
@@ -628,7 +636,7 @@ MonoBehaviour:
   skillRange: 8
   skillName: Invisible
   skillIcon: {fileID: 21300000, guid: 2c2a868fc9c84b1fb7528a202683c9b7, type: 3}
-  SkillDescription: "5\u79D2\u9593\u900F\u660E\u306B\u306A\u308A\u3001\n1\u56DE\u653B\u6483\u3059\u308B\u307E\u3067\u30B9\u30D4\u30FC\u30C9\u3068\u653B\u6483\u529B\u304C\u4E0A\u304C\u308B"
+  SkillDescription: "5\u79D2\u9593\u900F\u660E\u3001\u653B\u6483\u901F\u5EA6\u30D0\u30D5\u304C\u3064\u304F"
   skillID: Specter
   invisibleDuration: 5
   bodyRenderers:

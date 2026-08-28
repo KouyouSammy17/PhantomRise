@@ -1,4 +1,3 @@
-using Unity.VisualScripting;
 using UnityEngine;
 using Unity.Cinemachine;
 using UnityEngine.AI;
@@ -22,6 +21,12 @@ public class BossRoomTrigger : MonoBehaviour
 
     private bool hasTriggered = false;
 
+    //ボス戦のBGM
+    //[SerializeField] private AudioClip bossBGM;
+    [SerializeField] private AudioSource bossBGMSource;
+
+    [SerializeField] private StageBGM stageBGM;
+
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     private void Start()
     {
@@ -30,6 +35,7 @@ public class BossRoomTrigger : MonoBehaviour
         // 通常時
         playerCamera.Priority = 10;
         bossCamera.Priority = 0;
+
     }
 
 
@@ -51,6 +57,10 @@ public class BossRoomTrigger : MonoBehaviour
             hasTriggered = true;
 
             StartCoroutine(BossEntranceSequence());
+
+            //ステージのBGMを止めてボス戦のBGMを再生する
+            stageBGM.StopStageBGM();
+            bossBGMSource.Play();
         }
     }
 
@@ -111,4 +121,13 @@ public class BossRoomTrigger : MonoBehaviour
 
         bossController.StartBossBattle();
     }
+
+    public void StopBossBGM()
+    {
+        if (bossBGMSource != null)
+        {
+            bossBGMSource.Stop();
+        }
+    }
+
 }
