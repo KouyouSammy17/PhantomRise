@@ -1,8 +1,14 @@
 // ============================================================
 // GameManager.cs
-// ゲームの状態管理（Playing / GameClear / GameOver）
+// ゲームの状態管理（Playing / GameClear / GameOver）とシーン遷移
 //
-// シーンに1つだけ配置する。
+// 各シーンに1つずつ配置する。DontDestroyOnLoad にはしない。
+// シーン内のオブジェクト（StageBGM / BossRoomTrigger）を参照するので、
+// シーンと一緒に破棄されるのが正しい。
+//
+// シーン名は Scenes.cs の定数に集約する。
+// シーンごとに設定するのは nextScene と bossRoomTrigger だけ。
+//
 // PlayerStateMachine と BossEnemy から通知を受け取り
 // ゲームクリア / ゲームオーバーに遷移する。
 //
@@ -16,7 +22,7 @@ using UnityEngine.SceneManagement;
 public class GameManager : MonoBehaviour
 {
     // ─────────────────────────────────────────
-    // Singleton
+    // Singleton（シーンスコープ）
     // ─────────────────────────────────────────
 
     public static GameManager Instance { get; private set; }
@@ -29,6 +35,16 @@ public class GameManager : MonoBehaviour
             return;
         }
         Instance = this;
+
+        // ゲームオーバーやチュートリアルで 0 にしたまま
+        // シーンが切り替わっても止まらないよう、必ず戻す
+        Time.timeScale = 1f;
+    }
+
+    private void OnDestroy()
+    {
+        // 破棄済みオブジェクトを Instance が指し続けないようにする
+        if (Instance == this) Instance = null;
     }
 
     // ─────────────────────────────────────────
@@ -46,10 +62,11 @@ public class GameManager : MonoBehaviour
     // ─────────────────────────────────────────
 
     [Header("=== シーン ===")]
-    [SerializeField] private string gameSceneName = "";   // 空なら現在のシーンをリロード
-    [SerializeField] private string titleSceneName = "TitleScene";
-    [SerializeField] private string tutorialSceneName = "Tutorials";
-    [SerializeField] private string stage2SceneName = "Stage2";
+    [Tooltip("クリア後に進むシーン。空ならタイトルへ戻る（＝最終ステージ）")]
+    [SerializeField] private string nextScene = "";
+
+    /// <summary>クリア画面に「次へ」ボタンを出すかどうか。</summary>
+    public bool HasNextScene => !string.IsNullOrEmpty(nextScene);
 
     // ─────────────────────────────────────────
     // UnityEvents（UIManager などへ通知）
@@ -64,14 +81,25 @@ public class GameManager : MonoBehaviour
     [SerializeField] private AudioClip gameOverSound;
 
     [SerializeField] private AudioClip UISound;
-   [SerializeField] private AudioSource audioSource;
+    [SerializeField] private AudioSource audioSource;
 
+    [Header("=== BGM（シーンにある物だけ割り当てる。空でもよい）===")]
     [SerializeField] private BossRoomTrigger bossRoomTrigger;
     [SerializeField] private StageBGM stageBGM;
 
     // ─────────────────────────────────────────
     // 内部
     // ─────────────────────────────────────────
+
+    /// <summary>
+    /// BGM を止める。チュートリアルやタイトルにはボスがいないので、
+    /// 未割り当てでも落ちないように必ず null チェックする。
+    /// </summary>
+    private void StopAllBgm()
+    {
+        if (bossRoomTrigger != null) bossRoomTrigger.StopBossBGM();
+        if (stageBGM != null)        stageBGM.StopStageBGM();
+    }
 
     // ─────────────────────────────────────────
     // ゲームクリア
@@ -89,8 +117,7 @@ public class GameManager : MonoBehaviour
         Time.timeScale = 0f;
 
         Debug.Log("[GameManager] ゲームクリア！");
-        bossRoomTrigger.StopBossBGM();
-        stageBGM.StopStageBGM();
+        StopAllBgm();
         audioSource.PlayOneShot(gameClearSound); // ゲームクリア音を再生
 
         OnGameClear?.Invoke();
@@ -109,10 +136,11 @@ public class GameManager : MonoBehaviour
 
         _state = GameState.GameOver;
         Time.timeScale = 0f;
+
         Debug.Log("[GameManager] ゲームオーバー");
-        bossRoomTrigger.StopBossBGM();
-        stageBGM.StopStageBGM();
+        StopAllBgm();
         audioSource.PlayOneShot(gameOverSound); // ゲームオーバー音を再生
+
         OnGameOver?.Invoke();
     }
 
@@ -120,34 +148,37 @@ public class GameManager : MonoBehaviour
     // リスタート
     // ─────────────────────────────────────────
 
+    /// <summary>
+    /// 今いるシーンをそのまま読み直す。
+    /// シーン名を持たないので、どのシーンでも設定なしで動く。
+    /// </summary>
     public void Restart()
     {
-        stageBGM.StopStageBGM();
-        //audioSource.PlayOneShot(UISound);
-        //Time.timeScale = 1f;
-        string scene = string.IsNullOrEmpty(gameSceneName)
-            ? SceneManager.GetActiveScene().name
-            : gameSceneName;
-        //SceneManager.LoadScene(scene);
-
-        LoadSceneWithUISound(scene);
+        StopAllBgm();
+        LoadSceneWithUISound(SceneManager.GetActiveScene().buildIndex);
     }
 
+    // ─────────────────────────────────────────
+    // シーン遷移
+    // ─────────────────────────────────────────
 
     /// <summary>
-    /// タイトル画面からゲームシーンへ遷移する。
-    /// TitleManager などから呼ぶ。
+    /// クリア画面の「次へ」ボタンから呼ぶ。
+    /// nextScene が空（最終ステージ）ならタイトルへ戻る。
+    /// </summary>
+    public void GoToNextStage()
+    {
+        StopAllBgm();
+        LoadSceneWithUISound(HasNextScene ? nextScene : Scenes.Title);
+    }
+
+    /// <summary>
+    /// タイトル画面からゲーム本編へ遷移する。
+    /// TitleManager（TitlePanel.prefab）から呼ぶ。
     /// </summary>
     public void LoadGameScene()
     {
-        stageBGM.StopStageBGM();
-        //audioSource.PlayOneShot(UISound);
-        //Time.timeScale = 1f;
-        string scene = string.IsNullOrEmpty(gameSceneName)
-            ? SceneManager.GetActiveScene().name
-            : gameSceneName;
-        // SceneManager.LoadScene(scene);
-        LoadSceneWithUISound(scene);
+        GoToTutorial();
     }
 
     /// <summary>
@@ -155,11 +186,8 @@ public class GameManager : MonoBehaviour
     /// </summary>
     public void GoToTitle()
     {
-        stageBGM.StopStageBGM();
-        //audioSource.PlayOneShot(UISound);
-        //Time.timeScale = 1f;
-        // SceneManager.LoadScene(titleSceneName);
-        LoadSceneWithUISound(titleSceneName);    
+        StopAllBgm();
+        LoadSceneWithUISound(Scenes.Title);
     }
 
     /// <summary>
@@ -167,40 +195,41 @@ public class GameManager : MonoBehaviour
     /// </summary>
     public void GoToTutorial()
     {
-        stageBGM.StopStageBGM();
-        //audioSource.PlayOneShot(UISound);
-        //Time.timeScale = 1f;
-        //SceneManager.LoadScene(tutorialSceneName);
-        LoadSceneWithUISound(tutorialSceneName);
+        StopAllBgm();
+        LoadSceneWithUISound(Scenes.Tutorial);
     }
 
     /// <summary>
     /// ステージ2へ遷移する。
-    /// ステージ1クリア後の「次へ」ボタンなどから呼ぶ。
     /// </summary>
     public void GoToStage2()
     {
-        stageBGM.StopStageBGM();
-        //audioSource.PlayOneShot(UISound);
-        //Time.timeScale = 1f;
-       // SceneManager.LoadScene(stage2SceneName);
-        LoadSceneWithUISound(stage2SceneName);
+        StopAllBgm();
+        LoadSceneWithUISound(Scenes.Stage2);
     }
+
+    // ─────────────────────────────────────────
+    // 読み込み（UI音を鳴らしてから遷移する）
+    // ─────────────────────────────────────────
 
     private void LoadSceneWithUISound(string sceneName)
     {
-        StartCoroutine(LoadSceneWithUISoundCoroutine(sceneName));
+        StartCoroutine(LoadSceneRoutine(() => SceneManager.LoadScene(sceneName)));
     }
 
-    private System.Collections.IEnumerator LoadSceneWithUISoundCoroutine(string sceneName)
+    private void LoadSceneWithUISound(int buildIndex)
+    {
+        StartCoroutine(LoadSceneRoutine(() => SceneManager.LoadScene(buildIndex)));
+    }
+
+    private System.Collections.IEnumerator LoadSceneRoutine(System.Action load)
     {
         audioSource.PlayOneShot(UISound);
 
+        // timeScale が 0 でも待てるよう Realtime を使う
         yield return new WaitForSecondsRealtime(0.2f);
 
         Time.timeScale = 1f;
-        SceneManager.LoadScene(sceneName);
+        load();
     }
-
-
 }
