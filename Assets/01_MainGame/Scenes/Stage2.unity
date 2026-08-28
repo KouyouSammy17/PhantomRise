@@ -57204,14 +57204,6 @@ PrefabInstance:
       value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 8770129714593838041, guid: 63ba39e9d7e14eb478f3eeda9b0c2bae, type: 3}
-      propertyPath: gameSceneName
-      value: Stage2
-      objectReference: {fileID: 0}
-    - target: {fileID: 8770129714593838041, guid: 63ba39e9d7e14eb478f3eeda9b0c2bae, type: 3}
-      propertyPath: titleSceneName
-      value: Title
-      objectReference: {fileID: 0}
-    - target: {fileID: 8770129714593838041, guid: 63ba39e9d7e14eb478f3eeda9b0c2bae, type: 3}
       propertyPath: OnGameOver.m_PersistentCalls.m_Calls.Array.data[0].m_Target
       value: 
       objectReference: {fileID: 6746243213155933156}
