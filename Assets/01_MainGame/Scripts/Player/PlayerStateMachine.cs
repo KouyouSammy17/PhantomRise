@@ -174,6 +174,13 @@ public class PlayerStateMachine : MonoBehaviour
     // Unity ライフサイクル
     // ─────────────────────────────────────────
 
+    public bool IsStageStarted { get; private set; } = false;
+
+    public void SetStageStarted(bool started)
+    {
+        IsStageStarted = started;
+    }
+
     private void Awake()
     {
         CC = GetComponent<CharacterController>();

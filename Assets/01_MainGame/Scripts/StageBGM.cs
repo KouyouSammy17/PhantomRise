@@ -23,4 +23,25 @@ public class StageBGM : MonoBehaviour
             stageBGM.Stop();
         }
     }
+
+    public void PauseStageBGM()
+    {
+        if (stageBGM.isPlaying)
+        {
+            stageBGM.Pause();
+        }
+    }
+
+    public void PlayStageBGM()
+    {
+        if (!stageBGM.isPlaying)
+        {
+            stageBGM.Play();
+        }
+    }
+
+    public void SetStageBGMVolume(float volume)
+    {
+        stageBGM.volume = Mathf.Clamp01(volume);
+    }
 }
