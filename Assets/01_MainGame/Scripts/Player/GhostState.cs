@@ -48,6 +48,12 @@ public class GhostState : PlayerBaseState
         // 移動
         Machine.ApplyMovement(deltaTime);
 
+        // ゲーム開始前はタイマーを進めない
+        if (!Machine.IsStageStarted)
+        {
+            return;
+        }
+
         // タイマー加算
         _timer += deltaTime;
         float remaining = Mathf.Max(0f, Machine.GhostTimeLimit - _timer);

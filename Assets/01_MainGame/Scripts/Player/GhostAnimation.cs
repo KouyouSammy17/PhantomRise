@@ -82,6 +82,19 @@ public class GhostAnimation : MonoBehaviour
         Play(HashAttack);
     }
 
+    /// <summary>
+    /// スタート時に表示する乗っ取り成功時の攻撃アニメーション
+    /// </summary>
+    public void StartPlayAttackAnimation()
+    {
+        _isPlayingAction = true;
+        Play(HashAttack);
+
+        CancelInvoke(nameof(ResetToIdle));
+
+        Invoke(nameof(ResetToIdle), _attackAnimTime);
+    }
+
     /// <summary>死亡時（ghost_dissolve）</summary>
     public void PlayDie()
     {

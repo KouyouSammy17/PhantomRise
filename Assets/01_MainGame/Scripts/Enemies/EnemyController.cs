@@ -82,6 +82,7 @@ public class EnemyController : MonoBehaviour
     //スタン状態をプレイヤーに知らせるためのインジケーター
     [SerializeField] private GameObject stunIndicator;
 
+    //外から呼び出すクラス
     public void ShowStunIndicator()
     {
         if (stunIndicator != null)
@@ -99,6 +100,17 @@ public class EnemyController : MonoBehaviour
         if (enemyAnimation != null)
         {
             enemyAnimation.SetStun(stun);
+        }
+    }
+    private bool isStageStarting = false;
+
+    public void SetStageStarting(bool value)
+    {
+        isStageStarting = value;
+
+        if (agent != null && agent.enabled)
+        {
+            agent.isStopped = value;
         }
     }
 
@@ -231,6 +243,11 @@ public class EnemyController : MonoBehaviour
     // Update is called once per frame
      protected virtual void Update()
     {
+
+        if (isStageStarting)
+        {
+            return;
+        }
 
         // 乗っ取り中でもタイマーだけ更新する
         if (hijackedAttackTimer > 0f)
