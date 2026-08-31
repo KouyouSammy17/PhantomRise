@@ -246,7 +246,7 @@ public class PlayerStateMachine : MonoBehaviour
 
     private void Start()
     {
-        CacheCameraAxes();
+       //CacheCameraAxes();
         TransitionTo(Ghost);
     }
 
@@ -385,8 +385,10 @@ public class PlayerStateMachine : MonoBehaviour
     {
         if (_cameraTransform == null) return;
         CamForward = Vector3.ProjectOnPlane(_cameraTransform.forward, Vector3.up).normalized;
-        CamRight   = Vector3.ProjectOnPlane(_cameraTransform.right,   Vector3.up).normalized;
+        CamRight = Vector3.ProjectOnPlane(_cameraTransform.right, Vector3.up).normalized;
     }
+
+
 
     /// <summary>
     /// ゴーストタイマーを延長する（アイテム取得時などに呼ぶ）。
