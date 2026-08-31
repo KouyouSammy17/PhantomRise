@@ -206,6 +206,13 @@ MonoBehaviour:
   skillNameText: {fileID: 0}
   defaultIcon: {fileID: 0}
   skillAudio: {fileID: 0}
+  readyPunch: 0.3
+  readyPunchDuration: 0.45
+  idlePulseWhenReady: 1
+  idleAmp: 0.06
+  idleDuration: 1.1
+  cooldownTint: {r: 0.45, g: 0.45, b: 0.5, a: 1}
+  swapDuration: 0.28
 --- !u!1 &9156040496799262656
 GameObject:
   m_ObjectHideFlags: 0

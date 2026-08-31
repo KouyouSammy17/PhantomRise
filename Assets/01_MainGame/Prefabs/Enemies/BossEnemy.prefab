@@ -438,8 +438,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::BossController
   agent: {fileID: 547475900661319100}
   VisualRoot: {fileID: 803548001275172412}
-  rank: 2
-  attackPower: 30
+  rank: 0
+  attackPower: 20
   attackRange: 5
   attackCooldown: 2
   patrolPoints: []
@@ -471,7 +471,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 0d59ebe21c547f44cb3420bd0e58c665, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::BossHealth
-  _maxHP: 500
+  _maxHP: 300
   healEffect: {fileID: 0}
   immuneToPoison: 1
 --- !u!114 &4503699562866260743
@@ -520,7 +520,7 @@ AudioSource:
   m_GameObject: {fileID: 4948271245640352368}
   m_Enabled: 1
   serializedVersion: 4
-  OutputAudioMixerGroup: {fileID: 0}
+  OutputAudioMixerGroup: {fileID: -2702401839757078264, guid: d8c40d21609ed3a4db48f6ee9cc4c2e7, type: 2}
   m_audioClip: {fileID: 0}
   m_Resource: {fileID: 0}
   m_PlayOnAwake: 1
@@ -625,6 +625,12 @@ MonoBehaviour:
   eSkillSE: {fileID: 8300000, guid: aab208881b1c6744ea43b0fa371f9339, type: 3}
   eDeathSE: {fileID: 8300000, guid: 44c3c877541b28146bd60f1d37eec3a9, type: 3}
   eHitSE: {fileID: 8300000, guid: d8689ea5259f2b343b619858102accad, type: 3}
+  eQTEFailureSE: {fileID: 0}
+  eQTESuccessSE: {fileID: 0}
+  eTakeOverSE: {fileID: 0}
+  eHijackableSE: {fileID: 0}
+  eAlertSE: {fileID: 0}
+  eStunSE: {fileID: 0}
 --- !u!114 &5244450322856719226
 MonoBehaviour:
   m_ObjectHideFlags: 0

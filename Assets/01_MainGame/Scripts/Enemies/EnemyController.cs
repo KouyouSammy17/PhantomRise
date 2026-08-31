@@ -79,6 +79,12 @@ public class EnemyController : MonoBehaviour
     //自分がスタンしているかどうか
     private bool isStunned = true;
 
+    [Tooltip("スタンから回復してから、次にスタンできるようになるまでの秒数")]
+    [SerializeField] private float stunCooldown = 12f;
+
+    /// <summary>この時刻を過ぎるまで再スタンしない</summary>
+    private float _stunReadyTime;
+
     //スタン状態をプレイヤーに知らせるためのインジケーター
     [SerializeField] private GameObject stunIndicator;
 
@@ -401,11 +407,12 @@ public class EnemyController : MonoBehaviour
         {
 
             // スタン状態の処理
-            if (isStunned == true)
+            if (isStunned == true && Time.time >= _stunReadyTime)
             {
                 isStunned = false;
                 stunIndicator.SetActive(true);
                 currentState = EnemyState.Stun;
+                enemyAudio?.PlayStunSE();
 
                
                 float stunTime = 0f;
@@ -435,8 +442,9 @@ public class EnemyController : MonoBehaviour
     /// <summary>QTE 成功時に HijackState から呼ぶ</summary>
     public void BecomeHijacked()
     {
-        // QTE 成功音は HijackQTEUI が結果表示と同時に鳴らす
-        // （ここは結果表示が終わってから呼ばれるので遅すぎる）
+        // QTE 成功音は HijackQTEUI が結果表示と同時に鳴らす。
+        // こちらは体を乗っ取った瞬間の「取り憑いた」音。
+        enemyAudio?.PlayTakeOverSE();
 
         IsQTETarget = false;   // QTE フリーズを解除（IsHijacked で完全停止に移行）
         IsHijacked = true;
@@ -625,7 +633,18 @@ public class EnemyController : MonoBehaviour
         if (currentState == EnemyState.Stun)
         {
             stunIndicator.SetActive(false);
-            //isStunned = false;
+
+            // 再びスタンできるようにする。
+            // ここを止めていると C/B/A ランクは一生に一度しかスタンせず、
+            // スタン中しか乗っ取れない仕様と合わさって
+            // 一度回復した敵は二度と乗っ取れない身体になってしまう。
+            //
+            // ただしスタン条件は「HP 50%以下」なので、回復直後はまだ条件を
+            // 満たしたまま。すぐ解禁すると毎フレーム再スタンして永久ハメになる。
+            // そのためクールダウンを置いてから解禁する。
+            isStunned = true;
+            _stunReadyTime = Time.time + stunCooldown;
+
             //スタンアニメーション停止
             enemyAnimation.SetStun(false);
             currentState = EnemyState.Patrol; // スタン状態からパトロール状態に戻る
@@ -793,6 +812,7 @@ public class EnemyController : MonoBehaviour
         currentState = EnemyState.Stun;
         agent.isStopped = true;
         stunIndicator.SetActive(true);
+        enemyAudio?.PlayStunSE();
         Invoke(nameof(RecoverFromStun), duration);
         Debug.Log($"[StunTrap] {name} がスタン（{duration}秒）");
     }
@@ -869,6 +889,7 @@ public class EnemyController : MonoBehaviour
 
     IEnumerator DiscoveryPlayer()
     {
+        enemyAudio?.PlayAlertSE();
         exclamation.SetActive(true);
         yield return new WaitForSeconds(1f);
         exclamation.SetActive(false);

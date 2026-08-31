@@ -525,6 +525,7 @@ MonoBehaviour:
   attackPower: 10
   attackRange: 2
   attackCooldown: 2
+  stunCooldown: 12
   patrolPoints:
   - {fileID: 0}
   - {fileID: 0}
@@ -653,8 +654,12 @@ MonoBehaviour:
   eSkillSE: {fileID: 0}
   eDeathSE: {fileID: 8300000, guid: 44c3c877541b28146bd60f1d37eec3a9, type: 3}
   eHitSE: {fileID: 8300000, guid: d8689ea5259f2b343b619858102accad, type: 3}
-  eQTEFailureSE: {fileID: 8300000, guid: c36881ab8b7c56b4fb5277ae81c85a5d, type: 3}
-  eQTESuccessSE: {fileID: 8300000, guid: 228cb16fd52273742a78f6b6f6af7db8, type: 3}
+  eQTEFailureSE: {fileID: 8300000, guid: 2408c2e6700245546b517b13cfcd9f66, type: 3}
+  eQTESuccessSE: {fileID: 8300000, guid: fd9aa8c570ad95b498e79034c1300b55, type: 3}
+  eTakeOverSE: {fileID: 8300000, guid: 228cb16fd52273742a78f6b6f6af7db8, type: 3}
+  eHijackableSE: {fileID: 8300000, guid: 75c6c339bce072b47b4885ebd81a9f0d, type: 3}
+  eAlertSE: {fileID: 8300000, guid: d852b3af16fed5947b3ab00a2ba22367, type: 3}
+  eStunSE: {fileID: 8300000, guid: f8e7038f6b27f594c8a423cea5783d18, type: 3}
 --- !u!82 &6679121586649431207
 AudioSource:
   m_ObjectHideFlags: 0

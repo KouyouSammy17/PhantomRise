@@ -7377,11 +7377,6 @@ GameObject:
   m_CorrespondingSourceObject: {fileID: 1556929439031393219, guid: 5325e82fd57b7c147bf5fce36e304cb4, type: 3}
   m_PrefabInstance: {fileID: 6746243213155933154}
   m_PrefabAsset: {fileID: 0}
---- !u!1 &432892943 stripped
-GameObject:
-  m_CorrespondingSourceObject: {fileID: 2689563857956170749, guid: 5325e82fd57b7c147bf5fce36e304cb4, type: 3}
-  m_PrefabInstance: {fileID: 6746243213155933154}
-  m_PrefabAsset: {fileID: 0}
 --- !u!1001 &439946001
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -10418,7 +10413,7 @@ PrefabInstance:
     - target: {fileID: 395375805237945892, guid: 094fcb07305f43746a895cc33db3066a, type: 3}
       propertyPath: enterSound
       value: 
-      objectReference: {fileID: 8300000, guid: 16908f27551c1b54aa81bf0f9bedbdba, type: 3}
+      objectReference: {fileID: 8300000, guid: 33fae60865afd04469f5e753983b44af, type: 3}
     - target: {fileID: 395375805237945892, guid: 094fcb07305f43746a895cc33db3066a, type: 3}
       propertyPath: audioSource
       value: 
@@ -16204,7 +16199,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: -8073077982118030115, guid: 7923b8c2ff2de418b8abbc512ae97eb0, type: 3}
       propertyPath: CloseDelayTime
-      value: 1
+      value: 2
       objectReference: {fileID: 0}
     - target: {fileID: 3472083611345350221, guid: 7923b8c2ff2de418b8abbc512ae97eb0, type: 3}
       propertyPath: m_LocalScale.x
@@ -23224,7 +23219,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: -8073077982118030115, guid: 7923b8c2ff2de418b8abbc512ae97eb0, type: 3}
       propertyPath: CloseDelayTime
-      value: 1
+      value: 2
       objectReference: {fileID: 0}
     - target: {fileID: 3472083611345350221, guid: 7923b8c2ff2de418b8abbc512ae97eb0, type: 3}
       propertyPath: m_LocalScale.x
@@ -23530,7 +23525,7 @@ PrefabInstance:
     - target: {fileID: 395375805237945892, guid: 094fcb07305f43746a895cc33db3066a, type: 3}
       propertyPath: enterSound
       value: 
-      objectReference: {fileID: 8300000, guid: 16908f27551c1b54aa81bf0f9bedbdba, type: 3}
+      objectReference: {fileID: 8300000, guid: 33fae60865afd04469f5e753983b44af, type: 3}
     - target: {fileID: 395375805237945892, guid: 094fcb07305f43746a895cc33db3066a, type: 3}
       propertyPath: audioSource
       value: 
@@ -24507,7 +24502,7 @@ PrefabInstance:
     - target: {fileID: 395375805237945892, guid: 094fcb07305f43746a895cc33db3066a, type: 3}
       propertyPath: enterSound
       value: 
-      objectReference: {fileID: 8300000, guid: 16908f27551c1b54aa81bf0f9bedbdba, type: 3}
+      objectReference: {fileID: 8300000, guid: 33fae60865afd04469f5e753983b44af, type: 3}
     - target: {fileID: 395375805237945892, guid: 094fcb07305f43746a895cc33db3066a, type: 3}
       propertyPath: audioSource
       value: 
@@ -36235,7 +36230,7 @@ PrefabInstance:
     - target: {fileID: 395375805237945892, guid: 094fcb07305f43746a895cc33db3066a, type: 3}
       propertyPath: enterSound
       value: 
-      objectReference: {fileID: 8300000, guid: 16908f27551c1b54aa81bf0f9bedbdba, type: 3}
+      objectReference: {fileID: 8300000, guid: 33fae60865afd04469f5e753983b44af, type: 3}
     - target: {fileID: 395375805237945892, guid: 094fcb07305f43746a895cc33db3066a, type: 3}
       propertyPath: audioSource
       value: 
@@ -36364,7 +36359,7 @@ PrefabInstance:
     - target: {fileID: 8770129714593838041, guid: 63ba39e9d7e14eb478f3eeda9b0c2bae, type: 3}
       propertyPath: Settingspanel
       value: 
-      objectReference: {fileID: 432892943}
+      objectReference: {fileID: 0}
     - target: {fileID: 8770129714593838041, guid: 63ba39e9d7e14eb478f3eeda9b0c2bae, type: 3}
       propertyPath: UIs.Array.size
       value: 5

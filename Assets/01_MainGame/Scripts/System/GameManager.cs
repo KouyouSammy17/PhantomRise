@@ -40,7 +40,27 @@ public class GameManager : MonoBehaviour
         // ゲームオーバーやチュートリアルで 0 にしたまま
         // シーンが切り替わっても止まらないよう、必ず戻す
         Time.timeScale = 1f;
+
+        // クリア条件（タイム / ノーデス）の記録を開始する。
+        // リスタートは同じシーンの読み直しなので記録は引き継がれる。
+        StageStats.BeginScene(SceneManager.GetActiveScene().name);
     }
+
+    private void Start()
+    {
+        _player = FindAnyObjectByType<PlayerStateMachine>();
+    }
+
+    /// <summary>クリア条件用のタイム計測。開始演出中は数えない。</summary>
+    private void Update()
+    {
+        if (!IsPlaying) return;
+        if (_player == null || !_player.IsStageStarted) return;
+
+        StageStats.Tick(Time.deltaTime);
+    }
+
+    private PlayerStateMachine _player;
 
     private void OnDestroy()
     {
@@ -159,6 +179,10 @@ public class GameManager : MonoBehaviour
     private void HandlePlayerDeath(bool killedByBoss)
     {
         if (!IsPlaying) return;
+
+        // 「ノーデス」条件のカウント。
+        // リスタートしてもシーン名が同じなので引き継がれる。
+        StageStats.RegisterDeath();
 
         if (killedByBoss && SceneManager.GetActiveScene().name == Scenes.Tutorial)
         {

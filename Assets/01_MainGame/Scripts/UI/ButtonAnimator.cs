@@ -45,6 +45,10 @@ public class ButtonAnimator : MonoBehaviour,
     [SerializeField] private float clickPunch = 0.18f;
     [SerializeField] private float clickPunchDuration = 0.28f;
 
+    [Header("=== 効果音 ===")]
+    [Tooltip("選択音・決定音を鳴らす。クリップは UISoundPlayer 側にまとめてある")]
+    [SerializeField] private bool playSounds = true;
+
     [Header("=== アイドル（通常時のゆっくりした呼吸）===")]
     [SerializeField] private bool idlePulse = false;
     [SerializeField] private float idleAmp = 0.02f;
@@ -103,7 +107,13 @@ public class ButtonAnimator : MonoBehaviour,
 
     public void OnPointerEnter(PointerEventData e)
     {
+        // カーソルを消しているときはホバーを無視する。
+        // 見えないマウスが少し動いただけで、パッドで選んでいるボタンとは
+        // 別のボタンが光り、選択音まで鳴ってしまうため。
+        if (!Cursor.visible) return;
+
         _hovered = true;
+        PlaySelectSE();
         Refresh();
     }
 
@@ -118,6 +128,7 @@ public class ButtonAnimator : MonoBehaviour,
     public void OnSelect(BaseEventData e)
     {
         _selected = true;
+        PlaySelectSE();
         Refresh();
     }
 
@@ -176,10 +187,21 @@ public class ButtonAnimator : MonoBehaviour,
             .OnComplete(() => { if (idlePulse && IsNormal) StartIdle(); });
     }
 
+    /// <summary>選択音。押せないボタンでは鳴らさない。</summary>
+    private void PlaySelectSE()
+    {
+        if (playSounds && Interactable) UISoundPlayer.PlaySelect();
+    }
+
     /// <summary>決定時に弾ませる。ボタンの onClick からも呼べる。</summary>
     public void PlayClick()
     {
-        if (!Interactable || clickPunch <= 0f) return;
+        if (!Interactable) return;
+
+        // 決定音は演出（clickPunch = 0）を切っていても鳴らす
+        if (playSounds) UISoundPlayer.PlayConfirm();
+
+        if (clickPunch <= 0f) return;
 
         // パンチは開始時のスケールに戻して終わるので、
         // 先に今の状態のスケールへ合わせておく

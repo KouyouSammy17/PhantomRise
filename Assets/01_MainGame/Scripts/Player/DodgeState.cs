@@ -37,6 +37,8 @@ public class DodgeState : PlayerBaseState
 
         Machine.VelocityY = 0f;
 
+        Machine.Audio?.PlayDodgeSE();
+
         // 幽霊状態からの回避なら走りアニメーション（乗っ取り中はモデル非表示なので無害）
         Machine.GhostAnim?.SetMove(true);
 

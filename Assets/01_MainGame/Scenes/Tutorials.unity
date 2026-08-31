@@ -3451,7 +3451,7 @@ PrefabInstance:
       objectReference: {fileID: 1160124963}
     - target: {fileID: -8073077982118030115, guid: 7923b8c2ff2de418b8abbc512ae97eb0, type: 3}
       propertyPath: CloseDelayTime
-      value: 1
+      value: 2
       objectReference: {fileID: 0}
     - target: {fileID: 3472083611345350221, guid: 7923b8c2ff2de418b8abbc512ae97eb0, type: 3}
       propertyPath: m_LocalScale.x
@@ -14211,7 +14211,7 @@ PrefabInstance:
       objectReference: {fileID: 1634832231}
     - target: {fileID: -8073077982118030115, guid: 7923b8c2ff2de418b8abbc512ae97eb0, type: 3}
       propertyPath: CloseDelayTime
-      value: 1
+      value: 2
       objectReference: {fileID: 0}
     - target: {fileID: 3472083611345350221, guid: 7923b8c2ff2de418b8abbc512ae97eb0, type: 3}
       propertyPath: m_LocalScale.x
@@ -22189,7 +22189,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: -8073077982118030115, guid: 7923b8c2ff2de418b8abbc512ae97eb0, type: 3}
       propertyPath: CloseDelayTime
-      value: 1
+      value: 2
       objectReference: {fileID: 0}
     - target: {fileID: 3472083611345350221, guid: 7923b8c2ff2de418b8abbc512ae97eb0, type: 3}
       propertyPath: m_LocalScale.x

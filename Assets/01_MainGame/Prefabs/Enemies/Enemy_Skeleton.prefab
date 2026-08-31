@@ -170,7 +170,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 6443116343119807069, guid: 4ef9cf0b807c6d74ba60784351b7ecd4, type: 3}
       propertyPath: attackPower
-      value: 15
+      value: 14
       objectReference: {fileID: 0}
     - target: {fileID: 6443116343119807069, guid: 4ef9cf0b807c6d74ba60784351b7ecd4, type: 3}
       propertyPath: attackRange
@@ -214,7 +214,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 7762544295177896909, guid: 4ef9cf0b807c6d74ba60784351b7ecd4, type: 3}
       propertyPath: _maxHP
-      value: 150
+      value: 160
       objectReference: {fileID: 0}
     - target: {fileID: 8060403493178725083, guid: 4ef9cf0b807c6d74ba60784351b7ecd4, type: 3}
       propertyPath: m_Size.x

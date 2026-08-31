@@ -443,6 +443,7 @@ GameObject:
   - component: {fileID: 4303073340821829473}
   - component: {fileID: 3599081290773302911}
   - component: {fileID: 1728169080902287820}
+  - component: {fileID: 2251856728320947930}
   m_Layer: 6
   m_Name: Player
   m_TagString: Player
@@ -734,7 +735,7 @@ MonoBehaviour:
   _rotationSpeed: 720
   _dodgeSpeed: 20
   _dodgeDuration: 0.25
-  _dodgeCooldown: 2.5
+  _dodgeCooldown: 2
   _ghostTimeLimit: 60
   _fallDeathY: -10
   _cameraTransform: {fileID: 0}
@@ -881,6 +882,20 @@ AudioSource:
     m_PreInfinity: 2
     m_PostInfinity: 2
     m_RotationOrder: 4
+--- !u!114 &2251856728320947930
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2251856728320947923}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5e83b1d0f4a94c26b7d51ae9c3068f7a, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::PlayerAudio
+  p_AudioSource: {fileID: 1728169080902287820}
+  pDodgeSE: {fileID: 8300000, guid: 783d34f730f2c3c4ba058948ce7d3683, type: 3}
 --- !u!1 &2287195207669617066
 GameObject:
   m_ObjectHideFlags: 0
