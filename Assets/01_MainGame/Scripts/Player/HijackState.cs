@@ -3,10 +3,14 @@
 // エルデンリング風バックスタブ乗っ取り
 //
 // ① TryStart    : Ghost から → 背後判定・スナップ・QTE 開始
-// ② TryTransfer : HijackedState から → 背後/スタン判定・スナップ・QTE 開始
+// ② TryTransfer : HijackedState から → 今のボディを捨ててから同じ QTE へ
 // ③ Enter       : 敵の AI をフリーズ・OnQTEStart イベント発火
-// ④ OnQTESuccess: 乗っ取り成立（通常 or 転送）
-// ⑤ OnQTEFail  : 失敗 → 元の状態に戻る（通常: Ghost / 転送: HijackedState）
+// ④ OnQTESuccess: 幽霊の成功アニメーション → 乗っ取り成立
+// ⑤ OnQTEFail  : 失敗 → Ghost に戻る
+//
+// 転送でもボディを先に捨てるので、QTE 中は必ず幽霊の姿になる。
+// （乗っ取り中は幽霊モデルが非表示で Animator も止まっており、
+//   そのままでは成功アニメーションが再生されないため）
 // ============================================================
 
 using System;
@@ -53,13 +57,21 @@ public class HijackState : PlayerBaseState
         if (target == null) return false;
 
         TargetEnemy  = target;
-        _callerState = Machine.Hijacked;   // 失敗時は HijackedState に戻る
+        _callerState = Machine.Hijacked;   // 「ボディを捨てて来た」目印（失敗時のタイマー用）
 
-        // HijackedState.Exit() でモデル復元をスキップ（ビジュアルは付けたまま）
-        Machine.Hijacked.PrepareTransfer();
+        // 乗っ取りに入る時点で今のボディを捨てる。
+        // 以降は幽霊の姿なので、Ghost からの通常フローと同じ演出になる。
+        // （乗っ取り中は幽霊モデルが非表示 ＝ Animator も止まっていて
+        //   アニメーションが再生されないため）
+        EnemyController oldBody = Machine.Hijacked.ReleaseBody();
 
         SnapBehindEnemy();
+
+        // Hijacked.Exit() が走ってビジュアルが敵に返り、幽霊モデルが復活する
         Machine.TransitionTo(this);
+
+        // ビジュアルを返した後に破棄する（先に消すと付いたままのモデルごと消える）
+        oldBody?.OnHijackedEnemyDied();
         return true;
     }
 
@@ -93,25 +105,22 @@ public class HijackState : PlayerBaseState
     /// <summary>
     /// QTE 成功 → 攻撃アニメーション（ghost_attack）を再生し、
     /// 完了を待ってから乗っ取りを成立させる。
-    /// 転送時は幽霊モデルが非表示なのでアニメーション待ちをスキップする。
+    ///
+    /// 転送でもボディは QTE 開始時に捨てているので、
+    /// どちらも幽霊の姿で同じアニメーションが流れる。
     /// </summary>
     private async UniTaskVoid SuccessAsync()
     {
         _successRunning = true;
 
-        bool isTransfer = _callerState == Machine.Hijacked;
+        Machine.GhostAnim?.PlayAttack();
 
-        if (!isTransfer)
+        float wait = Machine.GhostAnim != null ? Machine.GhostAnim.AttackAnimTime : 0f;
+        if (wait > 0f)
         {
-            Machine.GhostAnim?.PlayAttack();
-
-            float wait = Machine.GhostAnim != null ? Machine.GhostAnim.AttackAnimTime : 0f;
-            if (wait > 0f)
-            {
-                await UniTask.Delay(
-                    TimeSpan.FromSeconds(wait),
-                    cancellationToken: Machine.GetCancellationTokenOnDestroy());
-            }
+            await UniTask.Delay(
+                TimeSpan.FromSeconds(wait),
+                cancellationToken: Machine.GetCancellationTokenOnDestroy());
         }
 
         _successRunning = false;
@@ -120,9 +129,7 @@ public class HijackState : PlayerBaseState
         if (TargetEnemy == null)
         {
             Debug.Log("[Hijack] ターゲット消失 → Ghost に戻る");
-            _callerState = null;
-            Machine.Ghost.Resume();
-            Machine.TransitionTo(Machine.Ghost);
+            ReturnToGhost();
             return;
         }
 
@@ -145,43 +152,38 @@ public class HijackState : PlayerBaseState
 
         Machine.PlayerHP.Initialize(TargetEnemy.MaxHP, TargetEnemy.CurrentHP);
 
-        if (_callerState == Machine.Hijacked)
-        {
-            // 転送フロー: 旧ボディを捨てて新ボディへ
-            Debug.Log("[Hijack] 転送成功！");
-            Machine.Hijacked.TransferBody(TargetEnemy);
-            Machine.TransitionTo(Machine.Hijacked);
-        }
-        else
-        {
-            // 通常フロー: Ghost から乗っ取り
-            Machine.Hijacked.SetEnemy(TargetEnemy);
-            Machine.TransitionTo(Machine.Hijacked);
-        }
+        // 転送も通常フローも、この時点では幽霊なので扱いは同じ
+        Machine.Hijacked.SetEnemy(TargetEnemy);
+        Machine.TransitionTo(Machine.Hijacked);
 
         _callerState = null;
     }
 
     public void OnQTEFail()
     {
-        TargetEnemy.AlertChase();
+        TargetEnemy?.AlertChase();
 
-        PlayerBaseState returnTo = _callerState;
+        Debug.Log(_callerState == Machine.Hijacked
+            ? "[Hijack] 転送失敗 → ボディは捨てているので Ghost へ"
+            : "[Hijack] 失敗 → 敵が気づいた");
+
+        ReturnToGhost();
+    }
+
+    /// <summary>
+    /// Ghost に戻す。
+    ///
+    /// 通常フローはもともと幽霊だったのでタイマーを引き継ぐ（Resume）。
+    /// 転送フローは直前にボディを捨てたところなので、
+    /// 身体を捨てたときと同じくタイマーを 0 から数え直す。
+    /// </summary>
+    private void ReturnToGhost()
+    {
+        bool cameFromBody = _callerState == Machine.Hijacked;
         _callerState = null;
 
-        if (returnTo == Machine.Hijacked)
-        {
-            // 転送失敗 → 現在のボディのまま HijackedState に戻る
-            Debug.Log("[Hijack] 転送失敗 → 現在のボディに戻る");
-            Machine.TransitionTo(Machine.Hijacked);
-        }
-        else
-        {
-            // 通常失敗 → Ghost に戻る
-            Debug.Log("[Hijack] 失敗 → 敵が気づいた");
-            Machine.Ghost.Resume();
-            Machine.TransitionTo(Machine.Ghost);
-        }
+        if (!cameFromBody) Machine.Ghost.Resume();
+        Machine.TransitionTo(Machine.Ghost);
     }
 
     // ─────────────────────────────────────────

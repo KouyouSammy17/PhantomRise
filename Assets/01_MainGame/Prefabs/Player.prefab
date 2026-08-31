@@ -726,7 +726,7 @@ MonoBehaviour:
   _rotationSpeed: 720
   _dodgeSpeed: 20
   _dodgeDuration: 0.25
-  _dodgeCooldown: 1
+  _dodgeCooldown: 2.5
   _ghostTimeLimit: 60
   _fallDeathY: -10
   _cameraTransform: {fileID: 0}

@@ -45,6 +45,13 @@ public class PauseManager : MonoBehaviour
     [SerializeField] private Button restartButton;    // Button_ReStart  → やり直し
     [SerializeField] private Button titleButton;      // Button_GiveUp   → タイトルへ
 
+    [Header("=== パッド操作 ===")]
+    [Tooltip("ポーズを開いたとき最初に選択するオブジェクト。空なら Button_Continue")]
+    [SerializeField] private GameObject firstSelected;
+
+    [Tooltip("背景クリックなどで選択が外れたとき、選択を戻す")]
+    [SerializeField] private bool keepSelection = true;
+
     [Header("=== 効果音（任意）===")]
     [SerializeField] private AudioSource audioSource;
     [SerializeField] private AudioClip openSound;
@@ -66,6 +73,9 @@ public class PauseManager : MonoBehaviour
     private PlayerStateMachine _player;
     private PlayerInput _playerInput;
     private float _previousTimeScale = 1f;
+
+    /// <summary>最後に選ばれていたボタン。選択が外れたときここへ戻す</summary>
+    private GameObject _lastSelected;
 
     // ─────────────────────────────────────────
     // Unity ライフサイクル
@@ -127,6 +137,29 @@ public class PauseManager : MonoBehaviour
         continueButton?.onClick.AddListener(ClosePause);
         restartButton?.onClick.AddListener(OnRestartClicked);
         titleButton?.onClick.AddListener(OnTitleClicked);
+    }
+
+    /// <summary>
+    /// 背景をクリックすると EventSystem の選択が外れてしまい、
+    /// そのままではスティックで何も動かせなくなる。
+    /// ポーズ中だけ見張って選択を戻す。
+    /// </summary>
+    private void Update()
+    {
+        if (!IsPaused || !keepSelection) return;
+        if (EventSystem.current == null) return;
+
+        GameObject current = EventSystem.current.currentSelectedGameObject;
+
+        if (current != null && current.activeInHierarchy)
+        {
+            _lastSelected = current;
+            return;
+        }
+
+        Select(_lastSelected != null && _lastSelected.activeInHierarchy
+             ? _lastSelected
+             : FirstSelected());
     }
 
     // ─────────────────────────────────────────
@@ -223,18 +256,37 @@ public class PauseManager : MonoBehaviour
         if (audioSource != null && clip != null) audioSource.PlayOneShot(clip);
     }
 
-    /// <summary>コントローラーだけで操作できるよう最初のボタンを選択させる。</summary>
+    /// <summary>
+    /// パッドで操作できるよう最初のオブジェクトを選択させる。
+    /// これが無いと、開いた直後はスティックを倒しても何も動かない。
+    /// </summary>
     private void SelectFirstButton()
     {
-        if (EventSystem.current == null) return;
+        _lastSelected = null;
+        Select(FirstSelected());
+    }
 
-        Button first = continueButton != null ? continueButton
-                     : restartButton != null ? restartButton
-                     : titleButton;
-        if (first == null) return;
+    private GameObject FirstSelected()
+    {
+        if (firstSelected != null && firstSelected.activeInHierarchy)
+            return firstSelected;
 
+        Button fallback = continueButton != null ? continueButton
+                        : restartButton != null ? restartButton
+                        : titleButton;
+
+        return fallback != null ? fallback.gameObject : null;
+    }
+
+    private void Select(GameObject target)
+    {
+        if (target == null || EventSystem.current == null) return;
+
+        // 一度 null を挟まないと、同じ相手を選び直したとき
+        // OnSelect が飛ばずにハイライトが戻らない
         EventSystem.current.SetSelectedGameObject(null);
-        EventSystem.current.SetSelectedGameObject(first.gameObject);
+        EventSystem.current.SetSelectedGameObject(target);
+        _lastSelected = target;
     }
 
     private Button FindButton(string name)

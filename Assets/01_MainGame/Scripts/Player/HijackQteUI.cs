@@ -14,7 +14,7 @@
 //     ├── RingOuter     (Image, QTE_RingOuter)       ← 縮むリング（白 = tint される）
 //     ├── Burst         (Image, QTE_Burst)           ← ヒット / ミスのフィードバック
 //     ├── CountText     (TextMeshPro "1/3")
-//     ├── HintText      (TextMeshPro) / KeyCap       ← QTE_KeyCap_Space
+//     ├── HintText      (TextMeshPro) / KeyCap       ← デバイスで差し替え（Space / Xbox B）
 //     └── ResultText    (TextMeshPro "SUCCESS!")
 //
 // 演出は DOTween、待ち時間は UniTask（animation_stack.md の方針に合わせる）。
@@ -27,6 +27,7 @@ using Cysharp.Threading.Tasks;
 using DG.Tweening;
 using TMPro;
 using UnityEngine;
+using UnityEngine.InputSystem;
 using UnityEngine.UI;
 
 public class HijackQTEUI : MonoBehaviour
@@ -56,6 +57,24 @@ public class HijackQTEUI : MonoBehaviour
 
     [Tooltip("押すボタンのキーキャップ（点滅させる）")]
     [SerializeField] private RectTransform _keyCap;
+
+    [Tooltip("キーキャップの画像。未設定なら _keyCap から探す")]
+    [SerializeField] private Image _keyCapImage;
+
+    [Header("=== 押すボタンの表示（デバイス別）===")]
+    // QTE の押下は Hijack アクション（Keyboard/space・XInput/buttonEast＝B）。
+    // パッドで遊んでいるのに "Press Space!" と出ないよう、デバイスで出し分ける。
+    [SerializeField] private string _keyboardHint = "Press Space!";
+    [SerializeField] private string _gamepadHint  = "Press B!";
+
+    [Tooltip("キーボード用のキーキャップ。未設定ならキーボード時はキーキャップを隠す")]
+    [SerializeField] private Sprite _keyboardKeyCap;
+
+    [Tooltip("ゲームパッド用のキーキャップ（Xbox の B）")]
+    [SerializeField] private Sprite _gamepadKeyCap;
+
+    [Tooltip(".inputactions のコントロールスキーム名")]
+    [SerializeField] private string _gamepadSchemeName = "Gamepad";
 
     [Header("=== QTE パラメーター ===")]
     [SerializeField] private float _outerStartSize = 400f;
@@ -99,6 +118,10 @@ public class HijackQTEUI : MonoBehaviour
     private CancellationTokenSource _cts;
     private Tween _keyCapPulse;
     private Vector3 _burstBaseScale = Vector3.one;
+    private Vector3 _resultBaseScale = Vector3.one;
+
+    /// <summary>ヒント表示のデバイス判定に使う（遅延取得）</summary>
+    private PlayerInput _playerInput;
 
     private float Delta => _useUnscaledTime ? Time.unscaledDeltaTime : Time.deltaTime;
 
@@ -116,6 +139,11 @@ public class HijackQTEUI : MonoBehaviour
     private void Awake()
     {
         if (_burst != null) _burstBaseScale = _burst.localScale;
+
+        // プレハブで設定されたスケールを覚えておく。
+        // 決め打ちで 1 に戻すと、2 倍に設定してあるテキストが
+        // 一度表示しただけで半分のサイズになってしまう。
+        if (_resultText != null) _resultBaseScale = _resultText.rectTransform.localScale;
 
         ApplyHitWindowSize();
         SetAlpha(_burstImage, 0f);
@@ -175,11 +203,7 @@ public class HijackQTEUI : MonoBehaviour
         _qtePanel?.SetActive(true);
         if (_resultText) _resultText.gameObject.SetActive(false);
         if (_countText)  _countText.gameObject.SetActive(true);
-        if (_hintText)
-        {
-            _hintText.gameObject.SetActive(true);
-            _hintText.text = "Press Space!";
-        }
+        ApplyDeviceHint();
 
         ApplyHitWindowSize();
         UpdateCount();
@@ -298,10 +322,11 @@ public class HijackQTEUI : MonoBehaviour
                 _resultText.color = success ? _successColor   : _failColor;
                 _resultText.gameObject.SetActive(true);
 
-                // 結果テキストをドンと出す
+                // 結果テキストをドンと出す（プレハブのスケールを基準にする）
                 RectTransform rt = _resultText.rectTransform;
-                rt.localScale = Vector3.one * 0.7f;
-                rt.DOScale(1f, 0.28f).SetEase(Ease.OutBack).SetUpdate(true);
+                DOTween.Kill(rt);
+                rt.localScale = _resultBaseScale * 0.7f;
+                rt.DOScale(_resultBaseScale, 0.28f).SetEase(Ease.OutBack).SetUpdate(true);
             }
 
             await UniTask.Delay(
@@ -414,6 +439,65 @@ public class HijackQTEUI : MonoBehaviour
     private void UpdateCount()
     {
         if (_countText) _countText.text = $"{_hitCount} / {_requiredHits}";
+    }
+
+    // ─────────────────────────────────────────
+    // 押すボタンの表示（デバイス別）
+    // ─────────────────────────────────────────
+
+    /// <summary>
+    /// 今使っているデバイスに合わせて、ヒント文とキーキャップ画像を差し替える。
+    /// QTE 開始のたびに呼ぶ（途中でパッドに持ち替えても次回から合う）。
+    /// </summary>
+    private void ApplyDeviceHint()
+    {
+        bool gamepad = IsUsingGamepad();
+
+        if (_hintText != null)
+        {
+            _hintText.gameObject.SetActive(true);
+            _hintText.text = gamepad ? _gamepadHint : _keyboardHint;
+        }
+
+        Sprite cap = gamepad ? _gamepadKeyCap : _keyboardKeyCap;
+        Image  img = ResolveKeyCapImage();
+
+        if (img != null)
+        {
+            // そのデバイス用の画像が無いときは、
+            // 別デバイスのボタンを出したままにせず隠す
+            img.gameObject.SetActive(cap != null);
+            if (cap != null) img.sprite = cap;
+        }
+    }
+
+    private Image ResolveKeyCapImage()
+    {
+        if (_keyCapImage == null && _keyCap != null)
+            _keyCapImage = _keyCap.GetComponent<Image>();
+
+        return _keyCapImage;
+    }
+
+    /// <summary>
+    /// パッドで操作中か。
+    /// PlayerInput のコントロールスキームで判定し、
+    /// まだ確定していない場合はパッドが繋がっていればパッド扱いにする
+    /// （パッド推奨のため、キーボード表示に倒さない）。
+    /// </summary>
+    private bool IsUsingGamepad()
+    {
+        if (_playerInput == null)
+        {
+            PlayerStateMachine player = FindAnyObjectByType<PlayerStateMachine>();
+            if (player != null) _playerInput = player.GetComponent<PlayerInput>();
+        }
+
+        string scheme = _playerInput != null ? _playerInput.currentControlScheme : null;
+        if (!string.IsNullOrEmpty(scheme))
+            return scheme == _gamepadSchemeName;
+
+        return Gamepad.current != null;
     }
 
     private static void SetAlpha(Image img, float a)
