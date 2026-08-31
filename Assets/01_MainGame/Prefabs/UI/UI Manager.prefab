@@ -3433,6 +3433,7 @@ GameObject:
   - component: {fileID: 4324295742443027628}
   - component: {fileID: 2475920060912446003}
   - component: {fileID: 7328618898229198816}
+  - component: {fileID: 7328618898229198817}
   m_Layer: 5
   m_Name: UI Manager
   m_TagString: Untagged
@@ -5061,3 +5062,22 @@ RectTransform:
   m_CorrespondingSourceObject: {fileID: 7441164634862130683, guid: f9cd6fffc6ad846969fe938fe26f9eac, type: 3}
   m_PrefabInstance: {fileID: 8881676887968318769}
   m_PrefabAsset: {fileID: 0}
+--- !u!114 &7328618898229198817
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6985734097682280509}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 7b1c04e3a9d24f5a8c6e0d13f4a25b90, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::PauseManager
+  pausePanel: {fileID: 0}
+  continueButton: {fileID: 0}
+  restartButton: {fileID: 0}
+  titleButton: {fileID: 0}
+  audioSource: {fileID: 0}
+  openSound: {fileID: 0}
+  closeSound: {fileID: 0}
