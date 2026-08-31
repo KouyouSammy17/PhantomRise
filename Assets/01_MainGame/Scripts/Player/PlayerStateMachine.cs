@@ -63,6 +63,27 @@ public class PlayerStateMachine : MonoBehaviour
     public UnityEvent OnPlayerDead;
 
     // ─────────────────────────────────────────
+    // 死因（ボスに倒されたか）
+    //
+    // チュートリアルのボスは「負けイベント」なので、
+    // ボスに倒された場合だけゲームオーバーにせず次のステージへ進める。
+    // GameManager.TriggerGameOver() に渡す。
+    // ─────────────────────────────────────────
+
+    private bool _killedByBoss;
+
+    /// <summary>ボスの攻撃で死んだことを記録する。ボス側から呼ぶ。</summary>
+    public void MarkKilledByBoss() => _killedByBoss = true;
+
+    /// <summary>記録を読み出して消す。DeadState から呼ぶ。</summary>
+    public bool ConsumeKilledByBoss()
+    {
+        bool killed = _killedByBoss;
+        _killedByBoss = false;
+        return killed;
+    }
+
+    // ─────────────────────────────────────────
     // 共有データ（各状態クラスから参照）
     // ─────────────────────────────────────────
 
@@ -252,6 +273,10 @@ public class PlayerStateMachine : MonoBehaviour
 
     private void Update()
     {
+        // クールダウンは Dodge 状態を抜けた後に進める必要がある。
+        // DodgeState.Update() は Dodge 中しか呼ばれないので、ここで毎フレーム進める。
+        Dodge?.TickCooldown(Time.deltaTime);
+
         _currentState?.Update(Time.deltaTime);
 
         // 落下死：Dead 以外の状態でステージ外まで落ちたらゲームオーバー
@@ -319,6 +344,10 @@ public class PlayerStateMachine : MonoBehaviour
     private void OnDodgeStarted(InputAction.CallbackContext ctx)
     {
         if (_isStunned) return;
+
+        // クールダウン中は回避させない
+        if (!Dodge.CanDodge) return;
+
         if (_currentState == Ghost || _currentState == Hijacked)
         {
             // HijackedState からの離脱は一時的 — モデルスワップを保持するよう通知
@@ -365,6 +394,10 @@ public class PlayerStateMachine : MonoBehaviour
         if (_currentState == Ghost)
         {
             if (!other.CompareTag("Enemy")) return;
+
+            if (other.GetComponentInParent<BossController>() != null)
+                MarkKilledByBoss();
+
             Ghost.OnHit();
         }
         else if (_currentState == Hijacked)

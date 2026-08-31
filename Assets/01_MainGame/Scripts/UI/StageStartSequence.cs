@@ -1,6 +1,7 @@
 using System.Collections;
-using UnityEngine;
 using Unity.Cinemachine;
+using UnityEngine;
+using static UnityEditor.Experimental.AssetDatabaseExperimental.AssetDatabaseCounters;
 
 public class StageStartSequence : MonoBehaviour
 {
@@ -14,6 +15,12 @@ public class StageStartSequence : MonoBehaviour
     [Header("=== 設定 ===")]
     [SerializeField] private float waitTime = 1.5f;
     [SerializeField] private float cameraMoveTime = 2.0f;
+
+    [Header("=== 開幕フェード ===")]
+    [Tooltip("真っ黒から始めて、カメラが構えてから明ける")]
+    [SerializeField] private bool fadeInOnStart = true;
+
+    [SerializeField] private float fadeInDuration = 0.8f;
 
     [Header("=== GAME START UI ===")]
     [SerializeField] private GameObject gameStartUI;
@@ -32,6 +39,10 @@ public class StageStartSequence : MonoBehaviour
     private Vector3 normalPosition;
     private Quaternion normalRotation;
 
+    [SerializeField] private GameObject[] UIs;
+    [SerializeField] private CountUp countUp;
+
+
 
 
 
@@ -41,6 +52,13 @@ public class StageStartSequence : MonoBehaviour
 
     private void Awake()
     {
+        // シーン読み込み直後の自動フェードインを止めて、
+        // 下の StartSequence が明けるまで真っ黒を保持する。
+        if (fadeInOnStart)
+        {
+            ScreenFader.Instance.HoldBlack();
+        }
+
         mainCamera = Camera.main;
 
         if (mainCamera == null)
@@ -65,6 +83,11 @@ public class StageStartSequence : MonoBehaviour
 
     private void Start()
     {
+         foreach (var ui in UIs)
+        {
+            ui.SetActive(false);
+        }
+
         if (gameStartUI != null)
         {
             gameStartUI.SetActive(false);
@@ -99,6 +122,7 @@ public class StageStartSequence : MonoBehaviour
             enemy.SetStageStarting(true);
         }
 
+        countUp.StopCounting();
         StartCoroutine(StartSequence());
     }
 
@@ -134,6 +158,19 @@ public class StageStartSequence : MonoBehaviour
         playerCamera.Priority = 0;
 
         yield return null;
+
+
+        // --------------------------------------------------------
+        // カメラが構えたので暗転から明ける
+        // （Tween は実時間で動くので Realtime で待つ）
+        // --------------------------------------------------------
+
+        if (fadeInOnStart)
+        {
+            ScreenFader.Instance.FadeIn(fadeInDuration);
+
+            yield return new WaitForSecondsRealtime(fadeInDuration);
+        }
 
 
         // --------------------------------------------------------
@@ -237,7 +274,13 @@ public class StageStartSequence : MonoBehaviour
         {
             CountUI.SetActive(true);
         }
+        countUp.StartCounting();
 
+        foreach (var ui in UIs)
+        {
+            ui.SetActive(true);
+        }
+        
         foreach (EnemyController enemy in enemies)
         {
             enemy.SetStageStarting(false);

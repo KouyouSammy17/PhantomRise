@@ -130,6 +130,10 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::TitleManager
   titleUI: {fileID: 2805869090030390389}
+  startDelay: 0.35
+  fadeDuration: 0.6
+  fadeOverlay: {fileID: 0}
+  fadeColor: {r: 0, g: 0, b: 0, a: 1}
 --- !u!1 &3992199084393681889
 GameObject:
   m_ObjectHideFlags: 0

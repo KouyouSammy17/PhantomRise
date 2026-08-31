@@ -14,8 +14,9 @@
 //
 // 他スクリプトからのアクセス: GameManager.Instance
 // ============================================================
-
+using System;
 using UnityEngine;
+using UnityEngine.Audio;
 using UnityEngine.Events;
 using UnityEngine.SceneManagement;
 
@@ -83,10 +84,20 @@ public class GameManager : MonoBehaviour
     [SerializeField] private AudioClip UISound;
     [SerializeField] private AudioSource audioSource;
 
+    [Header("=== シーン遷移フェード ===")]
+    [Tooltip("暗転しきるまでの秒数。UI 音が鳴っている間に暗くなる")]
+    [SerializeField] private float fadeOutDuration = 0.35f;
+
+    [Tooltip("遷移先で明けるまでの秒数。ScreenFader が自動で行う")]
+    [SerializeField] private float fadeInDuration = 0.45f;
+
     [Header("=== BGM（シーンにある物だけ割り当てる。空でもよい）===")]
     [SerializeField] private BossRoomTrigger bossRoomTrigger;
     [SerializeField] private StageBGM stageBGM;
 
+
+    [SerializeField] private GameObject[] UIs;
+    [SerializeField] private GameObject Settingspanel;
     // ─────────────────────────────────────────
     // 内部
     // ─────────────────────────────────────────
@@ -98,7 +109,7 @@ public class GameManager : MonoBehaviour
     private void StopAllBgm()
     {
         if (bossRoomTrigger != null) bossRoomTrigger.StopBossBGM();
-        if (stageBGM != null)        stageBGM.StopStageBGM();
+        if (stageBGM != null) stageBGM.StopStageBGM();
     }
 
     // ─────────────────────────────────────────
@@ -118,6 +129,11 @@ public class GameManager : MonoBehaviour
 
         Debug.Log("[GameManager] ゲームクリア！");
         StopAllBgm();
+        //UIを消す
+        foreach (var ui in UIs)
+        {
+            ui.SetActive(false);
+        }
         audioSource.PlayOneShot(gameClearSound); // ゲームクリア音を再生
 
         OnGameClear?.Invoke();
@@ -129,16 +145,41 @@ public class GameManager : MonoBehaviour
 
     /// <summary>
     /// PlayerStateMachine の OnPlayerDead UnityEvent にバインドする。
+    /// 引数なしのまま残すこと（UnityEvent は引数付きメソッドを void 呼び出しにできない）。
     /// </summary>
-    public void TriggerGameOver()
+    public void TriggerGameOver() => HandlePlayerDeath(false);
+
+    /// <summary>
+    /// ボスに倒されたときの死亡。DeadState から呼ぶ。
+    /// チュートリアルのボスは勝てない「負けイベント」なので、
+    /// この場合だけゲームオーバーにせず Stage2 へ進める。
+    /// </summary>
+    public void TriggerGameOverByBoss() => HandlePlayerDeath(true);
+
+    private void HandlePlayerDeath(bool killedByBoss)
     {
         if (!IsPlaying) return;
+
+        if (killedByBoss && SceneManager.GetActiveScene().name == Scenes.Tutorial)
+        {
+            // 二重に遷移しないよう状態だけ進める（ゲームオーバー UI は出さない）
+            _state = GameState.GameOver;
+
+            Debug.Log("[GameManager] チュートリアルのボスに敗北 → Stage2 へ");
+            GoToStage2();   // 中で BGM 停止・UI 音・シーン遷移まで行う
+            return;
+        }
 
         _state = GameState.GameOver;
         Time.timeScale = 0f;
 
         Debug.Log("[GameManager] ゲームオーバー");
         StopAllBgm();
+        foreach (var ui in UIs)
+        {
+            ui.SetActive(false);
+        }
+
         audioSource.PlayOneShot(gameOverSound); // ゲームオーバー音を再生
 
         OnGameOver?.Invoke();
@@ -208,6 +249,17 @@ public class GameManager : MonoBehaviour
         LoadSceneWithUISound(Scenes.Stage2);
     }
 
+    /// <summary>/// 設定画面へ遷移する。/// </summary>
+    public void OpenSettings()
+    {
+        Settingspanel.SetActive(true);
+        audioSource.PlayOneShot(UISound);
+    }
+    public void CloseSettings()
+    {
+        Settingspanel.SetActive(false);
+        audioSource.PlayOneShot(UISound);
+    }
     // ─────────────────────────────────────────
     // 読み込み（UI音を鳴らしてから遷移する）
     // ─────────────────────────────────────────
@@ -226,8 +278,13 @@ public class GameManager : MonoBehaviour
     {
         audioSource.PlayOneShot(UISound);
 
+        // UI 音を鳴らしながら暗転する。
+        // 明けるのは ScreenFader 側（この GameManager は
+        // シーンと一緒に破棄されるので、遷移先まで面倒を見られない）。
+        ScreenFader.Instance.FadeOut(fadeOutDuration, fadeInDuration);
+
         // timeScale が 0 でも待てるよう Realtime を使う
-        yield return new WaitForSecondsRealtime(0.2f);
+        yield return new WaitForSecondsRealtime(Mathf.Max(fadeOutDuration, 0.2f));
 
         Time.timeScale = 1f;
         load();

@@ -123,6 +123,9 @@ public class HijackQTEUI : MonoBehaviour
     /// <summary>ヒント表示のデバイス判定に使う（遅延取得）</summary>
     private PlayerInput _playerInput;
 
+    /// <summary>今 QTE 中の敵。結果 SE をこの敵の EnemyAudio で鳴らす</summary>
+    private EnemyController _currentEnemy;
+
     private float Delta => _useUnscaledTime ? Time.unscaledDeltaTime : Time.deltaTime;
 
     // ─────────────────────────────────────────
@@ -193,6 +196,7 @@ public class HijackQTEUI : MonoBehaviour
 
     private void StartQTE(EnemyController enemy)
     {
+        _currentEnemy = enemy;   // 結果 SE を鳴らすのに使う
         _hitCount = 0;
         _active = true;
         _waitNext = false;
@@ -315,6 +319,9 @@ public class HijackQTEUI : MonoBehaviour
             _keyCapPulse?.Kill();
             _keyCapPulse = null;
             if (_keyCap != null) _keyCap.localScale = Vector3.one;
+
+            // 結果表示と同時に SE を鳴らす
+            PlayResultSE(success);
 
             if (_resultText)
             {
@@ -469,6 +476,24 @@ public class HijackQTEUI : MonoBehaviour
             img.gameObject.SetActive(cap != null);
             if (cap != null) img.sprite = cap;
         }
+    }
+
+    /// <summary>
+    /// 成功 / 失敗の SE を鳴らす。敵の EnemyAudio（クリップ設定済み）をそのまま使う。
+    ///
+    /// 以前は EnemyController.BecomeHijacked / AlertChase の中で鳴らしていたが、
+    /// どちらも結果表示・パネルを閉じる処理が終わってから呼ばれるので、
+    /// SE が 1〜1.7 秒遅れて（UI が消えた後に）鳴っていた。
+    /// </summary>
+    private void PlayResultSE(bool success)
+    {
+        if (_currentEnemy == null) return;
+
+        EnemyAudio audio = _currentEnemy.GetComponent<EnemyAudio>();
+        if (audio == null) return;
+
+        if (success) audio.PlayQTESSE();
+        else         audio.PlayQTEFSE();
     }
 
     private Image ResolveKeyCapImage()

@@ -435,9 +435,8 @@ public class EnemyController : MonoBehaviour
     /// <summary>QTE 成功時に HijackState から呼ぶ</summary>
     public void BecomeHijacked()
     {
-        //QTE成功音
-        enemyAudio?.PlayQTESSE();
-
+        // QTE 成功音は HijackQTEUI が結果表示と同時に鳴らす
+        // （ここは結果表示が終わってから呼ばれるので遅すぎる）
 
         IsQTETarget = false;   // QTE フリーズを解除（IsHijacked で完全停止に移行）
         IsHijacked = true;
@@ -470,12 +469,19 @@ public class EnemyController : MonoBehaviour
     /// <summary>QTE 失敗時 — フリーズ解除して Chase 状態にする</summary>
     public void AlertChase()
     {
-        //QTE失敗音
-        enemyAudio?.PlayQTEFSE();
-
+        // QTE 失敗音は HijackQTEUI が結果表示と同時に鳴らす
+        // （ここは結果表示が終わってから呼ばれるので遅すぎる）
 
         if (IsHijacked) return;
         IsQTETarget = false;
+
+        // スタン中の敵に失敗した場合、ここで Chase にすると
+        // RecoverFromStun（currentState == Stun のときだけ動く）が空振りして
+        // スタンアニメーションが解除されないまま追いかけてくる。
+        // 先にスタンを自分で終わらせてから Chase に移る。
+        CancelInvoke(nameof(RecoverFromStun));
+        SetStunAnimation(false);
+
         currentState = EnemyState.Chase;
         agent.enabled = true;    // NavMeshAgent を再有効化
         agent.isStopped = false;

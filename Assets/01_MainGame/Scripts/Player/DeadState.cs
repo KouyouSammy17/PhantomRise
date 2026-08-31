@@ -48,8 +48,11 @@ public class DeadState : PlayerBaseState
             Machine.PlayerVisual.SetActive(false);
 
         // ゲームオーバー UI
+        // ボスに倒された場合は、チュートリアルだけ負けイベント扱いになる
         Machine.OnPlayerDead?.Invoke();
-        GameManager.Instance.TriggerGameOver();
+
+        if (Machine.ConsumeKilledByBoss()) GameManager.Instance.TriggerGameOverByBoss();
+        else                               GameManager.Instance.TriggerGameOver();
     }
 
     public override void Update(float deltaTime)

@@ -43,11 +43,22 @@ public class DodgeState : PlayerBaseState
         Debug.Log($"[Dodge] Enter — 方向 {_dodgeDir}");
     }
 
+    /// <summary>
+    /// クールダウンを進める。
+    ///
+    /// Update() は Dodge 状態のあいだしか呼ばれないが、
+    /// クールダウンは回避が終わった後に進める必要があるので、
+    /// PlayerStateMachine.Update から毎フレーム呼ぶ。
+    /// </summary>
+    public void TickCooldown(float deltaTime)
+    {
+        if (_cooldownTimer <= 0f) return;
+
+        _cooldownTimer = Mathf.Max(0f, _cooldownTimer - deltaTime);
+    }
+
     public override void Update(float deltaTime)
     {
-        // クールダウンは常に更新
-        _cooldownTimer = Mathf.Max(0f, _cooldownTimer - deltaTime);
-
         // ダッシュ移動（重力なし）
         Machine.CC.Move(_dodgeDir * Machine.DodgeSpeed * deltaTime);
 
