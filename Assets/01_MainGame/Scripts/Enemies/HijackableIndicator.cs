@@ -32,6 +32,9 @@ public class HijackableIndicator : MonoBehaviour
     private EnemyController _enemy;
     private PlayerStateMachine _player;
 
+    /// <summary>前フレームの乗っ取り可否。SE を「なった瞬間」だけ鳴らすのに使う</summary>
+    private bool _wasHijackable;
+
     // PlayerStateMachine が持つ設定値をキャッシュ
     private float _hijackRange;
     private float _behindAngle;
@@ -74,6 +77,14 @@ public class HijackableIndicator : MonoBehaviour
         if (_indicatorRoot == null || _player == null) return;
 
         bool show = EvaluateHijackable();
+
+        // 乗っ取り可能になった「瞬間」だけ鳴らす。
+        // Update は毎フレーム走るので、状態が変わったときだけにしないと鳴り続ける。
+        if (show && !_wasHijackable)
+            _enemy.GetComponent<EnemyAudio>()?.PlayHijackableSE();
+
+        _wasHijackable = show;
+
         _indicatorRoot.SetActive(show);
     }
 

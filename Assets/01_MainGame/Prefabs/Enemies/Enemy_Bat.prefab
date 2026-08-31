@@ -168,6 +168,10 @@ PrefabInstance:
       propertyPath: rank
       value: 2
       objectReference: {fileID: 0}
+    - target: {fileID: 6443116343119807069, guid: 4ef9cf0b807c6d74ba60784351b7ecd4, type: 3}
+      propertyPath: attackPower
+      value: 14
+      objectReference: {fileID: 0}
     - target: {fileID: 7432282056635228474, guid: 4ef9cf0b807c6d74ba60784351b7ecd4, type: 3}
       propertyPath: m_AnchorMax.x
       value: 0
@@ -186,7 +190,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 7762544295177896909, guid: 4ef9cf0b807c6d74ba60784351b7ecd4, type: 3}
       propertyPath: _maxHP
-      value: 150
+      value: 160
       objectReference: {fileID: 0}
     - target: {fileID: 8060403493178725083, guid: 4ef9cf0b807c6d74ba60784351b7ecd4, type: 3}
       propertyPath: m_Size.x
@@ -307,8 +311,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 18f38f045bc37ae49a728a8acaca24d5, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::BatEnemySkill
-  skillCooldown: 3
-  skillRange: 1
+  skillCooldown: 6
+  skillRange: 2
   skillName: Bloodsucking
   skillIcon: {fileID: 21300000, guid: ba63880fbf224c1c98b44e5226ba95b5, type: 3}
   SkillDescription: "HP\u5438\u53CE"

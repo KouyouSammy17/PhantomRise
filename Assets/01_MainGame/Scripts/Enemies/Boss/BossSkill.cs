@@ -158,6 +158,7 @@ public class BossSkill : EnemySkillBase
             else if (player.CurrentStateName ==
                      nameof(GhostState))
             {
+                player.MarkKilledByBoss();
                 player.Ghost.OnHit();
             }
         }

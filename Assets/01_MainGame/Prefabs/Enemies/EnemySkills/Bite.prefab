@@ -49,7 +49,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: cb951a8281cf36d4789d671adaaf96e5, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Bloodsucking
-  damage: 20
+  damage: 30
 --- !u!65 &467803138383494170
 BoxCollider:
   m_ObjectHideFlags: 0

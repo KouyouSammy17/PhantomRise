@@ -367,6 +367,7 @@ GameObject:
   - component: {fileID: 1010428680573637184}
   - component: {fileID: 1010428680573637215}
   - component: {fileID: 1010428680573637185}
+  - component: {fileID: 1010428680573637190}
   m_Layer: 5
   m_Name: Button_Exit
   m_TagString: Untagged
@@ -476,6 +477,28 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls: []
+--- !u!114 &1010428680573637190
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1010428680573637213}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 3d5f81ca6b7e4e2a91c40af26d83be71, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::ButtonAnimator
+  hoverScale: 1.06
+  hoverDuration: 0.16
+  hoverEase: 27
+  pressScale: 0.94
+  pressDuration: 0.07
+  clickPunch: 0.18
+  clickPunchDuration: 0.28
+  idlePulse: 0
+  idleAmp: 0.02
+  idleDuration: 1.2
 --- !u!1 &1010428680708865961
 GameObject:
   m_ObjectHideFlags: 0
@@ -488,6 +511,7 @@ GameObject:
   - component: {fileID: 1010428680708865964}
   - component: {fileID: 1010428680708865963}
   - component: {fileID: 1010428680708865965}
+  - component: {fileID: 1010428680708865970}
   m_Layer: 5
   m_Name: Button_Restart
   m_TagString: Untagged
@@ -567,7 +591,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_Navigation:
-    m_Mode: 3
+    m_Mode: 1
     m_WrapAround: 0
     m_SelectOnUp: {fileID: 0}
     m_SelectOnDown: {fileID: 0}
@@ -575,7 +599,7 @@ MonoBehaviour:
     m_SelectOnRight: {fileID: 0}
   m_Transition: 1
   m_Colors:
-    m_NormalColor: {r: 1, g: 1, b: 1, a: 1}
+    m_NormalColor: {r: 0.45911938, g: 0.44035032, b: 0.44035032, a: 1}
     m_HighlightedColor: {r: 0.9607843, g: 0.9607843, b: 0.9607843, a: 1}
     m_PressedColor: {r: 0.78431374, g: 0.78431374, b: 0.78431374, a: 1}
     m_SelectedColor: {r: 0.9607843, g: 0.9607843, b: 0.9607843, a: 1}
@@ -598,6 +622,28 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls: []
+--- !u!114 &1010428680708865970
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1010428680708865961}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 3d5f81ca6b7e4e2a91c40af26d83be71, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::ButtonAnimator
+  hoverScale: 1.06
+  hoverDuration: 0.16
+  hoverEase: 27
+  pressScale: 0.94
+  pressDuration: 0.07
+  clickPunch: 0.18
+  clickPunchDuration: 0.28
+  idlePulse: 0
+  idleAmp: 0.02
+  idleDuration: 1.2
 --- !u!1 &1010428680831006400
 GameObject:
   m_ObjectHideFlags: 0
@@ -10729,7 +10775,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: GameOver
+  m_text: Game Over
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: 7659f6d6ec9b642db8be29bc45fe97cc, type: 2}
   m_sharedMaterial: {fileID: 8690591861142563998, guid: 7659f6d6ec9b642db8be29bc45fe97cc, type: 2}
@@ -11095,6 +11141,7 @@ GameObject:
   - component: {fileID: 1010428681933019108}
   - component: {fileID: 1010428681933019107}
   - component: {fileID: 1010428681933019109}
+  - component: {fileID: 1010428681933019114}
   m_Layer: 5
   m_Name: Button_Title
   m_TagString: Untagged
@@ -11174,7 +11221,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_Navigation:
-    m_Mode: 3
+    m_Mode: 1
     m_WrapAround: 0
     m_SelectOnUp: {fileID: 0}
     m_SelectOnDown: {fileID: 0}
@@ -11182,7 +11229,7 @@ MonoBehaviour:
     m_SelectOnRight: {fileID: 0}
   m_Transition: 1
   m_Colors:
-    m_NormalColor: {r: 1, g: 1, b: 1, a: 1}
+    m_NormalColor: {r: 0.509434, g: 0.509434, b: 0.509434, a: 1}
     m_HighlightedColor: {r: 0.9607843, g: 0.9607843, b: 0.9607843, a: 1}
     m_PressedColor: {r: 0.78431374, g: 0.78431374, b: 0.78431374, a: 1}
     m_SelectedColor: {r: 0.9607843, g: 0.9607843, b: 0.9607843, a: 1}
@@ -11205,6 +11252,28 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls: []
+--- !u!114 &1010428681933019114
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1010428681933019105}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 3d5f81ca6b7e4e2a91c40af26d83be71, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::ButtonAnimator
+  hoverScale: 1.06
+  hoverDuration: 0.16
+  hoverEase: 27
+  pressScale: 0.94
+  pressDuration: 0.07
+  clickPunch: 0.18
+  clickPunchDuration: 0.28
+  idlePulse: 0
+  idleAmp: 0.02
+  idleDuration: 1.2
 --- !u!1 &1010428682260002511
 GameObject:
   m_ObjectHideFlags: 0
@@ -11228,7 +11297,7 @@ RectTransform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1010428682260002511}
-  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0

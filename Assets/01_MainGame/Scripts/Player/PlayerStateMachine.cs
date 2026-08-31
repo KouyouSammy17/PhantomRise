@@ -63,6 +63,27 @@ public class PlayerStateMachine : MonoBehaviour
     public UnityEvent OnPlayerDead;
 
     // ─────────────────────────────────────────
+    // 死因（ボスに倒されたか）
+    //
+    // チュートリアルのボスは「負けイベント」なので、
+    // ボスに倒された場合だけゲームオーバーにせず次のステージへ進める。
+    // GameManager.TriggerGameOver() に渡す。
+    // ─────────────────────────────────────────
+
+    private bool _killedByBoss;
+
+    /// <summary>ボスの攻撃で死んだことを記録する。ボス側から呼ぶ。</summary>
+    public void MarkKilledByBoss() => _killedByBoss = true;
+
+    /// <summary>記録を読み出して消す。DeadState から呼ぶ。</summary>
+    public bool ConsumeKilledByBoss()
+    {
+        bool killed = _killedByBoss;
+        _killedByBoss = false;
+        return killed;
+    }
+
+    // ─────────────────────────────────────────
     // 共有データ（各状態クラスから参照）
     // ─────────────────────────────────────────
 
@@ -71,8 +92,29 @@ public class PlayerStateMachine : MonoBehaviour
     public float VelocityY { get; set; }
 
     // カメラ固定軸キャッシュ
-    public Vector3 CamForward { get; private set; }
-    public Vector3 CamRight { get; private set; }
+    // カメラの水平軸。毎回その場で計算する。
+    //
+    // 以前は一度だけキャッシュしていたが、キャッシュした後に
+    // Cinemachine がカメラを動かす（ボス部屋のカメラ切り替え等も含む）ため、
+    // 実際のカメラ向きと基準がズレて、ひどいときは入力が反転していた。
+    public Vector3 CamForward => Horizontal(ResolveCamera()?.forward ?? Vector3.forward, Vector3.forward);
+    public Vector3 CamRight   => Horizontal(ResolveCamera()?.right   ?? Vector3.right,   Vector3.right);
+
+    /// <summary>水平面に落として正規化。真下を向いている等で潰れたら fallback を返す。</summary>
+    private static Vector3 Horizontal(Vector3 v, Vector3 fallback)
+    {
+        Vector3 flat = Vector3.ProjectOnPlane(v, Vector3.up);
+
+        return flat.sqrMagnitude > 0.0001f ? flat.normalized : fallback;
+    }
+
+    private Transform ResolveCamera()
+    {
+        if (_cameraTransform == null && Camera.main != null)
+            _cameraTransform = Camera.main.transform;
+
+        return _cameraTransform;
+    }
 
     // 現在の状態名（デバッグ・UI 用）
     public string CurrentStateName => _currentState?.GetType().Name ?? "None";
@@ -109,6 +151,9 @@ public class PlayerStateMachine : MonoBehaviour
 
     /// <summary>幽霊モデルのアニメーション制御（CrossFade 方式）</summary>
     public GhostAnimation GhostAnim { get; private set; }
+
+    /// <summary>効果音。未アタッチなら null（各呼び出しは null 許容）</summary>
+    public PlayerAudio Audio { get; private set; }
 
     /// <summary>幽霊モデルのディゾルブ演出（シェーダーの _Dissolve を駆動）</summary>
     public GhostDissolveEffect DissolveFx { get; private set; }
@@ -203,6 +248,9 @@ public class PlayerStateMachine : MonoBehaviour
         // GhostAnimation も同様に自動追加
         GhostAnim = GetComponent<GhostAnimation>() ?? gameObject.AddComponent<GhostAnimation>();
 
+        // 効果音（付いていなければ鳴らないだけ）
+        Audio = GetComponent<PlayerAudio>();
+
         // ディゾルブ演出も自動追加
         DissolveFx = GetComponent<GhostDissolveEffect>() ?? gameObject.AddComponent<GhostDissolveEffect>();
 
@@ -252,6 +300,10 @@ public class PlayerStateMachine : MonoBehaviour
 
     private void Update()
     {
+        // クールダウンは Dodge 状態を抜けた後に進める必要がある。
+        // DodgeState.Update() は Dodge 中しか呼ばれないので、ここで毎フレーム進める。
+        Dodge?.TickCooldown(Time.deltaTime);
+
         _currentState?.Update(Time.deltaTime);
 
         // 落下死：Dead 以外の状態でステージ外まで落ちたらゲームオーバー
@@ -319,6 +371,10 @@ public class PlayerStateMachine : MonoBehaviour
     private void OnDodgeStarted(InputAction.CallbackContext ctx)
     {
         if (_isStunned) return;
+
+        // クールダウン中は回避させない
+        if (!Dodge.CanDodge) return;
+
         if (_currentState == Ghost || _currentState == Hijacked)
         {
             // HijackedState からの離脱は一時的 — モデルスワップを保持するよう通知
@@ -365,6 +421,10 @@ public class PlayerStateMachine : MonoBehaviour
         if (_currentState == Ghost)
         {
             if (!other.CompareTag("Enemy")) return;
+
+            if (other.GetComponentInParent<BossController>() != null)
+                MarkKilledByBoss();
+
             Ghost.OnHit();
         }
         else if (_currentState == Hijacked)
@@ -381,11 +441,14 @@ public class PlayerStateMachine : MonoBehaviour
     // ─────────────────────────────────────────
 
     /// <summary>カメラ水平軸をキャッシュ（固定カメラなので Start 時のみ）</summary>
+    /// <summary>
+    /// 旧 API。CamForward / CamRight は毎フレーム計算するようになったので
+    /// 呼ぶ必要は無い（StageStartSequence 等の既存の呼び出しのために残してある）。
+    /// カメラ参照の解決だけ行う。
+    /// </summary>
     public void CacheCameraAxes()
     {
-        if (_cameraTransform == null) return;
-        CamForward = Vector3.ProjectOnPlane(_cameraTransform.forward, Vector3.up).normalized;
-        CamRight = Vector3.ProjectOnPlane(_cameraTransform.right, Vector3.up).normalized;
+        ResolveCamera();
     }
 
 
@@ -404,10 +467,19 @@ public class PlayerStateMachine : MonoBehaviour
     }
 
     /// <summary>移動＋重力を適用（各状態から呼ぶ共通処理）</summary>
+    /// <summary>
+    /// スキルなどが体を動かしている間 true。
+    ///
+    /// 入力による移動と回転を止める（重力だけは効かせる）。
+    /// これが無いと、突進などの外部移動と入力移動が同じフレームで
+    /// 二重に CC.Move されて、向きと移動方向がバラバラになる。
+    /// </summary>
+    public bool ExternalMotion { get; set; }
+
     public void ApplyMovement(float deltaTime)
     {
-        // スタン中は移動しない（重力だけ適用）
-        if (_isStunned)
+        // スタン中・外部移動中は入力で動かさない（重力だけ適用）
+        if (_isStunned || ExternalMotion)
         {
             if (CC.isGrounded) VelocityY = -2f;
             else VelocityY += _gravity * deltaTime;

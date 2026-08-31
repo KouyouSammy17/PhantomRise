@@ -378,6 +378,7 @@ public class BossController : EnemyController
         else if (playerMachine.CurrentStateName ==
                  nameof(GhostState))
         {
+            playerMachine.MarkKilledByBoss();
             playerMachine.Ghost.OnHit();
 
             Debug.Log("ボスの攻撃でゴーストが攻撃を受けた");

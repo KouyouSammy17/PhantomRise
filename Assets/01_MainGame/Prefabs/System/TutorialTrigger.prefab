@@ -69,7 +69,9 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::TutorialTrigger
   panels: []
   audioSource: {fileID: 0}
-  enterSound: {fileID: 0}
+  enterSound: {fileID: 8300000, guid: 33fae60865afd04469f5e753983b44af, type: 3}
+  fadeInDuration: 0.25
+  fadeOutDuration: 0.18
 --- !u!82 &6649325684523821890
 AudioSource:
   m_ObjectHideFlags: 0
@@ -79,7 +81,7 @@ AudioSource:
   m_GameObject: {fileID: 5076289238124575198}
   m_Enabled: 1
   serializedVersion: 4
-  OutputAudioMixerGroup: {fileID: 0}
+  OutputAudioMixerGroup: {fileID: -2702401839757078264, guid: d8c40d21609ed3a4db48f6ee9cc4c2e7, type: 2}
   m_audioClip: {fileID: 0}
   m_Resource: {fileID: 0}
   m_PlayOnAwake: 0

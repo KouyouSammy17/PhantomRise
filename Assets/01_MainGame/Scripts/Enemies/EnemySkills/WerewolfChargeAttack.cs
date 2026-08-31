@@ -25,6 +25,17 @@ public class WerewolfChargeAttack : MonoBehaviour
         checkHit = true;
     }
 
+    /// <summary>
+    /// 突進が終わったら必ず呼ぶ。
+    /// これが無いと checkHit が立ちっぱなしになり、
+    /// スキル後もずっと前方に判定を出し続ける（常時ダメージ判定になる）。
+    /// </summary>
+    public void StopHitCheck()
+    {
+        checkHit = false;
+        hasHit   = false;
+    }
+
     private void Update()
     {
       

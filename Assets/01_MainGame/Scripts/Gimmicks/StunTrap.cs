@@ -49,6 +49,65 @@ public class StunTrap : MonoBehaviour
 
     private bool _onCooldown = false;
 
+    private Collider _collider;
+    private readonly Collider[] _overlapBuffer = new Collider[16];
+
+    private void Awake()
+    {
+        _collider = GetComponent<Collider>();
+    }
+
+    // ─────────────────────────────────────────
+    // 重なり判定（毎フレーム）
+    //
+    // 敵は NavMeshAgent が Transform を直接動かしていて、
+    // Rigidbody も CharacterController.Move() も通らないため
+    // OnTriggerEnter が飛んでこない。
+    // （プレイヤーは CharacterController.Move() で動くので飛んでくる）
+    // トラップ側から重なりを探しに行けば、動かし方に関係なく反応できる。
+    // ─────────────────────────────────────────
+
+    private void Update()
+    {
+        if (_onCooldown || _collider == null) return;
+
+        int count = OverlapTrap(_overlapBuffer);
+
+        for (int i = 0; i < count; i++)
+        {
+            if (TryTrigger(_overlapBuffer[i])) return;   // 発動したら終わり
+        }
+    }
+
+    private int OverlapTrap(Collider[] results)
+    {
+        Vector3 scale = transform.lossyScale;
+
+        if (_collider is SphereCollider sphere)
+        {
+            float radius = sphere.radius * Mathf.Max(scale.x, Mathf.Max(scale.y, scale.z));
+
+            return Physics.OverlapSphereNonAlloc(
+                transform.TransformPoint(sphere.center), radius, results,
+                ~0, QueryTriggerInteraction.Ignore);
+        }
+
+        if (_collider is BoxCollider box)
+        {
+            return Physics.OverlapBoxNonAlloc(
+                transform.TransformPoint(box.center),
+                Vector3.Scale(box.size, scale) * 0.5f, results,
+                transform.rotation, ~0, QueryTriggerInteraction.Ignore);
+        }
+
+        // その他の形状は bounds で近似する
+        Bounds bounds = _collider.bounds;
+
+        return Physics.OverlapBoxNonAlloc(
+            bounds.center, bounds.extents, results,
+            Quaternion.identity, ~0, QueryTriggerInteraction.Ignore);
+    }
+
     // ─────────────────────────────────────────
     // トリガー判定
     // ─────────────────────────────────────────
@@ -92,9 +151,15 @@ public class StunTrap : MonoBehaviour
     //    ActivateTrap();
     //}
 
-    private void OnTriggerEnter(Collider other)
+    private void OnTriggerEnter(Collider other) => TryTrigger(other);
+
+    /// <summary>
+    /// 相手がプレイヤー／敵ならスタンさせる。
+    /// 発動したら true。
+    /// </summary>
+    private bool TryTrigger(Collider other)
     {
-        if (_onCooldown) return;
+        if (_onCooldown || other == null) return false;
 
         // =========================================
         // プレイヤー判定
@@ -110,7 +175,7 @@ public class StunTrap : MonoBehaviour
             Debug.Log($"[StunTrap] プレイヤーを {stunDurationPlayer}秒スタン！");
 
             ActivateTrap();
-            return;
+            return true;
         }
 
         // =========================================
@@ -118,19 +183,23 @@ public class StunTrap : MonoBehaviour
         // =========================================
 
         if (!other.CompareTag("Enemy"))
-            return;
+            return false;
 
         EnemyController enemy = other.GetComponent<EnemyController>()
                              ?? other.GetComponentInParent<EnemyController>();
 
         if (enemy == null)
-            return;
+            return false;
+
+        // 乗っ取り中の敵＝プレイヤー本体なので、敵としては扱わない
+        if (enemy.IsHijacked)
+            return false;
 
         // ボスはスタントラップ無効
         if (enemy is BossController)
         {
             Debug.Log($"[StunTrap] {enemy.name} はボスのためスタン無効");
-            return;
+            return false;
         }
 
         float stunDuration = GetStunDurationForRank(enemy.Rank);
@@ -142,6 +211,7 @@ public class StunTrap : MonoBehaviour
         );
 
         ActivateTrap();
+        return true;
     }
 
     private void ActivateTrap()
