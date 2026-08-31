@@ -92,15 +92,9 @@ public class HijackedState : PlayerBaseState
             _enemyVisualOriginalLocalPos = _enemyVisual.localPosition;
             _enemyVisualOriginalLocalRot = _enemyVisual.localRotation;
 
-            // Player の子にする（worldPositionStays: false = ローカル座標で配置）
+            // Player の子にする（worldPositionStays: false = ローカル座標でゼロ配置）
             _enemyVisual.SetParent(Machine.transform, false);
-
-            // 高さのオフセットは敵ごとに違う（例: Demon +2.83 / Mushroom -0.5）。
-            // ゼロにすると背の高い敵ほどモデルが地面にめり込むので、
-            // 敵として立っていたときのオフセットをそのまま使う。
-            // Player と敵の CharacterController は同寸（高さ1・中心0）なので
-            // ローカルオフセットはそのまま移し替えられる。
-            _enemyVisual.localPosition = _enemyVisualOriginalLocalPos;
+            _enemyVisual.localPosition = Vector3.zero;
             _enemyVisual.localRotation = Quaternion.identity;
         }
 
