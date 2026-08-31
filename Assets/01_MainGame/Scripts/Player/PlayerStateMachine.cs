@@ -130,6 +130,8 @@ public class PlayerStateMachine : MonoBehaviour
     //スタンインディケーター
     [SerializeField] private GameObject stunIndicator;
 
+    private EnemyController stunnedEnemy;
+
     //スピードダウンパーティクル
     [SerializeField] private ParticleSystem speedDownParticle;
 
@@ -460,25 +462,30 @@ public class PlayerStateMachine : MonoBehaviour
     /// </summary>
     public void ApplyStun(float duration)
     {
-        // ─────────────────────────────
-        // 乗っ取り中
-        // ─────────────────────────────
+        // 前回のスタン表示を念のため消す
+        if (stunnedEnemy != null)
+        {
+            stunnedEnemy.HideStunIndicator();
+            stunnedEnemy.SetStunAnimation(false);
+            stunnedEnemy = null;
+        }
+
         if (_currentState == Hijacked)
         {
             EnemyController currentEnemy = Hijacked.CurrentEnemy;
 
             if (currentEnemy != null)
             {
-                // 乗っ取っている敵の頭上に表示
+                // 「今回はこの敵をスタンさせた」と記録
+                stunnedEnemy = currentEnemy;
+
                 currentEnemy.ShowStunIndicator();
                 currentEnemy.SetStunAnimation(true);
             }
         }
-        // ─────────────────────────────
-        // 通常のプレイヤー
-        // ─────────────────────────────
         else
         {
+            // 通常のプレイヤーをスタン
             if (stunIndicator != null)
             {
                 stunIndicator.SetActive(true);
@@ -491,7 +498,6 @@ public class PlayerStateMachine : MonoBehaviour
         _stunCts = CancellationTokenSource.CreateLinkedTokenSource(
             this.GetCancellationTokenOnDestroy());
 
-        
         StunAsync(duration, _stunCts.Token).Forget();
     }
 
@@ -500,6 +506,7 @@ public class PlayerStateMachine : MonoBehaviour
         try
         {
             _isStunned = true;
+
             Debug.Log($"[Player] スタン {duration}秒");
 
             await UniTask.Delay(
@@ -507,19 +514,22 @@ public class PlayerStateMachine : MonoBehaviour
                 cancellationToken: ct);
 
             _isStunned = false;
-           
-            if (_currentState == Hijacked)
-            {
-                EnemyController currentEnemy = Hijacked.CurrentEnemy;
 
-                if (currentEnemy != null)
-                {
-                    currentEnemy.HideStunIndicator();
-                    currentEnemy.SetStunAnimation(false);
-                }
+            // =====================================
+            // スタン解除
+            // =====================================
+
+            // 乗っ取った敵をスタンさせていた場合
+            if (stunnedEnemy != null)
+            {
+                stunnedEnemy.HideStunIndicator();
+                stunnedEnemy.SetStunAnimation(false);
+
+                stunnedEnemy = null;
             }
             else
             {
+                // プレイヤー自身をスタンさせていた場合
                 if (stunIndicator != null)
                 {
                     stunIndicator.SetActive(false);
@@ -530,7 +540,7 @@ public class PlayerStateMachine : MonoBehaviour
         }
         catch (OperationCanceledException)
         {
-            // 上書きキャンセル時 — 次の ApplyStun が _isStunned を再設定する
+            // 上書きキャンセル
         }
         finally
         {
