@@ -133,7 +133,7 @@ MonoBehaviour:
   stunDurationRankC: 4
   stunDurationRankB: 2.5
   stunDurationRankA: 1
-  trapCooldown: 5
+  trapCooldown: 8
   activatedVisual: {fileID: 2632290285691827317}
   idleVisual: {fileID: 5495089765721172661}
 --- !u!82 &5289240985154906068
