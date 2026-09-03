@@ -26,6 +26,16 @@ public class SpecterEnemySkill : EnemySkillBase
     [SerializeField] private ParticleSystem buffParticle;
 
     private Coroutine fadeCoroutine;
+
+
+    // =========================================
+    // Collider関連
+    // =========================================
+
+    private Collider[] playerColliders;
+    private Collider[] enemyColliders;
+
+
     public override bool TryUseSkill()
     {
         if (!CanUseSkill())
@@ -53,7 +63,6 @@ public class SpecterEnemySkill : EnemySkillBase
     {
         if (enemyController.IsHijacked)
         {
-            //BuffUIController.Instance.ShowBuff(BuffType.SpecterBuff);
             FindAnyObjectByType<PlayerStateMachine>()?.StartSpecterBuff(invisibleDuration);
         }
         else
@@ -65,17 +74,23 @@ public class SpecterEnemySkill : EnemySkillBase
         {
             buffParticle.Play();
         }
-        
-        //bufficon.SetActive(true);
+
         isInvisible = true;
+
         // ダメージ倍率を2倍にする
         enemyController.SetDamageMultiplier(2f);
-        //敵の時の速さを1.5倍にする
+
+        // 敵の時の速さを1.5倍にする
         enemyController.SetSpeedMultiplier(1.5f);
+
         // 見た目を透明化
         SetInvisible(true);
 
+        // 敵から見つからない
         enemyController.SetHidden(true);
+
+        // ★ プレイヤーと敵の衝突を無視
+        IgnorePlayerCollision(true);
 
         Debug.Log("スペクター透明化開始");
 
@@ -83,6 +98,7 @@ public class SpecterEnemySkill : EnemySkillBase
 
         RemoveInvisible();
     }
+
 
     public void RemoveInvisible()
     {
@@ -103,10 +119,8 @@ public class SpecterEnemySkill : EnemySkillBase
         isInvisible = false;
 
         BuffUIController.Instance.HideBuff(BuffType.SpecterBuff);
-       
+
         bufficon.SetActive(false);
-        
-        //bufficon.SetActive(false);
 
         enemyController.SetHidden(false);
 
@@ -114,7 +128,63 @@ public class SpecterEnemySkill : EnemySkillBase
         enemyController.SetSpeedMultiplier(1f);
 
         SetInvisible(false);
+
+        // ★ プレイヤーと敵の衝突を元に戻す
+        IgnorePlayerCollision(false);
     }
+
+
+    // =========================================
+    // プレイヤーと敵の衝突を無視する
+    // =========================================
+
+    private void IgnorePlayerCollision(bool ignore)
+    {
+        GameObject playerObject =
+            GameObject.FindGameObjectWithTag("Player");
+
+        if (playerObject == null)
+        {
+            Debug.LogWarning("Playerが見つかりませんでした。");
+            return;
+        }
+
+        // プレイヤー側のColliderを取得
+        playerColliders =
+            playerObject.GetComponentsInChildren<Collider>(true);
+
+        // スペクター側のColliderを取得
+        enemyColliders =
+            enemyController.GetComponentsInChildren<Collider>(true);
+
+        foreach (Collider playerCollider in playerColliders)
+        {
+            if (playerCollider == null)
+                continue;
+
+            foreach (Collider enemyCollider in enemyColliders)
+            {
+                if (enemyCollider == null)
+                    continue;
+
+                Physics.IgnoreCollision(
+                    playerCollider,
+                    enemyCollider,
+                    ignore);
+            }
+        }
+
+        Debug.Log(
+            ignore
+            ? "スペクター透明化：プレイヤーとの衝突を無視"
+            : "スペクター透明化解除：プレイヤーとの衝突を復元");
+    }
+
+
+    // =========================================
+    // 透明化
+    // =========================================
+
     private void SetInvisible(bool invisible)
     {
         if (fadeCoroutine != null)
