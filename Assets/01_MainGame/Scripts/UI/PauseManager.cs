@@ -134,7 +134,7 @@ public class PauseManager : MonoBehaviour
 
     private void OnDestroy()
     {
-        if (_cancelAction != null) _cancelAction.performed -= OnCancelPerformed;
+        //if (_cancelAction != null) _cancelAction.performed -= OnCancelPerformed;
 
         KillPanelTweens(pausePanel);
         KillPanelTweens(settingsPanel);
@@ -171,12 +171,11 @@ public class PauseManager : MonoBehaviour
 
         // パッドの B / Esc で閉じられるようにする。
         // UI マップは EventSystem 側が常に有効にしているのでそのまま購読できる。
-        _cancelAction = _playerInput != null
-            ? _playerInput.actions?.FindAction("UI/Cancel")
-            : null;
+        //_cancelAction = _playerInput != null
+        //    ? _playerInput.actions?.FindAction("UI/Cancel")
+        //    : null;
 
-        if (_cancelAction != null) _cancelAction.performed += OnCancelPerformed;
-
+        //if (_cancelAction != null) _cancelAction.performed += OnCancelPerformed;
         if (continueButton == null) continueButton = FindButton(ContinueName);
         if (restartButton  == null) restartButton  = FindButton(RestartName);
         if (titleButton    == null) titleButton    = FindButton(TitleName);
@@ -226,11 +225,11 @@ public class PauseManager : MonoBehaviour
     /// Esc は Pause（自前）と UI/Cancel の両方に反応するが、
     /// 各メソッドが「開いていなければ何もしない」ので二重には効かない。
     /// </summary>
-    private void OnCancelPerformed(InputAction.CallbackContext ctx)
-    {
-        if (_settingsOpen) CloseSettings();
-        else if (IsPaused) ClosePause();
-    }
+    //private void OnCancelPerformed(InputAction.CallbackContext ctx)
+    //{
+    //    if (_settingsOpen) CloseSettings();
+    //    else if (IsPaused) ClosePause();
+    //}
 
     /// <summary>ポーズ中なら閉じる、そうでなければ開く。</summary>
     public void TogglePause()
@@ -287,7 +286,8 @@ public class PauseManager : MonoBehaviour
 
 
         settingsPanel.SetActive(true);
-        settingsPanel.transform.SetAsLastSibling();   // ポーズ画面より手前
+        pausePanel.SetActive(false);
+        //settingsPanel.transform.SetAsLastSibling();   // ポーズ画面より手前
         PlayPanelIntro(settingsPanel, _settingsBaseScale);
 
         PlaySound(openSound);
@@ -302,6 +302,7 @@ public class PauseManager : MonoBehaviour
 
         _settingsOpen = false;
         settingsPanel.SetActive(false);
+        pausePanel.SetActive(true);
 
         // ポーズメニューを操作できる状態に戻す
         PlaySound(closeSound);
@@ -347,12 +348,14 @@ public class PauseManager : MonoBehaviour
         return true;
     }
 
+
     // ─────────────────────────────────────────
     // ポーズ / 再開
     // ─────────────────────────────────────────
 
     public void OpenPause()
     {
+      
         if (IsPaused) return;
 
         IsPaused = true;
@@ -373,6 +376,7 @@ public class PauseManager : MonoBehaviour
     /// <summary>再開。Button_Continue の onClick にも登録している。</summary>
     public void ClosePause()
     {
+       
         if (!IsPaused) return;
 
         // 設定を開いたままゲームに戻らないようにする

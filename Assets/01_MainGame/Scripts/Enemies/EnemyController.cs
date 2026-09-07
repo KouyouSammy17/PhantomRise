@@ -39,7 +39,7 @@ public class EnemyController : MonoBehaviour
 
     [Header("敵ステータス")]
     // Unityのインスペクターで選べるようにする変数
-    [SerializeField] private  EnemyRank rank = EnemyRank.D;
+    [SerializeField] private EnemyRank rank = EnemyRank.D;
 
 
     //敵の攻撃力
@@ -48,26 +48,26 @@ public class EnemyController : MonoBehaviour
     //敵の攻撃範囲
     [SerializeField] private float attackRange = 2f;
 
-   
+
     // 攻撃間隔とタイマー
     [SerializeField] private float attackCooldown = 3f;
     private float attackTimer = 0f;
 
     //ステートで敵の行動を管理
-   　    public enum EnemyState
-        　{
-            Patrol,
-            Chase,
-            Attack,
-            Die,
-            Stun
-    　　　}
+    public enum EnemyState
+    {
+        Patrol,
+        Chase,
+        Attack,
+        Die,
+        Stun
+    }
 
     //現在のステート
     private EnemyState currentState;
 
     //敵のパトロールポイント
-　 [SerializeField] private Transform[] patrolPoints;
+    [SerializeField] private Transform[] patrolPoints;
 
     //現在のパトロールポイントのインデックス
     private int currentPatrolIndex = 0;
@@ -162,7 +162,7 @@ public class EnemyController : MonoBehaviour
     private bool isHidden = false;
     public bool IsHidden => isHidden;
 
-    public float AttackRange => attackRange;    
+    public float AttackRange => attackRange;
 
     public bool SetHidden(bool hidden)
     {
@@ -214,6 +214,20 @@ public class EnemyController : MonoBehaviour
 
     private bool deathprocessed = false; // 死亡処理が既に行われたかどうかのフラグ
 
+    //ボスアリーナ戦でスポーンした敵かどうかのフラグ
+    private bool isBossArenaEnemy = false;
+
+    // 乗っ取り直後の無敵時間
+    private float hijackInvincibleTime = 0f;
+
+    [SerializeField]
+    private float hijackInvincibleDuration = 3f;
+
+    public bool IsHijackInvincible()
+    {
+        return hijackInvincibleTime > 0f;
+    }
+
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     protected virtual void Start()
     {
@@ -228,35 +242,67 @@ public class EnemyController : MonoBehaviour
         _enemyHealth = GetComponent<EnemyHealth>();
         _enemySkill = GetComponent<EnemySkillBase>();
         _playerMachine = player?.GetComponent<PlayerStateMachine>();
-        _viewCone   = GetComponentInChildren<EnemyViewCone>();
+        _viewCone = GetComponentInChildren<EnemyViewCone>();
         _enemyHPbar = GetComponentInChildren<EnemyHPbar>();
         _bossSkill = GetComponent<BossSkill>();
         _enemyBuffUI = GetComponent<EnemyBuffUI>();
-        
 
         agent = GetComponent<NavMeshAgent>();
-        currentState= EnemyState.Patrol;
-
-        currentPatrolIndex = Random.Range(0, patrolPoints.Length);
-
-        //スキルの後に攻撃する
-        attackTimer=attackCooldown;
 
         originalSpeed = agent.speed;
 
-        // デフォルトは通常攻撃と同じ間隔
-        hijackedAttackCooldown = attackCooldown;   
+        // スキルの後に攻撃する
+        attackTimer = attackCooldown;
 
+        // 通常攻撃と同じ間隔
+        hijackedAttackCooldown = attackCooldown;
+        // 通常敵はPatrol
+        // ボスアリーナ敵はStartBossArenaCombat()からChaseに設定する
+        currentState = EnemyState.Patrol;
+
+        if (patrolPoints != null && patrolPoints.Length > 0)
+        {
+            currentPatrolIndex = Random.Range(0, patrolPoints.Length);
+        }
+        else
+        {
+            // ボスアリーナ敵は巡回ポイント不要なので警告しない
+            Debug.LogWarning(
+                $"[Enemy] {name} にパトロールポイントが設定されていません。"
+            );
+        }
     }
 
+
     // Update is called once per frame
-     protected virtual void Update()
+    protected virtual void Update()
     {
 
         if (isStageStarting)
         {
             return;
         }
+
+
+        if (IsQTETarget)
+        {
+            if (agent != null && agent.enabled)
+            {
+                agent.isStopped = true;
+                agent.velocity = Vector3.zero;
+            }
+
+            return;
+        }
+
+
+        // 乗っ取り直後の無敵時間
+        if (hijackInvincibleTime > 0f)
+        {
+            hijackInvincibleTime -= Time.deltaTime;
+        }
+
+
 
         // 乗っ取り中でもタイマーだけ更新する
         if (hijackedAttackTimer > 0f)
@@ -280,7 +326,7 @@ public class EnemyController : MonoBehaviour
 
         if (IsHijacked || IsQTETarget) return;   // 乗っ取り中 or QTE 中は AI 停止
 
-        float distance= Vector3.Distance(transform.position,player.transform.position);
+        float distance = Vector3.Distance(transform.position, player.transform.position);
         switch (currentState)
         {
             case EnemyState.Patrol:
@@ -292,12 +338,12 @@ public class EnemyController : MonoBehaviour
 
                 if (_enemyVision.CanSeePlayer())
                 {
-                    
+
                     currentState = EnemyState.Chase;
                     StartCoroutine(DiscoveryPlayer());
-                    
+
                 }
-                
+
                 break;
 
             case EnemyState.Chase:
@@ -309,39 +355,35 @@ public class EnemyController : MonoBehaviour
                     EnemyController currentEnemy =
                         _playerMachine.Hijacked.CurrentEnemy;
 
+                    // 実際に乗っ取っている敵が透明化している場合だけ追跡解除
                     if (currentEnemy != null && currentEnemy.IsHidden)
                     {
-                          //Debug.Log(name + " : プレイヤー透明化中 → 追跡解除");
-
-                        currentState = EnemyState.Patrol;
-
-                        // 念のため追跡関連リセット
                         alertedByDamage = false;
                         lostSightTimer = 0f;
+
+                        if (isBossArenaEnemy)
+                        {
+                            // ボスアリーナの敵は巡回しない
+                            currentState = EnemyState.Chase;
+                        }
+                        else
+                        {
+                            // 通常敵は巡回へ戻る
+                            currentState = EnemyState.Patrol;
+                        }
 
                         break;
                     }
                 }
+
                 ChaseMode();
 
-                // スキル距離に入ったらスキル
-                //if (distance <= _enemySkill.SkillRange)
-                //{
-                //    if (_enemySkill != null && !isTryingSkill)
-                //    {
-                //        isTryingSkill = true;
-                //        _enemySkill.TryUseSkill();
-                //    }
-                //}
-                //else
-                //{
-                //    isTryingSkill = false;
-                //}
-
                 if (distance < attackRange)
-                currentState = EnemyState.Attack;
-                //else if (!_enemyVision.CanSeePlayer())
-                //    currentState = EnemyState.Patrol;
+                {
+                    currentState = EnemyState.Attack;
+                }
+
+                // ボスアリーナでは「見失ったらPatrol」をしない
                 if (!alertedByDamage)
                 {
                     if (_enemyVision.CanSeePlayer())
@@ -354,12 +396,22 @@ public class EnemyController : MonoBehaviour
 
                         if (lostSightTimer >= lostSightDuration)
                         {
-                            currentState = EnemyState.Patrol;
+                            if (isBossArenaEnemy)
+                            {
+                                // ボスアリーナでは巡回しない
+                                currentState = EnemyState.Chase;
+                            }
+                            else
+                            {
+                                // 通常敵は巡回へ戻る
+                                currentState = EnemyState.Patrol;
+                            }
 
-                         
+                            lostSightTimer = 0f;
                         }
                     }
                 }
+
                 break;
 
             case EnemyState.Attack:
@@ -395,10 +447,10 @@ public class EnemyController : MonoBehaviour
 
 
         //hpが0以下になったらDieステートに遷移
-        if (_enemyHealth.CurrentHP <= 0 && currentState != EnemyState.Die&& rank == EnemyRank.D)
+        if (_enemyHealth.CurrentHP <= 0 && currentState != EnemyState.Die && rank == EnemyRank.D)
         {
             currentState = EnemyState.Die;
-           
+
 
         }
 
@@ -449,6 +501,12 @@ public class EnemyController : MonoBehaviour
     /// <summary>QTE 成功時に HijackState から呼ぶ</summary>
     public void BecomeHijacked()
     {
+        //乗っ取ったときに自信のminimapアイコンを消す
+        FindAnyObjectByType<MinimapController>()?.UnregisterEnemy(transform);
+
+        // 乗っ取り直後の無敵時間をリセット
+        hijackInvincibleTime = hijackInvincibleDuration;
+
         // QTE 成功音は HijackQTEUI が結果表示と同時に鳴らす。
         // こちらは体を乗っ取った瞬間の「取り憑いた」音。
         enemyAudio?.PlayTakeOverSE();
@@ -476,7 +534,7 @@ public class EnemyController : MonoBehaviour
         agent.enabled = false;   // NavMeshAgent を完全無効化
         var col = GetComponent<Collider>();
         if (col) col.enabled = false;
-        if (_viewCone   != null) _viewCone.gameObject.SetActive(false);
+        if (_viewCone != null) _viewCone.gameObject.SetActive(false);
         if (_enemyHPbar != null) _enemyHPbar.gameObject.SetActive(false);
         //Debug.Log($"[Enemy] {name} 乗っ取られた");
     }
@@ -500,7 +558,7 @@ public class EnemyController : MonoBehaviour
         currentState = EnemyState.Chase;
         agent.enabled = true;    // NavMeshAgent を再有効化
         agent.isStopped = false;
-        if (_viewCone   != null) _viewCone.gameObject.SetActive(true);
+        if (_viewCone != null) _viewCone.gameObject.SetActive(true);
         if (_enemyHPbar != null) _enemyHPbar.gameObject.SetActive(true);
         //Debug.Log($"[Enemy] {name} プレイヤーを発見！");
         // 追跡開始時にスタンインディケーターを消す
@@ -511,7 +569,10 @@ public class EnemyController : MonoBehaviour
     public void FreezeForQTE()
     {
         IsQTETarget = true;
-        agent.isStopped = true;
+        if (agent != null && agent.enabled)
+        {
+            agent.isStopped = true;
+        }
         Debug.Log($"[Enemy] {name} QTE 中フリーズ");
     }
 
@@ -544,7 +605,7 @@ public class EnemyController : MonoBehaviour
             return; // 攻撃クールタイム中は何もしない
         }
 
-        hijackedAttackTimer=hijackedAttackCooldown;
+        hijackedAttackTimer = hijackedAttackCooldown;
 
         // 乗っ取り中はプレイヤーの現在位置を基点にする（EnemyController 自体は動かない）
         Vector3 origin = (IsHijacked && _playerMachine != null)
@@ -566,7 +627,7 @@ public class EnemyController : MonoBehaviour
 
             other.TakeDamage(AttackPower);
             hitSomeone = true;
-           
+
             //Debug.Log($"[Enemy] {name} → {other.name} に {AttackPower} ダメージ");
         }
 
@@ -585,15 +646,27 @@ public class EnemyController : MonoBehaviour
     public virtual void TakeDamage(int damage)
     {
         //透明化中は無敵
-    if (IsHidden)
+        if (IsHidden)
         {
             return;
         }
 
         //enemyAnimation.PlayHit();
 
+        //ボスの攻撃がスタン中の敵に入らないようにする
+        if (currentState == EnemyState.Stun)
+        {
+            return;
+        }
+
+        // 乗っ取り直後の無敵時間
+        if (hijackInvincibleTime > 0f)
+        {
+            Debug.Log($"[無敵中] {name} はボスなどからのダメージを無効化中。残り {hijackInvincibleTime:F2} 秒");
+            return;
+        }
+
         //敵からの攻撃を受けた時に出すパーティクル
-        //hitParticle.Play();
         PlayHitEffect();
 
         _enemyHealth?.TakeDamage(damage);
@@ -604,7 +677,7 @@ public class EnemyController : MonoBehaviour
     //ボスなどもダメージを受けた時にパーティクルを出すための関数
     protected void PlayHitEffect()
     {
-        
+
         hitParticle.Play();
     }
 
@@ -637,25 +710,74 @@ public class EnemyController : MonoBehaviour
 
     void RecoverFromStun()
     {
-        if (currentState == EnemyState.Stun)
+        if (currentState != EnemyState.Stun)
+            return;
+
+        stunIndicator.SetActive(false);
+        enemyAnimation.SetStun(false);
+
+        if (isBossArenaEnemy)
         {
-            stunIndicator.SetActive(false);
-
-            enemyAnimation.SetStun(false);
-
+            // ボスアリーナの敵はスタン解除後もプレイヤーを追跡
+            currentState = EnemyState.Chase;
+        }
+        else
+        {
+            // 通常敵はスタン解除後に巡回へ戻る
             currentState = EnemyState.Patrol;
+        }
 
-            //Debug.Log("敵がスタン状態から回復しました！");
+        if (agent != null && agent.enabled)
+        {
+            agent.isStopped = false;
         }
     }
 
-
-    protected  virtual void PatrolMode()
+    protected virtual void PatrolMode()
     {
+        // ボスアリーナの敵は巡回しない
+        if (isBossArenaEnemy)
+        {
+            currentState = EnemyState.Chase;
+            return;
+        }
+
+        // パトロールポイントがない場合
+        if (patrolPoints == null || patrolPoints.Length == 0)
+        {
+            // プレイヤーがいるなら追跡
+            if (player != null)
+            {
+                currentState = EnemyState.Chase;
+            }
+
+            return;
+        }
+
+        if (agent == null || !agent.enabled || !agent.isOnNavMesh)
+        {
+            return;
+        }
+
+        // インデックスが範囲外にならないようにする
+        if (currentPatrolIndex < 0 ||
+            currentPatrolIndex >= patrolPoints.Length)
+        {
+            currentPatrolIndex = 0;
+        }
+
+        Transform targetPoint = patrolPoints[currentPatrolIndex];
+
+        // nullの巡回ポイント対策
+        if (targetPoint == null)
+        {
+            currentPatrolIndex = 0;
+            return;
+        }
+
         agent.isStopped = false;
 
-        agent.SetDestination(
-            patrolPoints[currentPatrolIndex].position);
+        agent.SetDestination(targetPoint.position);
 
         if (!isWaiting &&
             !agent.pathPending &&
@@ -667,8 +789,6 @@ public class EnemyController : MonoBehaviour
                 nameof(SetNextPatrolPoint),
                 1f);
         }
-
-      
     }
 
     void SetNextPatrolPoint()
@@ -695,7 +815,7 @@ public class EnemyController : MonoBehaviour
         {
             agent.isStopped = false;
         }
-        
+
         //プレイヤーを追跡するロジック
         agent.SetDestination(player.position);
 
@@ -746,7 +866,7 @@ public class EnemyController : MonoBehaviour
         if (_enemySkill != null)
         {
             bool usedSkill = _enemySkill.TryUseSkill();
-           
+
 
             // スキルを使ったら通常攻撃しない
             if (usedSkill)
@@ -770,7 +890,8 @@ public class EnemyController : MonoBehaviour
             //スペクターの時は攻撃したら透明化を解除する
             SpecterEnemySkill specter =
                 GetComponent<SpecterEnemySkill>();
-            if (specter != null) {
+            if (specter != null)
+            {
                 specter.RemoveInvisible();
             }
         }
@@ -794,6 +915,77 @@ public class EnemyController : MonoBehaviour
         //Debug.Log($"[Enemy] {name} ダメージを受けたので追跡開始");
     }
 
+    /// <summary>
+    /// ボスアリーナにスポーンした敵を
+    /// 最初からプレイヤー追跡状態にする。
+    /// パトロールポイントは使用しない。
+    /// </summary>
+    public void StartBossArenaCombat(Transform target)
+    {
+        if (target == null)
+        {
+            Debug.LogWarning(
+                $"[Enemy] {name} ボスアリーナのターゲットがありません"
+            );
+            return;
+        }
+
+        // ボスアリーナ用敵として登録
+        isBossArenaEnemy = true;
+
+        // プレイヤーを追跡対象にする
+        player = target;
+
+        // プレイヤーのStateMachineを更新
+        _playerMachine = player.GetComponent<PlayerStateMachine>();
+
+        // QTE解除
+        IsQTETarget = false;
+
+        // 乗っ取り状態ではない
+        IsHijacked = false;
+
+        // NavMeshAgent取得
+        if (agent == null)
+        {
+            agent = GetComponent<NavMeshAgent>();
+        }
+
+        if (agent == null)
+        {
+            Debug.LogError(
+                $"[Enemy] {name} にNavMeshAgentがありません。"
+            );
+            return;
+        }
+
+        // NavMeshAgentを有効化
+        if (!agent.enabled)
+        {
+            agent.enabled = true;
+        }
+
+        // ボスアリーナでは必ずChase
+        currentState = EnemyState.Chase;
+
+        agent.isStopped = false;
+
+        // NavMesh上にいる場合だけ目的地を設定
+        if (agent.isOnNavMesh)
+        {
+            agent.SetDestination(player.position);
+        }
+        else
+        {
+            Debug.LogWarning(
+                $"[Enemy] {name} はNavMesh上にいません。"
+            );
+        }
+
+        Debug.Log(
+            $"[Enemy] {name} ボスアリーナ戦闘開始 → プレイヤーを追跡"
+        );
+    }
     //
     /// <summary>
     /// 外部（スタントラップなど）からスタンを適用する。
@@ -820,7 +1012,7 @@ public class EnemyController : MonoBehaviour
         {
             StopCoroutine(slowCoroutine);
         }
- 
+
         slowCoroutine = StartCoroutine(
             SlowCoroutine(slowPercent, duration));
     }
@@ -920,7 +1112,7 @@ public class EnemyController : MonoBehaviour
 
         yield return new WaitForSeconds(1.5f);
         Destroy(gameObject);
-    }   
-    
+    }
+
 
 }

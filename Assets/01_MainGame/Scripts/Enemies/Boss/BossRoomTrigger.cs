@@ -1,6 +1,7 @@
 using UnityEngine;
 using Unity.Cinemachine;
 using UnityEngine.AI;
+using Unity.VisualScripting;
 
 public class BossRoomTrigger : MonoBehaviour
 {
@@ -19,6 +20,8 @@ public class BossRoomTrigger : MonoBehaviour
     [SerializeField] private CinemachineCamera playerCamera;
     [SerializeField] private CinemachineCamera bossCamera;
 
+    [SerializeField] private GameObject BossRoomClose;
+
     private bool hasTriggered = false;
 
     //ボス戦のBGM
@@ -28,6 +31,8 @@ public class BossRoomTrigger : MonoBehaviour
     [SerializeField] private StageBGM stageBGM;
 
     [SerializeField] private CountUp countUp;
+
+    [SerializeField] private BossHealth bossHealth;
 
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     private void Start()
@@ -44,7 +49,7 @@ public class BossRoomTrigger : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        
+
     }
 
     private void OnTriggerEnter(Collider other)
@@ -74,6 +79,7 @@ public class BossRoomTrigger : MonoBehaviour
 
         BossUI.SetActive(true);
 
+
         // =========================
         // ② ボスカメラへ切り替え
         // =========================
@@ -91,6 +97,9 @@ public class BossRoomTrigger : MonoBehaviour
         bossCamera.Priority = 20;
         playerCamera.Priority = 10;
 
+
+        bossHealth.Initialization();
+
         // カメラがボスへ移動する時間
         yield return new WaitForSeconds(1.5f);
 
@@ -99,6 +108,12 @@ public class BossRoomTrigger : MonoBehaviour
         // =========================
 
         bossController.StartBossIntro();
+
+        //ボス部屋の入り口を閉じる
+        if (BossRoomClose != null)
+        {
+            BossRoomClose.SetActive(true);
+        }
 
         // Taunting時間
         yield return new WaitForSeconds(2f);
@@ -139,3 +154,4 @@ public class BossRoomTrigger : MonoBehaviour
     }
 
 }
+

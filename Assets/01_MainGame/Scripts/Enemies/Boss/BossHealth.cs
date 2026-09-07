@@ -30,5 +30,9 @@ public class BossHealth : EnemyHealth
             percent);
     }
 
-    
+
+    public void Initialization()
+    {
+        currentHP = maxHP;
+    }
 }

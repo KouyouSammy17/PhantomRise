@@ -16,19 +16,17 @@ public class BossSkill : EnemySkillBase
 
     [SerializeField] private NavMeshAgent agent;
 
-
     private bool isUsingSkill = false;
 
-    // スキル使用中かどうかを外部から確認できるようにするプロパティ
+    // スキル使用中かどうか
     public bool IsUsingSkill => isUsingSkill;
 
-   [SerializeField] private BossController controller;
+    [SerializeField] private BossController controller;
 
     public override bool TryUseSkill()
     {
         if (controller != null && controller.IsDead)
             return false;
-
 
         if (!CanUseSkill() || isUsingSkill)
             return false;
@@ -42,17 +40,21 @@ public class BossSkill : EnemySkillBase
 
     private IEnumerator ShockwaveAttack()
     {
-        if(controller.IsDead)
+        if (controller.IsDead)
             yield break;
 
         Debug.Log("ボスが衝撃波を発動しました。");
-       
-        //スキルが発動したらagentの動きを止める
-       agent.isStopped = true;
+
+        // スキル発動中はボスを停止
+        if (agent != null)
+            agent.isStopped = true;
 
         isUsingSkill = true;
-     
+
+        // =========================
         // 攻撃範囲の円
+        // =========================
+
         GameObject warning = Instantiate(
             warningPrefab,
             transform.position + Vector3.up * 0.05f,
@@ -63,7 +65,10 @@ public class BossSkill : EnemySkillBase
         warning.transform.localScale =
             new Vector3(targetScale, targetScale, targetScale);
 
+        // =========================
         // 広がる波
+        // =========================
+
         GameObject wave = Instantiate(
             shockwavePrefab,
             transform.position + Vector3.up * 0.1f,
@@ -84,14 +89,8 @@ public class BossSkill : EnemySkillBase
                 yield break;
             }
 
-
-
-            //Debug.Log("SkillRange = " + SkillRange);
-            //Debug.Log("TargetScale = " + targetScale);
-            // 時間の経過に合わせて広がる
             currentScale += shockwaveSpeed * Time.deltaTime;
 
-            // 円の最大サイズ（攻撃範囲）を超えないようにぴったり合わせる
             if (currentScale >= targetScale)
                 currentScale = targetScale;
 
@@ -104,26 +103,15 @@ public class BossSkill : EnemySkillBase
             yield return null;
         }
 
-        float attackRadius = warning.transform.lossyScale.x / 2f+2.0f;
+        // =========================
+        // 攻撃範囲
+        // =========================
 
+        float attackRadius =
+            warning.transform.lossyScale.x / 2f + 2.0f;
 
-        PlayerStateMachine players =
-    FindAnyObjectByType<PlayerStateMachine>();
-
-        //Debug.Log(
-        //    "Player Distance = " +
-        //    Vector3.Distance(
-        //        transform.position,
-        //        players.transform.position));
-
-        //Debug.Log(
-        //    "SkillRange = " +
-        //    SkillRange);
-
-        //Debug.Log(
-        //    "AttackRadius = " +
-        //    attackRadius);
-
+        Debug.Log(
+            $"ボススキル攻撃判定開始 / 範囲 = {attackRadius}");
 
         if (controller.IsDead)
         {
@@ -134,48 +122,98 @@ public class BossSkill : EnemySkillBase
             yield break;
         }
 
-        // 波が端まで到達（目標サイズと重なった）直後に攻撃判定を行う
-        // ====== 攻撃 ======
+        // =========================
+        // 攻撃判定
+        // =========================
 
         Collider[] hits =
             Physics.OverlapSphere(
                 transform.position,
                 attackRadius);
-    
+
         foreach (Collider hit in hits)
         {
+            // ==================================
+            // プレイヤーを攻撃
+            // ==================================
+
             PlayerStateMachine player =
-                hit.GetComponent<PlayerStateMachine>();
+                hit.GetComponentInParent<PlayerStateMachine>();
 
-            if (player == null)
+            if (player != null)
+            {
+                if (player.CurrentStateName ==
+                    nameof(HijackedState))
+                {
+                    EnemyController hijackedEnemy =
+                        player.Hijacked.CurrentEnemy;
+
+                    // 乗っ取り直後の無敵
+                    if (hijackedEnemy != null &&
+                        hijackedEnemy.IsHijackInvincible())
+                    {
+                        Debug.Log(
+                            "乗っ取り直後の無敵時間中なのでボススキルを無効化");
+
+                        continue;
+                    }
+
+                    player.PlayerHP.TakeDamage(damage);
+
+                    Debug.Log(
+                        $"ボススキル → プレイヤーに {damage} ダメージ");
+                }
+                else if (player.CurrentStateName ==
+                         nameof(GhostState))
+                {
+                    player.MarkKilledByBoss();
+                    player.Ghost.OnHit();
+
+                    Debug.Log(
+                        "ボススキル → ゴーストに命中");
+                }
+
+                // プレイヤーだった場合は敵判定をしない
                 continue;
+            }
 
-            if (player.CurrentStateName ==
-                nameof(HijackedState))
-            {
-                player.PlayerHP.TakeDamage(damage);
-            }
-            else if (player.CurrentStateName ==
-                     nameof(GhostState))
-            {
-                player.MarkKilledByBoss();
-                player.Ghost.OnHit();
-            }
+            // ==================================
+            // 敵を攻撃
+            // ==================================
+
+            //EnemyController enemy =
+            //    hit.GetComponentInParent<EnemyController>();
+
+            //if (enemy == null)
+            //    continue;
+
+            //// ボス自身には当てない
+            //if (enemy == controller)
+            //    continue;
+
+            //// 死亡済みの敵には当てない
+            //if (enemy.CurrentHP <= 0)
+            //    continue;
+
+            //enemy.TakeDamage(damage);
+
+            //Debug.Log(
+            //    $"ボススキル → {enemy.name} に {damage} ダメージ");
         }
 
-        // 重なった瞬間に攻撃が発動後、少しだけその状態を表示して（視認しやすくする）、消す場合はここで待機を追加できます
+        // 少し表示してから消す
         yield return new WaitForSeconds(0.1f);
 
-        // 攻撃範囲の円と広がる波を消去する
         Destroy(warning);
         Destroy(wave);
 
         isUsingSkill = false;
-        agent.isStopped = false;
 
-        //スキルのクールダウンを開始する
+        if (agent != null)
+            agent.isStopped = false;
+
+        // スキルのクールダウン開始
         ResetCooldown();
-
-
     }
 }
+

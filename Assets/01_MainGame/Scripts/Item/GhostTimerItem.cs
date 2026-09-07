@@ -26,6 +26,9 @@ public class GhostTimerItem : MonoBehaviour
 
     [SerializeField] private AudioSource ItemAudio;
 
+    //プレイヤーがゴースト状態じゃない時になる音
+    [SerializeField] private AudioClip shakeSound;
+
     // ─────────────────────────────────────────
     // トリガー判定
     // ─────────────────────────────────────────
@@ -41,7 +44,11 @@ public class GhostTimerItem : MonoBehaviour
 
         // Ghost 状態または Hijacked 状態のときだけ受け取れる
         string state = machine.CurrentStateName;
-        if (state != nameof(GhostState) && state != nameof(HijackedState)) return;
+        if (state != nameof(GhostState))
+        {
+            ItemAudio.PlayOneShot(shakeSound);
+            return;
+        }
 
         ItemAudio.Play();
 
