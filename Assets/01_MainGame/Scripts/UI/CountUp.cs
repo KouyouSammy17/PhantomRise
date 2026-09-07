@@ -12,6 +12,9 @@ public class CountUp : MonoBehaviour
     // カウント開始した時のTime.time
     private float startTime;
 
+    // 一時停止するまでに経過した時間
+    private float pausedTime = 0f;
+
 
 
     // Start is called once before the first execution of Update after the MonoBehaviour is created
@@ -27,7 +30,7 @@ public class CountUp : MonoBehaviour
         if (isCounting==true)
         {
             // カウント開始時からの経過時間
-            float currentTime = (Time.time - startTime) * countUpSpeed;
+            float currentTime = pausedTime+(Time.time - startTime) * countUpSpeed;
             // 分と秒に変換
             int minutes = Mathf.FloorToInt(currentTime / 60f);
             int seconds = Mathf.FloorToInt(currentTime % 60f);
@@ -45,12 +48,22 @@ public class CountUp : MonoBehaviour
         isCounting = false; // カウントアップを停止
     }
 
+    public void PauseCounting()
+    {
+        if (!isCounting) return; 
+        // 現在までの経過時間を保存
+        pausedTime += (Time.time - startTime) * countUpSpeed;
+        // カウント停止
+         isCounting = false;
+        Debug.Log($"カウント一時停止: {pausedTime:F2}秒");
+    }
+
     public void StartCounting()
     {
         startTime = Time.time;
 
         isCounting = true;
 
-        CountTime.text = "0.00";
+       // CountTime.text = "0.00";
     }
 }

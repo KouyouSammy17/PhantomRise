@@ -71,22 +71,32 @@ public class WerewolfEnemySkill : EnemySkillBase
     private IEnumerator Charge(bool aiControlled)
     {
         Transform root = enemyController.GetControlRoot();
-        if (root == null) yield break;
+
+        if (root == null)
+        {
+            Debug.LogError("[Werewolf] ControlRootがnullです");
+            yield break;
+        }
 
         Vector3 direction = root.forward;
         direction.y = 0f;
 
-        if (direction.sqrMagnitude < 0.001f) yield break;
+        if (direction.sqrMagnitude < 0.001f)
+        {
+            Debug.LogWarning("[Werewolf] 突進方向が取得できません");
+            yield break;
+        }
+
         direction.Normalize();
 
-        // 乗っ取り中はプレイヤーの CharacterController 越しに動かす
-        CharacterController cc = root.GetComponent<CharacterController>();
+        CharacterController cc =
+            root.GetComponent<CharacterController>();
 
-        // 突進中は入力移動・回転を止める。
-        // 止めないと ApplyMovement が同じフレームでもう一度 CC.Move して
-        // 向きだけ入力方向に回り、突進方向とズレる。
-        PlayerStateMachine machine = root.GetComponent<PlayerStateMachine>();
-        if (machine != null) machine.ExternalMotion = true;
+        PlayerStateMachine machine =
+            root.GetComponent<PlayerStateMachine>();
+
+        if (machine != null)
+            machine.ExternalMotion = true;
 
         try
         {
@@ -94,21 +104,37 @@ public class WerewolfEnemySkill : EnemySkillBase
 
             while (travelled < chargeDistance)
             {
-                float step = Mathf.Min(chargeSpeed * Time.deltaTime, chargeDistance - travelled);
+                float step =
+                    Mathf.Min(
+                        chargeSpeed * Time.deltaTime,
+                        chargeDistance - travelled
+                    );
+
                 Vector3 delta = direction * step;
 
-                if (cc != null && cc.enabled)  cc.Move(delta);        // プレイヤー
-                else if (aiControlled)         agent.Move(delta);     // NavMesh 上を維持したまま移動
-                else                           root.position += delta;
+                if (aiControlled)
+                {
+                    agent.Move(delta);
+                    //Debug.Log($"突進中: {root.position}");
+                }
+                else if (cc != null && cc.enabled)
+                {
+                    cc.Move(delta);
+                }
+                else
+                {
+                    root.position += delta;
+                }
 
                 travelled += step;
+
                 yield return null;
             }
         }
         finally
         {
-            // 途中で中断されても必ず解除する
-            if (machine != null) machine.ExternalMotion = false;
+            if (machine != null)
+                machine.ExternalMotion = false;
         }
     }
 }

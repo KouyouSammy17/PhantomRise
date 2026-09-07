@@ -27,6 +27,8 @@ public class BossRoomTrigger : MonoBehaviour
 
     [SerializeField] private StageBGM stageBGM;
 
+    [SerializeField] private CountUp countUp;
+
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     private void Start()
     {
@@ -79,6 +81,9 @@ public class BossRoomTrigger : MonoBehaviour
         //プレイヤーを止める
         playerStateMachine.StopMode();
 
+        // カウントアップを停止
+        countUp.PauseCounting();
+
         //画面に表示してあるUIを非表示にする
         UIManager.SetActive(false);
         PlayerCanvas.SetActive(false);
@@ -110,6 +115,9 @@ public class BossRoomTrigger : MonoBehaviour
 
         //プレイヤーを動かす
         playerStateMachine.ResumeMode();
+
+        //カウントを再開する
+        countUp.StartCounting();
 
         //画面に表示してあるUIを表示する
         UIManager.SetActive(true);

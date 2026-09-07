@@ -79,6 +79,9 @@ public class EnemyController : MonoBehaviour
     //自分がスタンしているかどうか
     private bool isStunned = true;
 
+    // C以上の敵がHP50%以下で一度だけスタンしたか
+    private bool hasStunnedOnce = false;
+
     [Tooltip("スタンから回復してから、次にスタンできるようになるまでの秒数")]
     [SerializeField] private float stunCooldown = 12f;
 
@@ -308,7 +311,7 @@ public class EnemyController : MonoBehaviour
 
                     if (currentEnemy != null && currentEnemy.IsHidden)
                     {
-                        Debug.Log(name + " : プレイヤー透明化中 → 追跡解除");
+                          //Debug.Log(name + " : プレイヤー透明化中 → 追跡解除");
 
                         currentState = EnemyState.Patrol;
 
@@ -403,35 +406,39 @@ public class EnemyController : MonoBehaviour
 
         //敵のランクがC以上の場合はHPが10％以下になると一回だけスタン状態になる
         //スタン状態が終わった後に攻撃を食らうと死ぬ
-        if (rank != EnemyRank.D && (float)_enemyHealth.CurrentHP / _enemyHealth.maxHP <= 0.5f&&CanStun())
+        if (rank != EnemyRank.D &&
+     (float)_enemyHealth.CurrentHP / _enemyHealth.maxHP <= 0.5f &&
+     CanStun())
         {
-
-            // スタン状態の処理
-            if (isStunned == true && Time.time >= _stunReadyTime)
+            // まだ一度もスタンしていない場合だけスタン
+            if (!hasStunnedOnce)
             {
-                isStunned = false;
+                hasStunnedOnce = true;
+
                 stunIndicator.SetActive(true);
                 currentState = EnemyState.Stun;
                 enemyAudio?.PlayStunSE();
 
-               
                 float stunTime = 0f;
+
                 if (rank == EnemyRank.C)
                     stunTime = 8f;
                 else if (rank == EnemyRank.B)
                     stunTime = 5f;
                 else if (rank == EnemyRank.A)
                     stunTime = 3f;
+
                 Invoke(nameof(RecoverFromStun), stunTime);
-                //スタンに入るときは1秒無敵になる
+
+                // スタン開始時は1秒無敵
                 StartCoroutine(_enemyHealth.InvincibleTime(1f));
             }
 
-            if (_enemyHealth.Invincible == false && _enemyHealth.CurrentHP <= 0)
+            if (_enemyHealth.Invincible == false &&
+                _enemyHealth.CurrentHP <= 0)
             {
                 currentState = EnemyState.Die;
             }
-
         }
     }
 
@@ -471,7 +478,7 @@ public class EnemyController : MonoBehaviour
         if (col) col.enabled = false;
         if (_viewCone   != null) _viewCone.gameObject.SetActive(false);
         if (_enemyHPbar != null) _enemyHPbar.gameObject.SetActive(false);
-        Debug.Log($"[Enemy] {name} 乗っ取られた");
+        //Debug.Log($"[Enemy] {name} 乗っ取られた");
     }
 
     /// <summary>QTE 失敗時 — フリーズ解除して Chase 状態にする</summary>
@@ -495,7 +502,7 @@ public class EnemyController : MonoBehaviour
         agent.isStopped = false;
         if (_viewCone   != null) _viewCone.gameObject.SetActive(true);
         if (_enemyHPbar != null) _enemyHPbar.gameObject.SetActive(true);
-        Debug.Log($"[Enemy] {name} プレイヤーを発見！");
+        //Debug.Log($"[Enemy] {name} プレイヤーを発見！");
         // 追跡開始時にスタンインディケーターを消す
         stunIndicator.SetActive(false);
     }
@@ -544,7 +551,7 @@ public class EnemyController : MonoBehaviour
             ? _playerMachine.transform.position
             : transform.position;
 
-        Debug.Log($"[Enemy] {name} 攻撃！ origin={origin}");
+        //Debug.Log($"[Enemy] {name} 攻撃！ origin={origin}");
         //攻撃アニメーション
         enemyAnimation.PlayAttack();
         //攻撃SE
@@ -560,7 +567,7 @@ public class EnemyController : MonoBehaviour
             other.TakeDamage(AttackPower);
             hitSomeone = true;
            
-            Debug.Log($"[Enemy] {name} → {other.name} に {AttackPower} ダメージ");
+            //Debug.Log($"[Enemy] {name} → {other.name} に {AttackPower} ダメージ");
         }
 
         // Specterなら透明化解除
@@ -570,7 +577,7 @@ public class EnemyController : MonoBehaviour
         if (hitSomeone && specter != null && specter.IsInvisible)
         {
             specter.RemoveInvisible();
-            Debug.Log("透明化解除");
+            //Debug.Log("透明化解除");
         }
     }
 
@@ -605,7 +612,7 @@ public class EnemyController : MonoBehaviour
     /// <summary>乗っ取り中に HP が 0 になったとき HijackedState から呼ぶ</summary>
     public void OnHijackedEnemyDied()
     {
-        Debug.Log($"[Enemy] {name} 乗っ取り中に死亡");
+        //($"[Enemy] {name} 乗っ取り中に死亡");
 
         Destroy(gameObject);
     }
@@ -618,7 +625,7 @@ public class EnemyController : MonoBehaviour
         if (usedSkill)
         {
             enemyAudio?.PlaySkillSE();
-            Debug.Log($"[Enemy] {name} スキル発動！");
+            //Debug.Log($"[Enemy] {name} スキル発動！");
         }
     }
 
@@ -634,21 +641,11 @@ public class EnemyController : MonoBehaviour
         {
             stunIndicator.SetActive(false);
 
-            // 再びスタンできるようにする。
-            // ここを止めていると C/B/A ランクは一生に一度しかスタンせず、
-            // スタン中しか乗っ取れない仕様と合わさって
-            // 一度回復した敵は二度と乗っ取れない身体になってしまう。
-            //
-            // ただしスタン条件は「HP 50%以下」なので、回復直後はまだ条件を
-            // 満たしたまま。すぐ解禁すると毎フレーム再スタンして永久ハメになる。
-            // そのためクールダウンを置いてから解禁する。
-            isStunned = true;
-            _stunReadyTime = Time.time + stunCooldown;
-
-            //スタンアニメーション停止
             enemyAnimation.SetStun(false);
-            currentState = EnemyState.Patrol; // スタン状態からパトロール状態に戻る
-            Debug.Log("敵がスタン状態から回復しました！");
+
+            currentState = EnemyState.Patrol;
+
+            //Debug.Log("敵がスタン状態から回復しました！");
         }
     }
 
@@ -766,7 +763,7 @@ public class EnemyController : MonoBehaviour
         if (attackTimer <= 0f)
         {
             attackTimer = attackCooldown;
-            Debug.Log($"[Enemy] {name} 通常攻撃！");
+            //Debug.Log($"[Enemy] {name} 通常攻撃！");
             enemyAnimation.PlayAttack();
             enemyAudio.PlayAttackSE();
             DealDamageToPlayer();
@@ -794,7 +791,7 @@ public class EnemyController : MonoBehaviour
 
         currentState = EnemyState.Chase;
 
-        Debug.Log($"[Enemy] {name} ダメージを受けたので追跡開始");
+        //Debug.Log($"[Enemy] {name} ダメージを受けたので追跡開始");
     }
 
     //
@@ -814,7 +811,7 @@ public class EnemyController : MonoBehaviour
         stunIndicator.SetActive(true);
         enemyAudio?.PlayStunSE();
         Invoke(nameof(RecoverFromStun), duration);
-        Debug.Log($"[StunTrap] {name} がスタン（{duration}秒）");
+        //Debug.Log($"[StunTrap] {name} がスタン（{duration}秒）");
     }
 
     public void ApplySlow(float slowPercent, float duration)
@@ -835,8 +832,7 @@ public class EnemyController : MonoBehaviour
     {
         agent.speed = originalSpeed * (1f - slowPercent);
 
-        Debug.Log(
-            $"{name} の移動速度が {(int)(slowPercent * 100)}% 低下");
+        //Debug.Log($"{name} の移動速度が {(int)(slowPercent * 100)}% 低下");
 
         _enemyBuffUI?.ShowSpeedDebuff(duration);
         //デバフパーティクルを表示する
@@ -848,7 +844,7 @@ public class EnemyController : MonoBehaviour
 
         agent.speed = originalSpeed;
 
-        Debug.Log($"{name} の移動速度が元に戻った");
+        //Debug.Log($"{name} の移動速度が元に戻った");
 
         slowCoroutine = null;
     }
@@ -903,7 +899,7 @@ public class EnemyController : MonoBehaviour
 
         deathprocessed = true;
 
-        Debug.Log("敵が死亡しました！");
+        //Debug.Log("敵が死亡しました！");
         StartCoroutine(EnemyDeath());
 
     }

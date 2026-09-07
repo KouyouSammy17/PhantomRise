@@ -507,6 +507,8 @@ public class PlayerStateMachine : MonoBehaviour
             GhostAnim?.SetMove(MoveInput.sqrMagnitude > 0.01f);
             //幽霊の時は敵のランクを消す
             FindAnyObjectByType<EnemyRankUI>()?.HideRank();
+            // スペクターバフ効果解除
+            SetPMoveSpeedMultiplier(1f);
         }
         else if (CurrentStateName == nameof(HijackedState))
         {

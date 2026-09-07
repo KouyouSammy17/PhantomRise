@@ -48,9 +48,16 @@ public class HijackHealItem : MonoBehaviour
             return;
         }
 
+        // HPが最大なら取得しない
+        if (machine.PlayerHP.CurrentHP >= machine.PlayerHP.MaxHP)
+        {
+            return;
+        }
+
         HealItemAudio.Play();
 
         // HP 回復
+       // if(machine.PlayerHP==)
         machine.PlayerHP.Heal(HealAmount);
         Debug.Log($"[HijackHealItem] HP +{HealAmount} 回復");
 

@@ -34,7 +34,7 @@ public class StunTrap : MonoBehaviour
     [SerializeField] private float stunDurationRankA = 1f;
 
     [Tooltip("トラップ再発動までのクールダウン（秒）。0 なら無制限に発動。")]
-    [SerializeField] private float trapCooldown = 5f;
+    [SerializeField] private float trapCooldown = 8f;
 
     [Header("=== 演出（任意）===")]
     [Tooltip("発動中に有効化するビジュアル（エフェクト等）")]
