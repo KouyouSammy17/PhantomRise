@@ -3,14 +3,20 @@
 // プレイヤーが範囲に入ったらチュートリアルのパネルを表示する。
 //
 // TutorialTriggerを複数設置している場合でも、
-// どれか1つのスキップボタンを押すと、
+// どれか1つのスキップ確認で「はい」を押すと、
 // 以降のTutorialTriggerもすべてチュートリアルを表示しない。
+//
+// スキップボタンを押しただけではスキップしない。
+//   ↓
+// 「本当にスキップしますか？」を表示
+//   ↓
+// 「はい」   → チュートリアル全体をスキップ
+// 「いいえ」 → 元のチュートリアルパネルに戻る
 //
 // 表示中:
 //   ・Time.timeScale = 0 でゲームを止める
 //   ・操作を UI アクションマップに切り替える
 //   ・パネルのボタンを自動選択する
-//   ・スキップボタンを押すとチュートリアル全体を終了
 //
 // パネルの出入りは DOTween でフェードする。
 // timeScale = 0 で止めているので、Tween は必ず SetUpdate(true)。
@@ -34,6 +40,16 @@ public class TutorialTrigger : MonoBehaviour
     [Tooltip("このTutorialTriggerが担当するパネルのスキップボタンを設定")]
     [SerializeField] private Button[] skipButtons;
 
+    [Header("=== スキップ確認画面 ===")]
+    [Tooltip("「本当にスキップしますか？」と表示するパネル")]
+    [SerializeField] private GameObject skipConfirmPanel;
+
+    [Tooltip("スキップ確認画面の「はい」ボタン")]
+    [SerializeField] private Button yesButton;
+
+    [Tooltip("スキップ確認画面の「いいえ」ボタン")]
+    [SerializeField] private Button noButton;
+
     [Header("=== 効果音 ===")]
     [SerializeField] private AudioSource audioSource;
     [SerializeField] private AudioClip enterSound;
@@ -53,8 +69,9 @@ public class TutorialTrigger : MonoBehaviour
     // チュートリアル全体で共有する状態
     // ─────────────────────────────────────────
 
-    // どれか1つのTutorialTriggerでスキップしたら、
-    // すべてのTutorialTriggerがチュートリアルを表示しない。
+    // 「はい」を押した場合のみ true になる。
+    //
+    // staticなので、4つのTutorialTriggerで共有される。
     private static bool _tutorialSkipped;
 
     // ─────────────────────────────────────────
@@ -64,11 +81,18 @@ public class TutorialTrigger : MonoBehaviour
     private bool _isShown;
     private bool _isTutorialActive;
     private bool _isTransitioning;
+    private bool _isSkipConfirmOpen;
+
     private int _currentIndex;
 
     private PlayerInput _playerInput;
     private string _previousMap;
+
     private GameObject _selectedButton;
+
+    // スキップ確認画面を開く前に
+    // 選択されていたボタンを記憶しておく
+    private GameObject _previousSelectedButton;
 
     // ─────────────────────────────────────────
     // Unityライフサイクル
@@ -76,28 +100,53 @@ public class TutorialTrigger : MonoBehaviour
 
     private void Start()
     {
-        // このTutorialTriggerが担当するパネルを初期化
+        // チュートリアルパネルを初期化
         if (panels != null)
         {
             foreach (GameObject panel in panels)
             {
                 if (panel == null) continue;
 
-                GetCanvasGroup(panel).alpha = 0f;
+                CanvasGroup group = GetCanvasGroup(panel);
+
+                group.alpha = 0f;
+                group.interactable = false;
+                group.blocksRaycasts = false;
+
                 panel.SetActive(false);
             }
         }
 
-        // このTutorialTriggerが担当するスキップボタンを登録
+        // スキップ確認画面を初期化
+        if (skipConfirmPanel != null)
+        {
+            skipConfirmPanel.SetActive(false);
+        }
+
+        // スキップボタンを登録
         if (skipButtons != null)
         {
             foreach (Button skipButton in skipButtons)
             {
                 if (skipButton == null) continue;
 
-                skipButton.onClick.RemoveListener(SkipTutorial);
-                skipButton.onClick.AddListener(SkipTutorial);
+                skipButton.onClick.RemoveListener(OpenSkipConfirm);
+                skipButton.onClick.AddListener(OpenSkipConfirm);
             }
+        }
+
+        // 「はい」ボタン
+        if (yesButton != null)
+        {
+            yesButton.onClick.RemoveListener(ConfirmSkip);
+            yesButton.onClick.AddListener(ConfirmSkip);
+        }
+
+        // 「いいえ」ボタン
+        if (noButton != null)
+        {
+            noButton.onClick.RemoveListener(CancelSkip);
+            noButton.onClick.AddListener(CancelSkip);
         }
     }
 
@@ -117,23 +166,33 @@ public class TutorialTrigger : MonoBehaviour
             }
         }
 
-        // スキップボタンのイベントを解除
+        // スキップボタンのイベント解除
         if (skipButtons != null)
         {
             foreach (Button skipButton in skipButtons)
             {
                 if (skipButton == null) continue;
 
-                skipButton.onClick.RemoveListener(SkipTutorial);
+                skipButton.onClick.RemoveListener(OpenSkipConfirm);
             }
         }
+
+        if (yesButton != null)
+            yesButton.onClick.RemoveListener(ConfirmSkip);
+
+        if (noButton != null)
+            noButton.onClick.RemoveListener(CancelSkip);
     }
 
     private void Update()
     {
-        if (!_isTutorialActive || _selectedButton == null) return;
+        if (!_isTutorialActive) return;
+        if (_isSkipConfirmOpen) return;
+        if (_selectedButton == null) return;
         if (EventSystem.current == null) return;
-        if (EventSystem.current.currentSelectedGameObject != null) return;
+
+        if (EventSystem.current.currentSelectedGameObject != null)
+            return;
 
         EventSystem.current.SetSelectedGameObject(_selectedButton);
     }
@@ -144,8 +203,7 @@ public class TutorialTrigger : MonoBehaviour
 
     private void OnTriggerEnter(Collider other)
     {
-        // すでにチュートリアル全体がスキップされていたら、
-        // このTutorialTriggerでは何もしない。
+        // すでに「はい」でスキップされていたら何もしない
         if (_tutorialSkipped) return;
 
         if (_isShown) return;
@@ -154,6 +212,8 @@ public class TutorialTrigger : MonoBehaviour
 
         _isShown = true;
         _isTutorialActive = true;
+        _isSkipConfirmOpen = false;
+
         _currentIndex = 0;
 
         Time.timeScale = 0f;
@@ -169,8 +229,9 @@ public class TutorialTrigger : MonoBehaviour
 
     private void ShowPanel(int index)
     {
-        // スキップされた後なら絶対に表示しない
-        if (!_isTutorialActive || _tutorialSkipped) return;
+        if (!_isTutorialActive) return;
+        if (_tutorialSkipped) return;
+        if (_isSkipConfirmOpen) return;
 
         if (index < 0 || index >= panels.Length)
         {
@@ -204,8 +265,9 @@ public class TutorialTrigger : MonoBehaviour
              .SetUpdate(true)
              .OnComplete(() =>
              {
-                 // フェード中にスキップされていたら何もしない
-                 if (!_isTutorialActive || _tutorialSkipped)
+                 if (!_isTutorialActive ||
+                     _tutorialSkipped ||
+                     _isSkipConfirmOpen)
                      return;
 
                  _isTransitioning = false;
@@ -220,8 +282,10 @@ public class TutorialTrigger : MonoBehaviour
 
     private void OnPanelSubmit()
     {
-        if (!_isTutorialActive || _isTransitioning) return;
+        if (!_isTutorialActive) return;
+        if (_isTransitioning) return;
         if (_tutorialSkipped) return;
+        if (_isSkipConfirmOpen) return;
 
         if (audioSource != null && enterSound != null)
             audioSource.PlayOneShot(enterSound);
@@ -233,8 +297,10 @@ public class TutorialTrigger : MonoBehaviour
     {
         if (!_isTutorialActive) return;
         if (_tutorialSkipped) return;
+        if (_isSkipConfirmOpen) return;
 
-        if (_currentIndex < 0 || _currentIndex >= panels.Length)
+        if (_currentIndex < 0 ||
+            _currentIndex >= panels.Length)
         {
             Finish();
             return;
@@ -248,9 +314,9 @@ public class TutorialTrigger : MonoBehaviour
 
         FadeOut(current, () =>
         {
-            // スキップされた場合は次のパネルを表示しない
-            if (!_isTutorialActive || _tutorialSkipped)
-                return;
+            if (!_isTutorialActive) return;
+            if (_tutorialSkipped) return;
+            if (_isSkipConfirmOpen) return;
 
             if (hasNext)
                 ShowPanel(_currentIndex);
@@ -267,8 +333,9 @@ public class TutorialTrigger : MonoBehaviour
             return;
         }
 
-        if (!_isTutorialActive || _tutorialSkipped)
-            return;
+        if (!_isTutorialActive) return;
+        if (_tutorialSkipped) return;
+        if (_isSkipConfirmOpen) return;
 
         _isTransitioning = true;
 
@@ -286,45 +353,87 @@ public class TutorialTrigger : MonoBehaviour
              {
                  panel.SetActive(false);
 
-                 // スキップされた場合は次を表示しない
-                 if (!_isTutorialActive || _tutorialSkipped)
-                     return;
+                 if (!_isTutorialActive) return;
+                 if (_tutorialSkipped) return;
+                 if (_isSkipConfirmOpen) return;
 
                  onComplete?.Invoke();
              });
     }
 
     // ─────────────────────────────────────────
-    // スキップ
+    // スキップ確認画面を開く
     // ─────────────────────────────────────────
 
-    /// <summary>
-    /// どのTutorialTriggerのスキップボタンを押しても、
-    /// チュートリアル全体をスキップする。
-    /// </summary>
-    private void SkipTutorial()
+    private void OpenSkipConfirm()
     {
         if (!_isTutorialActive) return;
+        if (_tutorialSkipped) return;
+        if (_isSkipConfirmOpen) return;
 
-        Debug.Log("=== チュートリアル全体をスキップ ===");
+        Debug.Log("=== スキップ確認画面を表示 ===");
 
-        // ★重要
-        // staticなので、他のTutorialTriggerとも共有される。
+        _isSkipConfirmOpen = true;
+
+        // 現在選択されているボタンを保存
+        if (EventSystem.current != null)
+        {
+            _previousSelectedButton =
+                EventSystem.current.currentSelectedGameObject;
+        }
+
+        // 確認画面を表示
+        if (skipConfirmPanel != null)
+        {
+            skipConfirmPanel.SetActive(true);
+
+            skipConfirmPanel.transform.SetAsLastSibling();
+        }
+
+        // 「はい」を自動選択
+        if (EventSystem.current != null && yesButton != null)
+        {
+            EventSystem.current.SetSelectedGameObject(null);
+            EventSystem.current.SetSelectedGameObject(yesButton.gameObject);
+        }
+    }
+
+    // ─────────────────────────────────────────
+    // 「はい」
+    // ─────────────────────────────────────────
+
+    private void ConfirmSkip()
+    {
+        if (!_isTutorialActive) return;
+        if (!_isSkipConfirmOpen) return;
+
+        Debug.Log("=== チュートリアルをスキップしました ===");
+
+        // ★ここで初めてtrueにする
         _tutorialSkipped = true;
 
+        _isSkipConfirmOpen = false;
         _isTutorialActive = false;
         _isTransitioning = false;
-        _currentIndex = panels != null ? panels.Length : 0;
 
-        // このTutorialTriggerが担当している
-        // すべてのパネルを非表示にする。
+        _currentIndex =
+            panels != null ? panels.Length : 0;
+
+        // 確認画面を非表示
+        if (skipConfirmPanel != null)
+        {
+            skipConfirmPanel.SetActive(false);
+        }
+
+        // このTutorialTriggerのパネルをすべて非表示
         if (panels != null)
         {
             foreach (GameObject panel in panels)
             {
                 if (panel == null) continue;
 
-                CanvasGroup group = panel.GetComponent<CanvasGroup>();
+                CanvasGroup group =
+                    panel.GetComponent<CanvasGroup>();
 
                 if (group != null)
                 {
@@ -340,13 +449,73 @@ public class TutorialTrigger : MonoBehaviour
         }
 
         _selectedButton = null;
+        _previousSelectedButton = null;
 
         if (EventSystem.current != null)
+        {
             EventSystem.current.SetSelectedGameObject(null);
+        }
 
         RestoreControls();
 
         Time.timeScale = 1f;
+    }
+
+    // ─────────────────────────────────────────
+    // 「いいえ」
+    // ─────────────────────────────────────────
+
+    private void CancelSkip()
+    {
+        if (!_isTutorialActive) return;
+        if (!_isSkipConfirmOpen) return;
+
+        Debug.Log("=== スキップをキャンセル ===");
+
+        _isSkipConfirmOpen = false;
+
+        // 確認画面を閉じる
+        if (skipConfirmPanel != null)
+        {
+            skipConfirmPanel.SetActive(false);
+        }
+
+        // 元のチュートリアルパネルを再び操作可能にする
+        if (panels != null &&
+            _currentIndex >= 0 &&
+            _currentIndex < panels.Length)
+        {
+            GameObject currentPanel =
+                panels[_currentIndex];
+
+            if (currentPanel != null)
+            {
+                CanvasGroup group =
+                    GetCanvasGroup(currentPanel);
+
+                group.interactable = true;
+                group.blocksRaycasts = true;
+            }
+        }
+
+        // 元のパネルのボタンを選択
+        if (EventSystem.current != null)
+        {
+            EventSystem.current.SetSelectedGameObject(null);
+
+            if (_previousSelectedButton != null)
+            {
+                EventSystem.current.SetSelectedGameObject(
+                    _previousSelectedButton);
+            }
+            else if (_selectedButton != null)
+            {
+                EventSystem.current.SetSelectedGameObject(
+                    _selectedButton);
+            }
+        }
+
+        _previousSelectedButton = null;
     }
 
     // ─────────────────────────────────────────
@@ -356,8 +525,17 @@ public class TutorialTrigger : MonoBehaviour
     private void Finish()
     {
         _isTutorialActive = false;
+        _isSkipConfirmOpen = false;
         _isTransitioning = false;
+
         _selectedButton = null;
+        _previousSelectedButton = null;
+
+        // 確認画面を閉じる
+        if (skipConfirmPanel != null)
+        {
+            skipConfirmPanel.SetActive(false);
+        }
 
         if (panels != null)
         {
@@ -365,7 +543,8 @@ public class TutorialTrigger : MonoBehaviour
             {
                 if (panel == null) continue;
 
-                CanvasGroup group = panel.GetComponent<CanvasGroup>();
+                CanvasGroup group =
+                    panel.GetComponent<CanvasGroup>();
 
                 if (group != null)
                 {
@@ -381,7 +560,9 @@ public class TutorialTrigger : MonoBehaviour
         }
 
         if (EventSystem.current != null)
+        {
             EventSystem.current.SetSelectedGameObject(null);
+        }
 
         RestoreControls();
 
@@ -394,12 +575,14 @@ public class TutorialTrigger : MonoBehaviour
 
     private void SelectPanelButton(GameObject panel)
     {
-        Button button = panel.GetComponentInChildren<Button>(true);
+        Button button =
+            panel.GetComponentInChildren<Button>(true);
 
         if (button == null)
         {
             button = panel.AddComponent<Button>();
-            button.transition = Selectable.Transition.None;
+            button.transition =
+                Selectable.Transition.None;
         }
 
         button.onClick.RemoveListener(OnPanelSubmit);
@@ -410,7 +593,9 @@ public class TutorialTrigger : MonoBehaviour
         if (EventSystem.current != null)
         {
             EventSystem.current.SetSelectedGameObject(null);
-            EventSystem.current.SetSelectedGameObject(_selectedButton);
+
+            EventSystem.current.SetSelectedGameObject(
+                _selectedButton);
         }
     }
 
@@ -426,16 +611,21 @@ public class TutorialTrigger : MonoBehaviour
                 FindAnyObjectByType<PlayerStateMachine>();
 
             if (player != null)
-                _playerInput = player.GetComponent<PlayerInput>();
+            {
+                _playerInput =
+                    player.GetComponent<PlayerInput>();
+            }
         }
 
         if (_playerInput == null) return;
 
-        _previousMap = _playerInput.currentActionMap != null
-            ? _playerInput.currentActionMap.name
-            : PlayerMapName;
+        _previousMap =
+            _playerInput.currentActionMap != null
+                ? _playerInput.currentActionMap.name
+                : PlayerMapName;
 
-        _playerInput.SwitchCurrentActionMap(UIMapName);
+        _playerInput.SwitchCurrentActionMap(
+            UIMapName);
     }
 
     private void RestoreControls()
@@ -456,7 +646,8 @@ public class TutorialTrigger : MonoBehaviour
     // ヘルパー
     // ─────────────────────────────────────────
 
-    private static CanvasGroup GetCanvasGroup(GameObject panel)
+    private static CanvasGroup GetCanvasGroup(
+        GameObject panel)
     {
         return panel.GetComponent<CanvasGroup>()
             ?? panel.AddComponent<CanvasGroup>();
