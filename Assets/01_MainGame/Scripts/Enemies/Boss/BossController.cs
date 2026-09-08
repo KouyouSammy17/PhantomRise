@@ -42,6 +42,7 @@ public class BossController : EnemyController
 
     public bool IsBossIntro => isBossIntro;
 
+
     protected override void Start()
     {
         Bossagent = GetComponent<NavMeshAgent>();
@@ -157,7 +158,22 @@ public class BossController : EnemyController
             Bossagent.isStopped = true;
         }
 
+        // マップ上の敵を取得
+        EnemyController[] enemies =
+            FindObjectsByType<EnemyController>(
+                FindObjectsSortMode.None);
+
         yield return new WaitForSeconds(1.5f);
+
+        foreach (EnemyController enemy in enemies)
+        {
+            // 自分（ボス）は除外
+            if (enemy == this)
+                continue;
+
+            Destroy(enemy.gameObject);
+        }
+
 
         GameManager.Instance.TriggerGameClear();
     }
@@ -209,6 +225,12 @@ public class BossController : EnemyController
 
         bossAttackTimer = 0f;
 
+        // 敵をスポーンさせる
+        BossArenaEnemySpawner spawner =
+            FindAnyObjectByType<BossArenaEnemySpawner>();
+
+        spawner?.StartBossBattle();
+
         if (Bossagent != null)
         {
             Bossagent.isStopped = false;
@@ -219,6 +241,7 @@ public class BossController : EnemyController
     // =========================================================
     // ボスAI
     // =========================================================
+
     private void BossBattleUpdate()
     {
         if (player == null)
@@ -244,9 +267,10 @@ public class BossController : EnemyController
         {
             // 5m以内なら停止して攻撃
             BossAttackMode();
-
         }
     }
+
+
     // =========================================================
     // プレイヤーを追跡
     // =========================================================
@@ -266,6 +290,8 @@ public class BossController : EnemyController
 
         LookAtPlayer();
     }
+
+
     // =========================================================
     // 攻撃
     // =========================================================
@@ -308,8 +334,7 @@ public class BossController : EnemyController
 
             if (usedSkill)
             {
-             //   Debug.Log("【ボス】スキル発動 → 通常攻撃なし");
-
+                // スキル発動
                 return;
             }
         }
@@ -324,13 +349,14 @@ public class BossController : EnemyController
             return;
         }
 
-       
         bossAttackTimer = bossAttackCooldown;
 
         BossNormalAttack();
     }
+
+
     // =========================================================
-    // 通常攻撃の処理
+    // 通常攻撃
     // =========================================================
 
     private void BossNormalAttack()
@@ -340,11 +366,50 @@ public class BossController : EnemyController
         // 攻撃アニメーション
         enemyAnimation.PlayAttack();
 
-        // 攻撃SE
-        // enemyAudio.PlayAttackSE();
-
         // プレイヤーへダメージ
         DealDamageToPlayer();
+
+        // ★追加
+        // ボスの周囲にいる敵にもダメージ
+        //DealDamageToEnemies();
+    }
+
+
+    // =========================================================
+    // ボス通常攻撃 → 周囲の敵
+    // =========================================================
+
+    private void DealDamageToEnemies()
+    {
+        Collider[] hits = Physics.OverlapSphere(
+            transform.position,
+            bossAttackRange
+        );
+
+        foreach (Collider hit in hits)
+        {
+            // 子オブジェクトにColliderがある場合にも対応
+            EnemyController enemy =
+                hit.GetComponentInParent<EnemyController>();
+
+            // EnemyControllerがない
+            if (enemy == null)
+                continue;
+
+            // 自分自身（ボス）には攻撃しない
+            if (enemy == this)
+                continue;
+
+            // 死亡している敵には攻撃しない
+            if (enemy.CurrentHP <= 0)
+                continue;
+
+            // 敵にダメージ
+            enemy.TakeDamage(AttackPower);
+
+            Debug.Log(
+                $"ボス通常攻撃 → {enemy.name} に {AttackPower} ダメージ");
+        }
     }
 
 
@@ -365,9 +430,18 @@ public class BossController : EnemyController
 
 
         // 乗っ取り中
-        if (playerMachine.CurrentStateName ==
-            nameof(HijackedState))
+        if (playerMachine.CurrentStateName == nameof(HijackedState))
         {
+            EnemyController hijackedEnemy =
+                playerMachine.Hijacked.CurrentEnemy;
+
+            if (hijackedEnemy != null &&
+                hijackedEnemy.IsHijackInvincible())
+            {
+                Debug.Log("乗っ取り直後の無敵時間中なのでボス通常攻撃を無効化");
+                return;
+            }
+
             playerMachine.PlayerHP.TakeDamage(AttackPower);
 
             Debug.Log(
@@ -411,5 +485,17 @@ public class BossController : EnemyController
                 transform.rotation,
                 targetRotation,
                 Time.deltaTime * 8f);
+    }
+
+
+    // =========================================================
+    // デバッグ用：通常攻撃範囲表示
+    // =========================================================
+
+    private void OnDrawGizmosSelected()
+    {
+        Gizmos.DrawWireSphere(
+            transform.position,
+            bossAttackRange);
     }
 }

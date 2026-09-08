@@ -52,6 +52,8 @@ public class EnemyVision : MonoBehaviour
 
         float distanceToPlayer = Vector3.Distance(transform.position, player.position);
 
+
+
         // ── シャドウゾーン補正 ──────────────────────────────
         // 幽霊状態 かつ シャドウゾーン内なら視野距離を大幅に縮小する
         float effectiveRange = _chaseRange;
@@ -74,7 +76,6 @@ public class EnemyVision : MonoBehaviour
 
         // プレイヤーまでRayを飛ばす
         Ray ray = new Ray(eyePosition, dirToPlayer);
-
         // 壁またはプレイヤーにだけ当たる
         LayerMask combinedMask = obstacleMask | playerMask;
 
