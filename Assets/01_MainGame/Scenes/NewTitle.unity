@@ -15937,6 +15937,14 @@ PrefabInstance:
       propertyPath: m_AnchorMax.y
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 5697846746595430445, guid: 5325e82fd57b7c147bf5fce36e304cb4, type: 3}
+      propertyPath: idleAmp
+      value: 0.3
+      objectReference: {fileID: 0}
+    - target: {fileID: 5697846746595430445, guid: 5325e82fd57b7c147bf5fce36e304cb4, type: 3}
+      propertyPath: idleDuration
+      value: 3
+      objectReference: {fileID: 0}
     - target: {fileID: 6665979767211091075, guid: 5325e82fd57b7c147bf5fce36e304cb4, type: 3}
       propertyPath: m_fontAsset
       value: 
@@ -58821,11 +58829,11 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 2050601884480892602, guid: bf6e56d9585d0ad49bf931db1c29c33f, type: 3}
       propertyPath: m_LocalPosition.y
-      value: 8.49
+      value: 7.1
       objectReference: {fileID: 0}
     - target: {fileID: 2050601884480892602, guid: bf6e56d9585d0ad49bf931db1c29c33f, type: 3}
       propertyPath: m_LocalPosition.z
-      value: 360.89
+      value: 341.5
       objectReference: {fileID: 0}
     - target: {fileID: 2050601884480892602, guid: bf6e56d9585d0ad49bf931db1c29c33f, type: 3}
       propertyPath: m_LocalRotation.w
