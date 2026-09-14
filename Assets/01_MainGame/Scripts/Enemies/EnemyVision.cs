@@ -44,11 +44,15 @@ public class EnemyVision : MonoBehaviour
                 return false;
             }
         }
-
-
+       
         Vector3 eyePosition = transform.position + Vector3.up * 1.5f;
 
-        Vector3 dirToPlayer = (player.position - eyePosition).normalized;
+        Vector3 targetPosition = player.position + Vector3.up * 0.5f;
+
+        Vector3 dirToPlayer = (targetPosition - eyePosition).normalized;
+
+        // Vector3 eyePosition = transform.position + Vector3.up * 1.5f;
+        //Vector3 dirToPlayer = (player.position - eyePosition).normalized;
 
         float distanceToPlayer = Vector3.Distance(transform.position, player.position);
 
@@ -64,6 +68,9 @@ public class EnemyVision : MonoBehaviour
             effectiveRange *= shadowRangeMultiplier;
         }
 
+
+
+       
         // 距離判定
         if (distanceToPlayer > effectiveRange)
             return false;
@@ -71,9 +78,12 @@ public class EnemyVision : MonoBehaviour
         // 角度判定
         float angle = Vector3.Angle(transform.forward, dirToPlayer);
 
-        if (angle > _viewAngle / 2f)
-            return false;
-
+        // 十分近い場合は角度判定をスキップ
+        if (distanceToPlayer > 1.0f)
+        {
+            if (angle > _viewAngle / 2f)
+                return false;
+        }
         // プレイヤーまでRayを飛ばす
         Ray ray = new Ray(eyePosition, dirToPlayer);
         // 壁またはプレイヤーにだけ当たる
@@ -81,6 +91,8 @@ public class EnemyVision : MonoBehaviour
 
         if (Physics.Raycast(ray, out RaycastHit hit, effectiveRange, combinedMask))
         {
+         
+
             // 最初に当たったのがプレイヤーなら視認成功
             if (((1 << hit.collider.gameObject.layer) & playerMask) != 0)
             {
