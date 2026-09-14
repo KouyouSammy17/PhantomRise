@@ -1,4 +1,3 @@
-using Unity.VisualScripting;
 using UnityEngine;
 
 public class SpiderThreadMove : MonoBehaviour
@@ -16,7 +15,7 @@ public class SpiderThreadMove : MonoBehaviour
     // 二重ヒット防止フラグ
     private bool _hasHit = false;
 
-    //敵が敵に攻撃してしまわないようにするためのオーナー情報
+    // スキルを撃った敵
     private EnemyController owner;
 
     public int Damage
@@ -30,93 +29,140 @@ public class SpiderThreadMove : MonoBehaviour
         owner = enemy;
     }
 
-
-
-    void Start()
+    private void Start()
     {
         rb = GetComponent<Rigidbody>();
-        rb.linearVelocity = transform.forward * speed;
-        Invoke("Delete", 2f);
+
+        if (rb != null)
+        {
+            rb.linearVelocity = transform.forward * speed;
+        }
+
+        Invoke(nameof(Delete), 2f);
     }
 
-    void Update()
+    private void Update()
     {
         if (_graceTimer < spawnGrace)
+        {
             _graceTimer += Time.deltaTime;
+        }
     }
 
     private void OnTriggerEnter(Collider other)
     {
-        Debug.Log(other.name);
+        Debug.Log($"[SpiderThread] Hit: {other.name}");
 
-        // 猶予時間中はヒット判定をスキップ（自分自身への誤ヒット防止）
-        if (_graceTimer < spawnGrace) return;
+        // 猶予時間中はヒット判定をスキップ
+        if (_graceTimer < spawnGrace)
+            return;
 
         HandleHit(other.gameObject);
-
-       // Debug.Log("当たった");
     }
-
 
     private void OnTriggerStay(Collider other)
     {
+        if (_graceTimer < spawnGrace)
+            return;
+
         HandleHit(other.gameObject);
     }
 
-
     private void HandleHit(GameObject target)
     {
-        if (_hasHit) return;
+        if (_hasHit)
+            return;
 
+        // ==========================================
+        // プレイヤーに当たった場合
+        // ==========================================
         if (target.CompareTag("Player"))
         {
-
-            // 自分（乗っ取り中）が撃った弾ならプレイヤーには当てない
+            // 乗っ取り中の蜘蛛が撃った場合、
+            // プレイヤー自身には当てない
             if (owner != null && owner.IsHijacked)
                 return;
 
-
             _hasHit = true;
 
-            // 乗っ取り中は PlayerHP にダメージを与える
-            PlayerStateMachine machine = target.GetComponentInParent<PlayerStateMachine>();
-            if (machine != null && machine.CurrentStateName == nameof(HijackedState))
+            PlayerStateMachine machine =
+                target.GetComponentInParent<PlayerStateMachine>();
+
+            if (machine != null &&
+                machine.CurrentStateName == nameof(HijackedState))
             {
                 machine.PlayerHP?.TakeDamage(damage);
+
                 // 6秒間90%減速
                 machine.ApplySlow(0.9f, 6f);
-                Debug.Log($"[SpiderThread] 乗っ取り中プレイヤーに {damage} ダメージ");
+
+                Debug.Log(
+                    $"[SpiderThread] 乗っ取り中プレイヤーに {damage} ダメージ"
+                );
             }
+
             Destroy(gameObject);
+            return;
         }
-        else if (target.CompareTag("Enemy"))
+
+        // ==========================================
+        // 敵に当たった場合
+        // ==========================================
+        if (target.CompareTag("Enemy"))
         {
-            //敵が敵に攻撃してしまわないようにするためのオーナー情報を確認
+            // 乗っ取り中の蜘蛛だけ敵を攻撃できる
             if (owner == null || !owner.IsHijacked)
                 return;
 
-            // 乗っ取り中にスキルを使った場合 → 他の敵にダメージ
-            EnemyController enemy = target.GetComponentInParent<EnemyController>();
-           // EnemyBuffController buffController = target.GetComponentInParent<EnemyBuffController>();
-            if (enemy != null && !enemy.IsHijacked&&enemy != owner)
+            EnemyController enemy =
+                target.GetComponentInParent<EnemyController>();
+
+            if (enemy == null)
+                return;
+
+            // ★ 発射した本人には絶対に当てない
+            if (enemy == owner)
             {
-                //敵のアイコンを表示する
-                //buffController.ShowSpeedDebuff(6f);
-
-                _hasHit = true;
-                enemy.TakeDamage(damage);
-                Debug.Log($"[SpiderThread] {enemy.name} に {damage} ダメージ");
-                
-                // 敵が蜘蛛の糸に当たった場合、移動速度を遅くする
-                enemy.ApplySlow(0.9f, 6f);
-
-                Destroy(gameObject);
+                Debug.Log("[SpiderThread] 発射した蜘蛛自身なので無視");
+                return;
             }
+
+            // 乗っ取り中の敵には当てない
+            if (enemy.IsHijacked)
+                return;
+
+            _hasHit = true;
+
+            enemy.TakeDamage(damage);
+
+            Debug.Log(
+                $"[SpiderThread] {enemy.name} に {damage} ダメージ"
+            );
+
+            // 敵を6秒間90%減速
+            enemy.ApplySlow(0.9f, 6f);
+
+            Destroy(gameObject);
+            return;
         }
+
+        // ==========================================
+        // その他のオブジェクト
+        // ==========================================
+        // PlayerでもEnemyでもないものに当たった場合は
+        // 障害物として扱い、蜘蛛の糸を消す
+        _hasHit = true;
+
+        Debug.Log(
+            $"[SpiderThread] 障害物に当たったため消滅: {target.name}"
+        );
+
+        Destroy(gameObject);
     }
 
-    void Delete()
+    private void Delete()
     {
         Destroy(gameObject);
     }
 }
+
