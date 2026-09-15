@@ -173,13 +173,12 @@ public class MageSpellMove : MonoBehaviour
         // ==========================================
         // PlayerでもEnemyでもないものに当たった場合は
         // 障害物として扱って魔法を消す
-        _hasHit = true;
+        if(target.CompareTag("Obstacle"))
+        {
+            Destroy(gameObject);
+        }
 
-        Debug.Log(
-            $"[MageSpell] 障害物に当たったため消滅: {hitObject.name}"
-        );
-
-        Destroy(gameObject);
+       
     }
 
     private void Delete()

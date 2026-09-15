@@ -151,13 +151,15 @@ public class SpiderThreadMove : MonoBehaviour
         // ==========================================
         // PlayerでもEnemyでもないものに当たった場合は
         // 障害物として扱い、蜘蛛の糸を消す
-        _hasHit = true;
+       // _hasHit = true;
 
-        Debug.Log(
-            $"[SpiderThread] 障害物に当たったため消滅: {target.name}"
-        );
+        if(target.CompareTag("Obstacle"))
+        {
+           
+            Destroy(gameObject);
+        }
 
-        Destroy(gameObject);
+       
     }
 
     private void Delete()
