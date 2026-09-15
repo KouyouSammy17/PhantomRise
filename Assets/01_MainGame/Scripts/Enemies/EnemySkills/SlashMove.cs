@@ -94,6 +94,11 @@ public class SlashMove : MonoBehaviour
                 Destroy(gameObject);
             }
         }
+
+        if(target.CompareTag("Obstacle"))
+        {
+            Destroy(gameObject);
+        }
     }
 
     private void Delete()

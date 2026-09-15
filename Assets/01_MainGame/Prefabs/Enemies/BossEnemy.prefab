@@ -326,6 +326,7 @@ GameObject:
   - component: {fileID: 8143774219302382700}
   - component: {fileID: -3982661420836953551}
   - component: {fileID: 5244450322856719226}
+  - component: {fileID: 2694058282435668640}
   m_Layer: 0
   m_Name: BossEnemy
   m_TagString: Enemy
@@ -439,16 +440,20 @@ MonoBehaviour:
   agent: {fileID: 547475900661319100}
   VisualRoot: {fileID: 803548001275172412}
   rank: 0
-  attackPower: 20
+  attackPower: 30
   attackRange: 5
   attackCooldown: 2
-  patrolPoints: []
+  patrolPoints:
+  - {fileID: 0}
+  - {fileID: 0}
+  stunCooldown: 12
   stunIndicator: {fileID: 0}
   exclamation: {fileID: 6571051158960857350}
   lostSightDuration: 3
   alertDuration: 5
   speedDebuffParticle: {fileID: 3481263520125698386}
   hitParticle: {fileID: 8793379394799236781}
+  hijackInvincibleDuration: 3
   bossHealth: {fileID: 3134472640766373428}
   bossSkill: {fileID: 4503699562866260743}
   summonCooldown: 15
@@ -471,7 +476,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 0d59ebe21c547f44cb3420bd0e58c665, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::BossHealth
-  _maxHP: 300
+  _maxHP: 400
   healEffect: {fileID: 0}
   immuneToPoison: 1
 --- !u!114 &4503699562866260743
@@ -492,7 +497,7 @@ MonoBehaviour:
   skillIcon: {fileID: 0}
   SkillDescription: 
   skillID: 
-  damage: 30
+  damage: 50
   warningPrefab: {fileID: 7633596098751999110, guid: 3551847361a6097428249701870e4c9e, type: 3}
   shockwavePrefab: {fileID: 7633596098751999110, guid: b94b073226d4df84daf84b123d417b11, type: 3}
   warningTime: 1
@@ -646,6 +651,40 @@ MonoBehaviour:
   SpeedDebufficon: {fileID: 0}
   poisonicon: {fileID: 0}
   bloodicon: {fileID: 0}
+--- !u!114 &2694058282435668640
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4948271245640352368}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 3bd8d76adbf1add42a211cceb844caa7, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::BossArenaEnemySpawner
+  boss: {fileID: 803548001275172412}
+  player: {fileID: 0}
+  enemyPrefabs:
+  - {fileID: 6334462468791909203, guid: eba37df7124373941bb3d67290622e63, type: 3}
+  - {fileID: 532823626918001931, guid: 5d09ef70bfa7718468ef21307de6efce, type: 3}
+  - {fileID: 6334462468791909203, guid: d4d34cbf6ef162e45be8de70fb0262a1, type: 3}
+  - {fileID: 6567420515636949625, guid: 2926c28ecb5de3e49b0d00dc89c47661, type: 3}
+  - {fileID: 1105029668325424456, guid: fb390a3af1083194f8a3e9fb01d3a7bf, type: 3}
+  - {fileID: 6334462468791909203, guid: bb13654b44660d940a6d104ae938c153, type: 3}
+  spawnPoints:
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  spawnInterval: 15
+  maxEnemyCount: 3
+  minDistanceFromPlayer: 10
+  minDistanceFromBoss: 8
+  spawnPointEnemyCheckRadius: 2
+  showDebugLog: 1
 --- !u!1 &4960187866816049238
 GameObject:
   m_ObjectHideFlags: 0
@@ -679,7 +718,7 @@ RectTransform:
   m_Father: {fileID: 5090650421173199103}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
-  m_AnchorMax: {x: 1, y: 1}
+  m_AnchorMax: {x: 0, y: 0}
   m_AnchoredPosition: {x: 0, y: 0}
   m_SizeDelta: {x: 10, y: 0}
   m_Pivot: {x: 0.5, y: 0.5}
@@ -1298,8 +1337,45 @@ PrefabInstance:
     - {fileID: 4387482976666195397, guid: d1eb5368e6bef184681cd4db6cf466fe, type: 3}
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
-    m_AddedComponents: []
+    m_AddedComponents:
+    - targetCorrespondingSourceObject: {fileID: 8029447796759425957, guid: d1eb5368e6bef184681cd4db6cf466fe, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 1962830035894887159}
   m_SourcePrefab: {fileID: 100100000, guid: d1eb5368e6bef184681cd4db6cf466fe, type: 3}
+--- !u!1 &2991928677171663088 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 8029447796759425957, guid: d1eb5368e6bef184681cd4db6cf466fe, type: 3}
+  m_PrefabInstance: {fileID: 5110217222370648917}
+  m_PrefabAsset: {fileID: 0}
+--- !u!114 &1962830035894887159
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2991928677171663088}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 474bcb49853aa07438625e644c072ee6, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Unity.RenderPipelines.Universal.Runtime::UnityEngine.Rendering.Universal.UniversalAdditionalLightData
+  m_UsePipelineSettings: 1
+  m_AdditionalLightsShadowResolutionTier: 2
+  m_CustomShadowLayers: 0
+  m_LightCookieSize: {x: 1, y: 1}
+  m_LightCookieOffset: {x: 0, y: 0}
+  m_SoftShadowQuality: 0
+  m_RenderingLayersMask:
+    serializedVersion: 0
+    m_Bits: 1
+  m_ShadowRenderingLayersMask:
+    serializedVersion: 0
+    m_Bits: 1
+  m_Version: 4
+  m_LightLayerMask: 1
+  m_ShadowLayerMask: 1
+  m_RenderingLayers: 1
+  m_ShadowRenderingLayers: 1
 --- !u!4 &8793379394799236755 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 4387482976666195398, guid: d1eb5368e6bef184681cd4db6cf466fe, type: 3}
