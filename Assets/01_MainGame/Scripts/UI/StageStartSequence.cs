@@ -32,6 +32,8 @@ public class StageStartSequence : MonoBehaviour
 
     private EnemyController[] enemies;
 
+    private Sample.TileNeedleScript[] needleTraps;
+
     private Camera mainCamera;
 
     // 通常時のカメラ位置
@@ -120,6 +122,23 @@ public class StageStartSequence : MonoBehaviour
         {
             enemy.SetStageStarting(true);
         }
+
+
+        // 罠取得
+        needleTraps = FindObjectsByType<Sample.TileNeedleScript>(
+            FindObjectsSortMode.None
+        );
+
+        Debug.Log($"取得した針罠の数: {needleTraps.Length}");
+
+
+        // 罠停止
+        foreach (Sample.TileNeedleScript trap in needleTraps)
+        {
+            trap.SetStageStarting(true);
+            Debug.Log($"停止する罠: {trap.gameObject.name}");
+        }
+
 
         countUp.StopCounting();
         StartCoroutine(StartSequence());
@@ -284,6 +303,13 @@ public class StageStartSequence : MonoBehaviour
         {
             enemy.SetStageStarting(false);
         }
+
+        // 罠を再開
+        foreach (Sample.TileNeedleScript trap in needleTraps)
+        {
+            trap.SetStageStarting(false);
+        }
+
 
         if (player != null)
         {
