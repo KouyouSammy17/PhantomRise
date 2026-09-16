@@ -38,12 +38,56 @@ namespace Sample
         // 敵用
         private float _lastEnemyDamageTime = -999f;
 
+        [Header("Audio")]
+        [Tooltip("針が出るときに鳴らす AudioSource（3D設定にしておく）")]
+        [SerializeField] private AudioSource needleAudioSource;
+
+        // ステージ開始演出中は針を止める
+        private bool _isStageStarting = false;
+
+        void Awake()
+        {
+            // StageStartSequence.Start() から SetStageStarting() が
+            // 先に呼ばれても大丈夫なように Awake で取得する
+            anim = this.GetComponent<Animator>();
+        }
+
         void Start()
         {
-            anim = this.GetComponent<Animator>();
+            if (anim == null)
+                anim = this.GetComponent<Animator>();
 
             if (autoCycle)
                 StartCoroutine(AutoCycleRoutine(startDelay));
+        }
+
+
+        // ==================================================
+        // ステージ開始演出中の一時停止
+        // StageStartSequence から呼ばれる
+        // ==================================================
+
+        public void SetStageStarting(bool value)
+        {
+            _isStageStarting = value;
+
+            if (!value) return;
+
+            // 針を戻して音も止める
+            if (anim != null)
+            {
+                anim.CrossFade(
+                    DefaultState,
+                    0.1f,
+                    0,
+                    0
+                );
+            }
+
+            if (needleAudioSource != null && needleAudioSource.isPlaying)
+                needleAudioSource.Stop();
+
+            DelayFlg = true;
         }
 
         private IEnumerator AutoCycleRoutine(float delay)
@@ -53,6 +97,10 @@ namespace Sample
 
             while (true)
             {
+                // 開始演出が終わるまで待つ
+                while (_isStageStarting)
+                    yield return null;
+
                 // ==============================
                 // 針を出す
                 // ==============================
@@ -63,6 +111,8 @@ namespace Sample
                     0,
                     0
                 );
+
+                PlayNeedleSound();
 
                 DelayFlg = false;
 
@@ -88,6 +138,9 @@ namespace Sample
 
         void OnTriggerStay(Collider other)
         {
+            // 開始演出中は何もしない
+            if (_isStageStarting) return;
+
             // ==============================
             // 針が出ているか確認
             // ==============================
@@ -109,6 +162,8 @@ namespace Sample
                         0,
                         0
                     );
+
+                    PlayNeedleSound();
 
                     DelayFlg = false;
 
@@ -211,6 +266,57 @@ namespace Sample
                     " ダメージ！"
                 );
             }
+        }
+
+
+        // ==================================================
+        // 効果音
+        //
+        // 3D 音源として鳴らす。
+        // AudioSource 側で Spatial Blend = 1（3D）、
+        // Volume Rolloff = Linear、Max Distance を
+        // 聞こえてほしい範囲に設定しておくこと。
+        // （Logarithmic のままだと Max Distance 以降も
+        //   音量が下がりきらず、どこにいても聞こえてしまう）
+        // ==================================================
+
+        private void PlayNeedleSound()
+        {
+            if (_isStageStarting) return;
+
+            if (needleAudioSource == null || needleAudioSource.clip == null)
+                return;
+
+            // 遠くの針は鳴らさない（同時発音数の節約）
+            Transform listener = GetListenerTransform();
+
+            if (listener != null)
+            {
+                float sqrDistance = (listener.position
+                                     - needleAudioSource.transform.position).sqrMagnitude;
+
+                float maxDistance = needleAudioSource.maxDistance;
+
+                if (sqrDistance > maxDistance * maxDistance)
+                    return;
+            }
+
+            needleAudioSource.Play();
+        }
+
+
+        // AudioListener はシーンに1つなので全針で共有する
+        private static Transform _listener;
+
+        private static Transform GetListenerTransform()
+        {
+            if (_listener != null) return _listener;
+
+            AudioListener listener = FindFirstObjectByType<AudioListener>();
+
+            _listener = (listener != null) ? listener.transform : null;
+
+            return _listener;
         }
 
 

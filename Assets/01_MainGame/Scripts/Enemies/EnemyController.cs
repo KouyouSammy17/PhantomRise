@@ -710,6 +710,21 @@ public class EnemyController : MonoBehaviour
         enemyHitEffect?.PlayHitEffect();
     }
 
+    /// <summary>
+    /// 乗っ取り中にプレイヤーが被弾したときのダメージ演出。
+    /// 敵が被弾したときと同じ「ヒットパーティクル＋白フラッシュ＋揺れ」を
+    /// 乗っ取っている体に出す。PlayerHP.TakeDamage から呼ばれる。
+    /// </summary>
+    public void PlayHijackedDamageEffect()
+    {
+        if (hitParticle != null)
+        {
+            hitParticle.Play();
+        }
+
+        enemyHitEffect?.PlayHitEffect();
+    }
+
 
     //ボスなどもダメージを受けた時にパーティクルを出すための関数
     protected void PlayHitEffect()

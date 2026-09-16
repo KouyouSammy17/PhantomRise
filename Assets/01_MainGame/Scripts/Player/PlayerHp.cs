@@ -1,4 +1,4 @@
-// ============================================================
+﻿// ============================================================
 // PlayerHP.cs
 // 乗っ取り中のプレイヤー HP を管理する
 // PlayerStateMachine と同じ GameObject にアタッチする
@@ -88,6 +88,10 @@ public class PlayerHP : MonoBehaviour
         CurrentHP = Mathf.Max(0, CurrentHP - damage);
         _onHPChanged?.Invoke(CurrentHP, MaxHP);
         Debug.Log($"[PlayerHP] -{damage} → {CurrentHP}/{MaxHP}");
+
+        // 乗っ取っている体に被弾演出（ヒットパーティクル＋白フラッシュ＋揺れ）を出す
+        PlayHitEffect();
+
         // ダメージ音を再生
         if (damageSound != null)
         {
@@ -99,6 +103,21 @@ public class PlayerHP : MonoBehaviour
             _onDead?.Invoke();
             _machine.Hijacked.OnHPZero();
         }
+    }
+
+    /// <summary>
+    /// 乗っ取っている敵の体に被弾演出を出す。
+    /// 敵が被弾したときとまったく同じ演出（EnemyHitEffect）を使うので、
+    /// 自分が乗っ取っていても敵を殴ったときと見た目が統一される。
+    /// 幽霊状態や体を持っていないときは何もしない。
+    /// </summary>
+    private void PlayHitEffect()
+    {
+        EnemyController body = _machine?.Hijacked?.CurrentEnemy;
+
+        if (body == null) return;
+
+        body.PlayHijackedDamageEffect();
     }
 
     // ─────────────────────────────────────────
