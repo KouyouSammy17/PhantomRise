@@ -327,6 +327,7 @@ GameObject:
   - component: {fileID: -3982661420836953551}
   - component: {fileID: 5244450322856719226}
   - component: {fileID: 2694058282435668640}
+  - component: {fileID: -4735457044668235027}
   m_Layer: 0
   m_Name: BossEnemy
   m_TagString: Enemy
@@ -454,6 +455,7 @@ MonoBehaviour:
   speedDebuffParticle: {fileID: 3481263520125698386}
   hitParticle: {fileID: 8793379394799236781}
   hijackInvincibleDuration: 3
+  HitEffectRoot: {fileID: 8955454445016708061}
   bossHealth: {fileID: 3134472640766373428}
   bossSkill: {fileID: 4503699562866260743}
   summonCooldown: 15
@@ -685,6 +687,22 @@ MonoBehaviour:
   minDistanceFromBoss: 8
   spawnPointEnemyCheckRadius: 2
   showDebugLog: 1
+--- !u!114 &-4735457044668235027
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4948271245640352368}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 7ceb1e7e13de87848893c7cdb2e6d6fc, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::EnemyHitEffect
+  shakeAmount: 0.25
+  shakeDuration: 0.12
+  flashDuration: 0.08
+  emissionPower: 0.25
 --- !u!1 &4960187866816049238
 GameObject:
   m_ObjectHideFlags: 0

@@ -51,6 +51,7 @@ public class EnemyHealth : MonoBehaviour
 
         enemyController?.AlertDamage();
 
+        enemyController?.PlayDamageEffect();
         //音
         enemyAudio?.PlayHitSE();
     }

@@ -223,6 +223,16 @@ public class EnemyController : MonoBehaviour
     [SerializeField]
     private float hijackInvincibleDuration = 3f;
 
+    private EnemyHitEffect enemyHitEffect;
+
+    [Header("ダメージ演出用")]
+    [SerializeField] private Transform HitEffectRoot;
+
+    public Transform GetHitEffectRoot()
+    {
+        return HitEffectRoot;
+    }
+
     public bool IsHijackInvincible()
     {
         return hijackInvincibleTime > 0f;
@@ -231,6 +241,8 @@ public class EnemyController : MonoBehaviour
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     protected virtual void Start()
     {
+        enemyHitEffect= GetComponent<EnemyHitEffect>();
+
         enemyAudio = GetComponent<EnemyAudio>();
         enemyAnimation = GetComponent<EnemyAnimation>();
 
@@ -645,15 +657,13 @@ public class EnemyController : MonoBehaviour
     /// <summary>他の敵から攻撃されたとき（乗っ取り攻撃など）</summary>
     public virtual void TakeDamage(int damage)
     {
-        //透明化中は無敵
+        // 透明化中は無敵
         if (IsHidden)
         {
             return;
         }
 
-        //enemyAnimation.PlayHit();
-
-        //ボスの攻撃がスタン中の敵に入らないようにする
+        // スタン中はダメージ無効
         if (currentState == EnemyState.Stun)
         {
             return;
@@ -662,15 +672,42 @@ public class EnemyController : MonoBehaviour
         // 乗っ取り直後の無敵時間
         if (hijackInvincibleTime > 0f)
         {
-            Debug.Log($"[無敵中] {name} はボスなどからのダメージを無効化中。残り {hijackInvincibleTime:F2} 秒");
+            Debug.Log(
+                $"[無敵中] {name} はダメージ無効。残り {hijackInvincibleTime:F2} 秒"
+            );
             return;
         }
 
-        //敵からの攻撃を受けた時に出すパーティクル
-        PlayHitEffect();
+        Debug.Log($"[TakeDamage] {name} が {damage} ダメージを受けた");
 
+        // 攻撃クールダウンを1秒延長
+        attackTimer += 1f;
+
+        // 攻撃を受けたパーティクル
+        if (hitParticle != null)
+        {
+            hitParticle.Play();
+        }
+
+        //// ダメージ演出
+        //if (enemyHitEffect != null)
+        //{
+        //    enemyHitEffect.PlayHitEffect();
+        //}
+        else
+        {
+            Debug.LogWarning($"[EnemyHitEffect] {name} にEnemyHitEffectがありません");
+        }
+
+        // HPにダメージ
         _enemyHealth?.TakeDamage(damage);
+    }
 
+
+    //乗っ取り中に攻撃を受けたときのダメージ演出
+    public void PlayDamageEffect()
+    {
+        enemyHitEffect?.PlayHitEffect();
     }
 
 

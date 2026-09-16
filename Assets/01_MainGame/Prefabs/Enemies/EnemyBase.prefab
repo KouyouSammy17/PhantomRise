@@ -375,6 +375,7 @@ GameObject:
   - component: {fileID: 3063100071211828625}
   - component: {fileID: 809926345217269769}
   - component: {fileID: 6679121586649431207}
+  - component: {fileID: 5744031623503710988}
   m_Layer: 0
   m_Name: EnemyBase
   m_TagString: Enemy
@@ -525,17 +526,19 @@ MonoBehaviour:
   attackPower: 10
   attackRange: 2
   attackCooldown: 2
-  stunCooldown: 12
   patrolPoints:
   - {fileID: 0}
   - {fileID: 0}
   - {fileID: 0}
+  stunCooldown: 12
   stunIndicator: {fileID: 6468800247213904955}
   exclamation: {fileID: 8177876927593807261}
   lostSightDuration: 3
   alertDuration: 5
   speedDebuffParticle: {fileID: 4253820397687781760}
   hitParticle: {fileID: 3632291853583949785}
+  hijackInvincibleDuration: 5
+  HitEffectRoot: {fileID: 0}
 --- !u!114 &7762544295177896909
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -757,6 +760,22 @@ AudioSource:
     m_PreInfinity: 2
     m_PostInfinity: 2
     m_RotationOrder: 4
+--- !u!114 &5744031623503710988
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2827516876372056535}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 7ceb1e7e13de87848893c7cdb2e6d6fc, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::EnemyHitEffect
+  shakeAmount: 0.25
+  shakeDuration: 0.12
+  flashDuration: 0.08
+  emissionPower: 0.25
 --- !u!1 &2900941461927276153
 GameObject:
   m_ObjectHideFlags: 0
@@ -2405,6 +2424,10 @@ PrefabInstance:
     - target: {fileID: 6908982678978212449, guid: 813f4ed7cc73c406d876fcbde63f0f96, type: 3}
       propertyPath: m_Value
       value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 6908982678978212449, guid: 813f4ed7cc73c406d876fcbde63f0f96, type: 3}
+      propertyPath: m_Interactable
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 6908982678978212477, guid: 813f4ed7cc73c406d876fcbde63f0f96, type: 3}
       propertyPath: m_Name
