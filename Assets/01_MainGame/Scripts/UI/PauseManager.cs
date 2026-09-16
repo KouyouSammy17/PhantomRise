@@ -402,11 +402,16 @@ public class PauseManager : MonoBehaviour
     // ボタン
     // ─────────────────────────────────────────
 
+    /// <summary>
+    /// ポーズ画面の「やり直し」。
+    /// ステージを最初からやり直すので、ミッションの記録（タイム／死亡回数）と
+    /// チュートリアルのスキップ状態も消す。
+    /// </summary>
     public void OnRestartClicked()
     {
         // timeScale は GameManager 側のシーン読み込みで 1 に戻る
         IsPaused = false;
-        GameManager.Instance?.Restart();
+        GameManager.Instance?.RestartFresh();
     }
 
     public void OnTitleClicked()

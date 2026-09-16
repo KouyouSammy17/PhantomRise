@@ -349,6 +349,7 @@ MonoBehaviour:
   skillName: TripleSlash
   skillIcon: {fileID: 21300000, guid: 5069775d81704c7591b297ebff5b5ca7, type: 3}
   SkillDescription: "\u65AC\u6483\u30923\u3064\u98DB\u3070\u3059"
+  skillDescriptionKey: skill.tripleslash.desc
   skillID: Skelton
   SlashPrefab: {fileID: 2078651765059141772, guid: 91987f8d5a96adf4591c4345303c03ff, type: 3}
   slashSpawnPoint: {fileID: 3485700809582975880}

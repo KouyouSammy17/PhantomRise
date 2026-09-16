@@ -2,6 +2,28 @@
 // PlayerHPBarUI.cs
 // 乗っ取り中にプレイヤー HP バーを表示する HUD スクリプト
 //
+// 【背の高い体に乗っ取ったとき】
+//   デーモンのような、飛び抜けて背の高いモンスターだけ持ち上げる。
+//
+//   体の高さは CharacterController から測る（center.y + height / 2）。
+//   見た目の Renderer から測ると、羽・角・エフェクトまで入ってしまい、
+//   マッシュルームのような小さい相手まで持ち上がってしまうため。
+//
+//   体の上端（足元からの高さ・ワールド単位）：
+//     プレイヤー（幽霊） 0.95  … center 0.2 + height 1.5 / 2
+//     スパイダー / マッシュルーム 0.50
+//     スケルトン 0.83
+//     バット / メイジ 1.10
+//     ウェアウルフ 1.29
+//     スペクター 1.43
+//     デーモン 2.31
+//   しきい値 1.8 を超えるのはデーモン（とボス）だけ。
+//
+// 【表示について】
+//   PlayerCanvas は World Space（プレイヤーの頭上に浮かぶ）。
+//   そのままだとプレイヤーの向きに合わせて回ってしまうので、
+//   LateUpdate でカメラと同じ向きに直している（EnemyHPbar と同じやり方）。
+//
 // 【セットアップ手順】
 //   1. Canvas の下に UI > Slider を作成（名前例: PlayerHPBar）
 //   2. このスクリプトを Canvas か任意の GameObject にアタッチ
@@ -24,23 +46,32 @@ public class PlayerHPBarUI : MonoBehaviour
     [Header("=== 色 ===")]
     [SerializeField] private Color _fillColor = Color.green;
 
+    [Header("=== カメラの向きに合わせる ===")]
+    [Tooltip("OFF にすると、キャンバスがプレイヤーと一緒に回る")]
+    [SerializeField] private bool _faceCamera = true;
+
     [Header("=== 乗っ取り中の位置調整 ===")]
-    // HP バーは Screen Space Overlay の HUD なので、本来は敵の背の高さと無関係。
-    // ただし背の高い敵に乗っ取るとモデルがバーに重なって見えるため、
-    // 体の高さに応じてバーだけ少し上へずらす。
-    [Tooltip("この高さ（ワールド単位）を超えた分だけバーを上へずらす")]
-    [SerializeField] private float _referenceBodyHeight = 2f;
+    // 乗っ取った体の一番上を測り、幽霊のときの頭の高さとの差だけ持ち上げる。
+    // 「1 単位あたり何ピクセル」のような係数は要らない。
+    // 体が 1 ワールド単位高ければ、UI も 1 ワールド単位上がる。
+    [Tooltip("体の上端がこの高さ（ワールド単位）を超えたときだけ持ち上げる。\n"
+           + "大きくすると、より背の高い相手だけが対象になる")]
+    [SerializeField] private float _riseThreshold = 1.8f;
 
-    [Tooltip("超過 1 単位あたり何ピクセル上げるか")]
-    [SerializeField] private float _offsetPerUnit = 14f;
+    [Tooltip("幽霊のときの体の上端（CharacterController の center.y + height / 2）。\n"
+           + "プレイヤーは center 0.2・height 1.5 なので 0.95")]
+    [SerializeField] private float _ghostBodyTop = 0.95f;
 
-    [Tooltip("上げ幅の上限（ピクセル）")]
-    [SerializeField] private float _maxOffset = 60f;
+    [Tooltip("持ち上げ幅の上限（ワールド単位）")]
+    [SerializeField] private float _maxRise = 2f;
 
     [Tooltip("HP バーと一緒にずらす UI（バフアイコンなど）")]
     [SerializeField] private RectTransform[] _offsetTargets;
 
     private Image _fillImage;
+
+    /// <summary>向きを合わせる相手。Camera.main は重いので覚えておく。</summary>
+    private Transform _cameraTransform;
 
     // ─── 位置調整用 ───────────────────────────
     // HP バー本体 ＋ _offsetTargets をまとめて動かす
@@ -115,6 +146,26 @@ public class PlayerHPBarUI : MonoBehaviour
     // ─────────────────────────────────────────
 
     /// <summary>乗っ取っている体が変わったときだけ計算し直す。</summary>
+    /// <summary>
+    /// World Space キャンバスをカメラと同じ向きに向ける。
+    /// カメラが切り替わることがあるので、居なくなったら取り直す。
+    /// </summary>
+    private void LateUpdate()
+    {
+        if (!_faceCamera) return;
+
+        if (_cameraTransform == null)
+        {
+            Camera cam = Camera.main;
+
+            if (cam == null) return;
+
+            _cameraTransform = cam.transform;
+        }
+
+        transform.rotation = _cameraTransform.rotation;
+    }
+
     private void UpdateOffset()
     {
         EnemyController enemy = _playerMachine.Hijacked?.CurrentEnemy;
@@ -128,10 +179,35 @@ public class PlayerHPBarUI : MonoBehaviour
             return;
         }
 
-        float height = MeasureBodyHeight(enemy);
+        if (!TryMeasureBodyTop(enemy, out float topWorldY))
+        {
+            ApplyOffset(0f);
+            return;
+        }
 
-        ApplyOffset(Mathf.Clamp(
-            (height - _referenceBodyHeight) * _offsetPerUnit, 0f, _maxOffset));
+        // キャンバスの原点から見た、体の上端の高さ
+        float top = topWorldY - transform.position.y;
+
+        // しきい値を超えない体はそのまま。
+        // 少し背が高いだけの相手まで動かすと、全体的に浮いて見える。
+        if (top <= _riseThreshold)
+        {
+            Debug.Log($"[PlayerHPBarUI] {enemy.name} 上端 {top:F2} → 持ち上げなし");
+            ApplyOffset(0f);
+            return;
+        }
+
+        // 頭の上に出したいので、幽霊のときの上端との差だけ持ち上げる
+        float rise = Mathf.Clamp(top - _ghostBodyTop, 0f, _maxRise);
+
+        Debug.Log($"[PlayerHPBarUI] {enemy.name} 上端 {top:F2} → {rise:F2} 持ち上げ");
+
+        // ワールド単位 → キャンバス内の単位
+        float scale = transform.lossyScale.y;
+
+        if (Mathf.Approximately(scale, 0f)) return;
+
+        ApplyOffset(rise / scale);
     }
 
     private void ResetPosition()
@@ -142,8 +218,8 @@ public class PlayerHPBarUI : MonoBehaviour
         ApplyOffset(0f);
     }
 
-    /// <summary>HP バーと登録された UI をまとめて上へずらす。</summary>
-    private void ApplyOffset(float pixels)
+    /// <summary>HP バーと登録された UI をまとめて上へずらす（キャンバス内の単位）。</summary>
+    private void ApplyOffset(float amount)
     {
         if (_targets == null) return;
 
@@ -151,7 +227,7 @@ public class PlayerHPBarUI : MonoBehaviour
         {
             if (_targets[i] == null) continue;
 
-            _targets[i].anchoredPosition = _basePositions[i] + Vector2.up * pixels;
+            _targets[i].anchoredPosition = _basePositions[i] + Vector2.up * amount;
         }
     }
 
@@ -182,18 +258,24 @@ public class PlayerHPBarUI : MonoBehaviour
     /// 敵ごとの数値を持たせなくて済むよう、実際の Renderer の
     /// 大きさから測る。見つからなければ基準値を返す（＝ずらさない）。
     /// </summary>
-    private float MeasureBodyHeight(EnemyController enemy)
+    /// <summary>
+    /// 乗っ取った体の上端（ワールド座標の Y）。
+    /// CharacterController の中心と高さから出す。測れなければ false。
+    /// </summary>
+    private bool TryMeasureBodyTop(EnemyController enemy, out float topWorldY)
     {
-        Transform visual = enemy.GetVisualRoot();
-        if (visual == null) return _referenceBodyHeight;
+        topWorldY = 0f;
 
-        Renderer[] renderers = visual.GetComponentsInChildren<Renderer>(true);
-        if (renderers.Length == 0) return _referenceBodyHeight;
+        CharacterController body = enemy.GetComponent<CharacterController>();
 
-        Bounds bounds = renderers[0].bounds;
-        for (int i = 1; i < renderers.Length; i++)
-            bounds.Encapsulate(renderers[i].bounds);
+        if (body == null) return false;
 
-        return bounds.size.y;
+        // center / height はローカル値なので、スケールを掛けてワールドに直す
+        float scale = enemy.transform.lossyScale.y;
+
+        topWorldY = enemy.transform.position.y
+                  + (body.center.y + body.height * 0.5f) * scale;
+
+        return true;
     }
 }

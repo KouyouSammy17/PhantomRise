@@ -86,6 +86,7 @@ GameObject:
   - component: {fileID: 6038863729264654843}
   - component: {fileID: 4222184553966824240}
   - component: {fileID: 8281742691978450462}
+  - component: {fileID: 7300000000000000001}
   m_Layer: 5
   m_Name: Text
   m_TagString: Untagged
@@ -443,6 +444,7 @@ GameObject:
   - component: {fileID: 5161597855413196928}
   - component: {fileID: 691937834534251963}
   - component: {fileID: 2924369437050321224}
+  - component: {fileID: 7300000000000000002}
   m_Layer: 5
   m_Name: Text
   m_TagString: Untagged
@@ -856,6 +858,7 @@ GameObject:
   - component: {fileID: 5967329541500917219}
   - component: {fileID: 5967329541500917245}
   - component: {fileID: 5967329541500917244}
+  - component: {fileID: 851754557346561178}
   m_Layer: 5
   m_Name: Title
   m_TagString: Untagged
@@ -25821,6 +25824,7 @@ GameObject:
   - component: {fileID: 5967329542419607265}
   - component: {fileID: 5967329542419607267}
   - component: {fileID: 5967329542419607266}
+  - component: {fileID: 421611261462728184}
   m_Layer: 5
   m_Name: Text_Clear
   m_TagString: Untagged
@@ -51136,6 +51140,7 @@ GameObject:
   - component: {fileID: 3316877962647241631}
   - component: {fileID: 3029848642212909859}
   - component: {fileID: 1949223139288683803}
+  - component: {fileID: 671382089759145833}
   m_Layer: 5
   m_Name: Restart
   m_TagString: Untagged
@@ -51273,6 +51278,7 @@ GameObject:
   - component: {fileID: 2666867537637221216}
   - component: {fileID: 8570354635610283888}
   - component: {fileID: 1688854212638857816}
+  - component: {fileID: 7300000000000000003}
   m_Layer: 5
   m_Name: Text
   m_TagString: Untagged
@@ -51726,3 +51732,96 @@ MonoBehaviour:
   m_FillOrigin: 0
   m_UseSpriteMesh: 0
   m_PixelsPerUnitMultiplier: 1
+--- !u!114 &7300000000000000001
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2113410462733819510}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 3a1c7e40b1d94f0ea6c25d18f7b3c002, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  key: achieve.hijack4
+  japaneseFont: {fileID: 0}
+  englishFont: {fileID: 0}
+--- !u!114 &7300000000000000002
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2966363427386097102}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 3a1c7e40b1d94f0ea6c25d18f7b3c002, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  key: achieve.no_gameover
+  japaneseFont: {fileID: 0}
+  englishFont: {fileID: 0}
+--- !u!114 &7300000000000000003
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8659212233685262661}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 3a1c7e40b1d94f0ea6c25d18f7b3c002, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  key: achieve.time200
+  japaneseFont: {fileID: 0}
+  englishFont: {fileID: 0}
+--- !u!114 &421611261462728184
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5967329542419607264}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 3a1c7e40b1d94f0ea6c25d18f7b3c002, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  key: ui.clear.title
+  japaneseFont: {fileID: 0}
+  englishFont: {fileID: 11400000, guid: 5c5ee151f9307453bad78be36b51a077, type: 2}
+  matchJapaneseLayout: 1
+--- !u!114 &671382089759145833
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8135061685073189282}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 3a1c7e40b1d94f0ea6c25d18f7b3c002, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  key: ui.clear.restart
+  japaneseFont: {fileID: 0}
+  englishFont: {fileID: 11400000, guid: c2f49fe8c22d94f9a9e6cd06ad490155, type: 2}
+  matchJapaneseLayout: 1
+--- !u!114 &851754557346561178
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5967329541500917218}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 3a1c7e40b1d94f0ea6c25d18f7b3c002, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  key: ui.clear.title_button
+  japaneseFont: {fileID: 0}
+  englishFont: {fileID: 11400000, guid: c2f49fe8c22d94f9a9e6cd06ad490155, type: 2}
+  matchJapaneseLayout: 1

@@ -223,6 +223,25 @@ public class GameManager : MonoBehaviour
         LoadSceneWithUISound(SceneManager.GetActiveScene().buildIndex);
     }
 
+    /// <summary>
+    /// このステージを「最初から」やり直す。
+    ///
+    /// Restart() との違いは、シーンをまたいで残る記録を先に捨てること。
+    ///   ・StageStats（タイム／死亡回数）→ ミッション達成の判定に使うので、
+    ///     やり直したのに前回のタイムが残っていると星が正しく出ない。
+    ///   ・チュートリアルのスキップ状態 → もう一度見られるようにする。
+    ///
+    /// クリア画面とポーズ画面の「やり直し」から呼ぶ。
+    /// ゲームオーバーからの再挑戦は Restart()（死亡回数を引き継ぐ）。
+    /// </summary>
+    public void RestartFresh()
+    {
+        StageStats.Clear();
+        TutorialTrigger.ResetSkipFlag();
+
+        Restart();
+    }
+
     // ─────────────────────────────────────────
     // シーン遷移
     // ─────────────────────────────────────────

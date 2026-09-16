@@ -611,6 +611,7 @@ MonoBehaviour:
   skillName: Buff
   skillIcon: {fileID: 21300000, guid: a4274d4da3bc4196a42f80177f9a3042, type: 3}
   SkillDescription: "\u653B\u6483\u529B\u3068\u30B9\u30D4\u30FC\u30C9\u309210\u79D2\u30A2\u30C3\u30D7"
+  skillDescriptionKey: skill.buff.desc
   skillID: deamon
   Bufficon: {fileID: 2060425553367516409}
   BuffParticle: {fileID: 19831716, guid: bb23163a0b24b99489c01eeb4b18a215, type: 3}

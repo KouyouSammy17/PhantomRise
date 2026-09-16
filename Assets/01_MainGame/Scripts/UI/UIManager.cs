@@ -155,7 +155,7 @@ public class UIManager : MonoBehaviour
         }
 
         if (gameClearText != null)
-            gameClearText.text = "STAGE CLEAR!";
+            gameClearText.text = Localization.Get("ui.clear.title", "STAGE CLEAR!");
 
         // ミッション達成表示と星の演出
         achievements?.Show(gameClearPanel);
@@ -173,7 +173,7 @@ public class UIManager : MonoBehaviour
         PlayPanelIntro(gameOverPanel, _overBaseScale);
 
         if (gameOverText != null)
-            gameOverText.text = "GAME OVER";
+            gameOverText.text = Localization.Get("ui.gameover.title", "GAME OVER");
 
         SelectFirst(gameOverRestartButton, gameOverTitleButton);
     }
@@ -182,10 +182,22 @@ public class UIManager : MonoBehaviour
     // ボタン
     // ─────────────────────────────────────────
 
-    /// <summary>リスタート。ボタンの onClick に登録済み。</summary>
+    /// <summary>
+    /// ゲームオーバー画面のリスタート。ボタンの onClick に登録済み。
+    /// 死亡回数とタイムは引き継ぐ（ノーデス判定を守るため）。
+    /// </summary>
     public void OnRestartClicked()
     {
         GameManager.Instance?.Restart();
+    }
+
+    /// <summary>
+    /// クリア画面のリスタート。ボタンの onClick に登録済み。
+    /// ミッションの記録とチュートリアルのスキップ状態を消してやり直す。
+    /// </summary>
+    public void OnClearRestartClicked()
+    {
+        GameManager.Instance?.RestartFresh();
     }
 
     /// <summary>
@@ -269,7 +281,7 @@ public class UIManager : MonoBehaviour
 
         // Inspector でも結線されていた場合に二重登録しないよう、
         // 一度外してから登録する
-        Bind(gameClearRestartButton, OnRestartClicked);
+        Bind(gameClearRestartButton, OnClearRestartClicked);
         Bind(gameClearNextButton,    OnNextClicked);
         Bind(gameClearTitleButton,   OnTitleClicked);
         Bind(gameOverRestartButton,  OnRestartClicked);
