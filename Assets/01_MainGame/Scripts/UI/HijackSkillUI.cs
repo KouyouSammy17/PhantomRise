@@ -109,7 +109,7 @@ public class HijackSkillUI : MonoBehaviour
             skillNameText.text = skill.SkillName;
 
         if (descriptionText != null)
-            descriptionText.text = skill.SkillDescription;
+            descriptionText.text = skill.LocalizedDescription;
 
         PlayShowTween();
 

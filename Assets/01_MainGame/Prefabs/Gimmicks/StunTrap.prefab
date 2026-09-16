@@ -114,8 +114,8 @@ BoxCollider:
   m_ProvidesContacts: 0
   m_Enabled: 1
   serializedVersion: 3
-  m_Size: {x: 1, y: 1, z: 1}
-  m_Center: {x: 0, y: 0, z: 0}
+  m_Size: {x: 1.5, y: 1.5, z: 1.5}
+  m_Center: {x: 0, y: 0.2, z: 0}
 --- !u!114 &9119720823115310743
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -128,11 +128,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 3e861443fb051ed46a3b9f910273facf, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::StunTrap
-  stunDurationPlayer: 2
+  stunDurationPlayer: 1.5
   stunDurationRankD: 6
   stunDurationRankC: 4
   stunDurationRankB: 2.5
-  stunDurationRankA: 1
+  stunDurationRankA: 2
   trapCooldown: 8
   activatedVisual: {fileID: 2632290285691827317}
   idleVisual: {fileID: 5495089765721172661}

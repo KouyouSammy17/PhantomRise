@@ -21,12 +21,34 @@ public abstract class EnemySkillBase : MonoBehaviour
     /// <summary>スキルアイコン（Assets/01_MainGame/Sprites/SkillIcons のスプライトをアサイン）</summary>
     [SerializeField] private Sprite skillIcon;
 
-    public string SkillName => skillName;
+    /// <summary>
+    /// 今の言語でのスキル名。UI はこちらを使うこと。
+    /// キーは説明文キーの ".desc" を ".name" に替えたもの（例: skill.poison.name）。
+    /// 表に無ければ Inspector の skillName をそのまま返す。
+    /// </summary>
+    public string SkillName =>
+        string.IsNullOrEmpty(skillDescriptionKey)
+            ? skillName
+            : Localization.Get(skillDescriptionKey.Replace(".desc", ".name"), skillName);
+
+    /// <summary>Inspector に書いた生のスキル名（ログ用）。</summary>
+    public string RawSkillName => skillName;
     public Sprite SkillIcon => skillIcon;
 
     // UI 用のスキル名と説明
     [TextArea]
     public string SkillDescription;
+
+    /// <summary>
+    /// 説明文の翻訳キー（Assets/Resources/Localization/Strings.csv）。
+    /// 空にしておくと SkillDescription がそのまま出る。
+    /// </summary>
+    [Tooltip("Strings.csv のキー。空なら上の説明文をそのまま表示する")]
+    [SerializeField] private string skillDescriptionKey;
+
+    /// <summary>今の言語での説明文。UI はこちらを使うこと。</summary>
+    public string LocalizedDescription =>
+        Localization.Get(skillDescriptionKey, SkillDescription);
 
     [Header("スキル設定")]
     [SerializeField] private string skillID;

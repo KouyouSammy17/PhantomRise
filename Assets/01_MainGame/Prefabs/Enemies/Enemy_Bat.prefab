@@ -316,6 +316,7 @@ MonoBehaviour:
   skillName: Bloodsucking
   skillIcon: {fileID: 21300000, guid: ba63880fbf224c1c98b44e5226ba95b5, type: 3}
   SkillDescription: "HP\u5438\u53CE"
+  skillDescriptionKey: skill.bloodsucking.desc
   skillID: bat
   bitePrefab: {fileID: 3023999648932019501, guid: 01bdc0c3dd0a9824daf88d726d063144, type: 3}
   biteSpawnPoint: {fileID: 4364850395713475234}

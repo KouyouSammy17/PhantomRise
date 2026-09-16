@@ -325,7 +325,9 @@ public class HijackQTEUI : MonoBehaviour
 
             if (_resultText)
             {
-                _resultText.text  = success ? _successMessage : _failMessage;
+                _resultText.text  = success
+                    ? Localization.Get("qte.success", _successMessage)
+                    : Localization.Get("qte.fail",    _failMessage);
                 _resultText.color = success ? _successColor   : _failColor;
                 _resultText.gameObject.SetActive(true);
 
@@ -463,7 +465,9 @@ public class HijackQTEUI : MonoBehaviour
         if (_hintText != null)
         {
             _hintText.gameObject.SetActive(true);
-            _hintText.text = gamepad ? _gamepadHint : _keyboardHint;
+            _hintText.text = gamepad
+                ? Localization.Get("qte.hint.gamepad",  _gamepadHint)
+                : Localization.Get("qte.hint.keyboard", _keyboardHint);
         }
 
         Sprite cap = gamepad ? _gamepadKeyCap : _keyboardKeyCap;

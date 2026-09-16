@@ -11,6 +11,7 @@ GameObject:
   - component: {fileID: 2505316331740623233}
   - component: {fileID: 6857853511728089419}
   - component: {fileID: 4551888497652600421}
+  - component: {fileID: 325041112850963274}
   m_Layer: 5
   m_Name: Text_Restart
   m_TagString: Untagged
@@ -148,6 +149,7 @@ GameObject:
   - component: {fileID: 1010428680340598591}
   - component: {fileID: 1010428680340598561}
   - component: {fileID: 1010428680340598560}
+  - component: {fileID: 848563112295360543}
   m_Layer: 5
   m_Name: Text_Continue
   m_TagString: Untagged
@@ -10584,6 +10586,7 @@ GameObject:
   - component: {fileID: 1010428681348347122}
   - component: {fileID: 1010428681348347124}
   - component: {fileID: 1010428681348347123}
+  - component: {fileID: 231496939500174326}
   m_Layer: 5
   m_Name: Text_Continue?
   m_TagString: Untagged
@@ -10721,6 +10724,7 @@ GameObject:
   - component: {fileID: 1010428681380030779}
   - component: {fileID: 1010428681380030781}
   - component: {fileID: 1010428681380030780}
+  - component: {fileID: 146144278908972478}
   m_Layer: 5
   m_Name: Text_Dead
   m_TagString: Untagged
@@ -16331,3 +16335,67 @@ MonoBehaviour:
   m_FillOrigin: 0
   m_UseSpriteMesh: 0
   m_PixelsPerUnitMultiplier: 1
+--- !u!114 &146144278908972478
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1010428681380030778}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 3a1c7e40b1d94f0ea6c25d18f7b3c002, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  key: ui.gameover.title
+  japaneseFont: {fileID: 0}
+  englishFont: {fileID: 11400000, guid: 7659f6d6ec9b642db8be29bc45fe97cc, type: 2}
+  matchJapaneseLayout: 1
+--- !u!114 &231496939500174326
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1010428681348347121}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 3a1c7e40b1d94f0ea6c25d18f7b3c002, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  key: ui.gameover.continue
+  japaneseFont: {fileID: 0}
+  englishFont: {fileID: 11400000, guid: 5c5ee151f9307453bad78be36b51a077, type: 2}
+  matchJapaneseLayout: 1
+--- !u!114 &325041112850963274
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 475485492362312725}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 3a1c7e40b1d94f0ea6c25d18f7b3c002, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  key: ui.gameover.restart
+  japaneseFont: {fileID: 0}
+  englishFont: {fileID: 11400000, guid: c2f49fe8c22d94f9a9e6cd06ad490155, type: 2}
+  matchJapaneseLayout: 1
+--- !u!114 &848563112295360543
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1010428680340598590}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 3a1c7e40b1d94f0ea6c25d18f7b3c002, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  key: ui.gameover.title_button
+  japaneseFont: {fileID: 0}
+  englishFont: {fileID: 11400000, guid: c2f49fe8c22d94f9a9e6cd06ad490155, type: 2}
+  matchJapaneseLayout: 1

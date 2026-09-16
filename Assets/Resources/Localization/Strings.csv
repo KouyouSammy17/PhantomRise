@@ -1,0 +1,241 @@
+"Key","Japanese","English"
+"# --- Title / HUD ---","",""
+"hud.controls",": 移動
+: 憑依
+: 攻撃
+: スキル
+: 回避
+
+
+",": Move
+: Hijack
+: Attack
+: Skill
+: Dodge
+
+
+"
+"# --- Stage clear achievements ---","",""
+"achieve.hijack4","乗っ取った数が4回以内でクリア","Clear with 4 hijacks or fewer"
+"achieve.no_gameover","一度もゲームオーバーにならずにクリア","Clear without a single game over"
+"achieve.time200","200秒以内にクリア","Clear within 200 seconds"
+"# --- Tutorial pages ---","",""
+"tutorial.ghost","【幽霊状態】
+プレーヤーは幽霊のため、
+そのままでは攻撃ができません。
+幽霊状態が60秒続くと力尽き、
+ゲームオーバーになります。
+また、幽霊状態で攻撃を受けると、
+即死してゲームオーバーになります。
+モンスターに憑依し体を手に入れ、
+モンスターを倒しながら先へ進みましょう。
+
+","[GHOST FORM]
+You are a ghost, so you
+cannot attack on your own.
+Stay a ghost for 60 seconds and
+you run out of power - game over.
+Take even one hit as a ghost and
+you die instantly - game over.
+Hijack a monster to take its body,
+then fight your way forward.
+
+"
+"tutorial.shadowzone","【シャドウゾーン】
+シャドウゾーン内にいると
+モンスターに見つからない。
+モンスターに見つかっている状態で
+シャドウゾーンに入るとプレイヤーを見失う。
+シャドウゾーンを活用してモンスターに憑依しよう。
+
+","[SHADOW ZONE]
+While you are in a shadow zone,
+monsters cannot see you.
+If a monster has already spotted you,
+entering a shadow zone makes it lose you.
+Use shadow zones to set up your hijacks.
+
+"
+"tutorial.hijack_approach","
+モンスターに気づかれないように近づき、
+Bボタンで憑依しよう！
+
+　　　　　　　　　　　モンスターの上に
+　　　　　　　　　　　紫のアイコンが出たら
+　　　　　　　　　　　　Bボタンで憑依できる。
+
+
+
+次へ
+
+","
+Sneak up on a monster without being seen,
+then press B to hijack it!
+
+<align=left><pos=1040>When a purple icon
+<pos=1040>appears above a monster,
+<pos=1040>you can hijack it with B.
+<align=center>
+
+
+Next
+
+"
+"tutorial.hijack_action","【憑依アクション】
+敵に気づかれないようにBボタンを
+押すと【憑依アクション】が発生！
+タイミングよくBボタンを押せ！
+
+
+
+
+
+
+","[HIJACK ACTION]
+Press B before the enemy notices you
+to trigger a HIJACK ACTION!
+Hit B with the right timing!
+
+
+
+
+
+
+"
+"tutorial.fight","憑依に成功したらモンスターと戦え！
+【操作方法】
+
+
+　
+　　　　　　　","Hijack succeeded - now fight!
+[CONTROLS]
+
+
+
+"
+"tutorial.fight_ctrl_left","移動
+
+攻撃
+
+スキル","Move
+
+Attack
+
+Skill"
+"tutorial.fight_ctrl_right","憑依
+
+回避","Hijack
+
+Dodge"
+"tutorial.rank","【ランク】
+モンスターのHPバーに
+表示されているアイコンが
+モンスターのランクを表している。
+
+　　　　　　　","[RANK]
+The icon shown on a
+monster's HP bar
+tells you its rank.
+
+"
+"tutorial.rank_left","Aランク　　　　　　
+
+Cランク　　　　　　　","Rank A
+
+Rank C"
+"tutorial.rank_right","Bランク　　　　　　
+
+Dランク　　　　　　　","Rank B
+
+Rank D"
+"tutorial.stun","A～Cランクモンスターは
+気絶させることで憑依できる。
+気絶させるには攻撃してHPを削るか
+スタントラップで気絶させることができる。
+
+
+
+
+","Rank A-C monsters can only be
+hijacked after you knock them out.
+Wear down their HP with attacks,
+or use a stun trap to stun them.
+
+
+
+
+"
+"tutorial.items","【回復アイテム】
+落ちているアイテムに触れると即時回復。
+
+ハート　HP50回復
+(憑依状態のみ)　
+　
+時計　　10秒回復
+(幽霊状態のみ)　
+
+","[RECOVERY ITEMS]
+Touch an item on the ground to heal at once.
+
+Heart  Restores 50 HP
+(only while hijacking)  
+  
+Clock  Adds 10 seconds
+(only while a ghost)  
+
+"
+"# --- Hijack skill descriptions ---","",""
+"skill.bloodsucking.desc","HP吸収","Drains HP"
+"skill.buff.desc","攻撃力とスピードを10秒アップ","Attack and speed up for 10s"
+"skill.magicsphere.desc","魔法弾を発射する","Fires a magic bolt"
+"skill.poison.desc","敵を毒状態にする","Poisons the enemy"
+"skill.tripleslash.desc","斬撃を3つ飛ばす","Fires three slashes"
+"skill.invisible.desc","5秒間透明、攻撃速度バフがつく","Invisible for 5s, attack speed up"
+"skill.thread.desc","敵のスピードを90%ダウン","Cuts enemy speed by 90%"
+"skill.charge.desc","敵を出血状態にする","Makes the enemy bleed"
+"# --- Language switch button (title) ---","",""
+"lang.switch_to","English","日本語"
+"lang.button","言語","Language"
+"lang.current","日本語","English"
+"# --- Pause menu ---","",""
+"ui.pause.title","ポーズ","PAUSE"
+"ui.pause.continue","つづける","Continue"
+"ui.pause.restart","リスタート","Restart"
+"ui.pause.settings","設定","Setting"
+"ui.pause.giveup","あきらめる","Give Up"
+"# --- Game over ---","",""
+"ui.gameover.title","ゲームオーバー","GAME OVER"
+"ui.gameover.continue","コンティニュー？","Continue?"
+"ui.gameover.restart","リスタート","Restart"
+"ui.gameover.title_button","タイトルへ","Title"
+"# --- Stage clear ---","",""
+"ui.clear.title","ステージクリア！","STAGE CLEAR!"
+"ui.clear.restart","リスタート","Restart"
+"ui.clear.title_button","タイトルへ","Title"
+"# --- Settings popup ---","",""
+"ui.settings.title","設定","Settings"
+"ui.settings.bgm","BGM","BGM"
+"ui.settings.se","SE","SE"
+"ui.settings.back","戻る","Back"
+"# --- HUD misc ---","",""
+"hud.gamestart","ゲームスタート！","Game Start!"
+"hud.bosshp","ボスHP:","BossHP:"
+"hud.rank","ランク:","Rank:"
+"tutorial.skip","スキップ>>","Skip>>"
+"tutorial.skip_confirm","スキップしますか？","Skip the tutorial?"
+"tutorial.skip_yes","はい","Yes"
+"tutorial.skip_no","いいえ","No"
+"# --- Hijack QTE ---","",""
+"qte.hint.keyboard","スペースキー！","Press Space!"
+"qte.hint.gamepad","Bボタン！","Press B!"
+"qte.success","成功！","SUCCESS!"
+"qte.fail","失敗！","FAILED!"
+"# --- Hijack skill names ---","",""
+"skill.bloodsucking.name","吸血","Bloodsucking"
+"skill.buff.name","強化","Buff"
+"skill.magicsphere.name","魔法弾","MagicSphere"
+"skill.poison.name","毒胞子","Poison"
+"skill.tripleslash.name","三連斬","TripleSlash"
+"skill.invisible.name","透明化","Invisible"
+"skill.thread.name","蜘蛛の糸","Thread"
+"skill.charge.name","突進","Charge"
