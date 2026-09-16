@@ -42,11 +42,11 @@ public class BossController : EnemyController
 
     public bool IsBossIntro => isBossIntro;
 
-
     protected override void Start()
     {
         Bossagent = GetComponent<NavMeshAgent>();
 
+     
         base.Start();
 
         summonTimer = summonCooldown;
@@ -103,8 +103,9 @@ public class BossController : EnemyController
             return;
 
         bossHealth.TakeDamage(damage);
-
+        PlayDamageEffect();
         PlayHitEffect();
+
     }
 
 
@@ -159,20 +160,20 @@ public class BossController : EnemyController
         }
 
         // マップ上の敵を取得
-        EnemyController[] enemies =
-            FindObjectsByType<EnemyController>(
-                FindObjectsSortMode.None);
+        //EnemyController[] enemies =
+        //    FindObjectsByType<EnemyController>(
+        //        FindObjectsSortMode.None);
 
         yield return new WaitForSeconds(1.5f);
 
-        foreach (EnemyController enemy in enemies)
-        {
-            // 自分（ボス）は除外
-            if (enemy == this)
-                continue;
+        //foreach (EnemyController enemy in enemies)
+        //{
+        //    // 自分（ボス）は除外
+        //    if (enemy == this)
+        //        continue;
 
-            Destroy(enemy.gameObject);
-        }
+        //    Destroy(enemy.gameObject);
+        //}
 
 
         GameManager.Instance.TriggerGameClear();
