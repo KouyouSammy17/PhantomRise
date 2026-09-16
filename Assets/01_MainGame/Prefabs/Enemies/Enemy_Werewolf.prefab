@@ -2731,6 +2731,10 @@ PrefabInstance:
       propertyPath: attackRange
       value: 5
       objectReference: {fileID: 0}
+    - target: {fileID: 6443116343119807069, guid: 4ef9cf0b807c6d74ba60784351b7ecd4, type: 3}
+      propertyPath: HitEffectRoot
+      value: 
+      objectReference: {fileID: 7774496454899680068}
     - target: {fileID: 6468800247213904955, guid: 4ef9cf0b807c6d74ba60784351b7ecd4, type: 3}
       propertyPath: m_IsActive
       value: 0

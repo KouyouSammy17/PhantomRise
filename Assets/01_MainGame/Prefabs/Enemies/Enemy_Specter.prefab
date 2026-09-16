@@ -521,6 +521,10 @@ PrefabInstance:
       propertyPath: attackRange
       value: 4
       objectReference: {fileID: 0}
+    - target: {fileID: 6443116343119807069, guid: 4ef9cf0b807c6d74ba60784351b7ecd4, type: 3}
+      propertyPath: HitEffectRoot
+      value: 
+      objectReference: {fileID: 6765316550764710585}
     - target: {fileID: 7432282056635228474, guid: 4ef9cf0b807c6d74ba60784351b7ecd4, type: 3}
       propertyPath: m_AnchorMax.x
       value: 0
